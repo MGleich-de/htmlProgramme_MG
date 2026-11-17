@@ -1,0 +1,188 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Fischer- &amp; Haworth-Projektion / Di- &amp; Polysaccharide</title><meta name="color-scheme" content="light dark">
+<style>
+:root{--bg:#eaeffa;--card:#fff;--tx:#1c2540;--mu:#6a7590;--ac:#4361ee;--c:#1c2540;--ox:#e8590c;--o:#d6336c;--ar:#7048e8;--ln:#dbe2f0;--dot:#e4eaf6;--sh:0 8px 28px rgba(40,60,120,.09),0 1px 3px rgba(40,60,120,.08);--grad:linear-gradient(115deg,#3b4cca 0%,#6a4be0 55%,#14a6c9 100%);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme=dark]{--bg:#0d1322;--card:#161e33;--tx:#e8ecf8;--mu:#98a4c0;--ac:#7f9dff;--c:#e8ecf8;--ox:#ff922b;--o:#ff7aa8;--ar:#b9a0ff;--ln:#2a3552;--dot:#222c47;--sh:0 8px 28px rgba(0,0,0,.4);--grad:linear-gradient(115deg,#26308f,#4b36a8 55%,#0e7f98);color-scheme:dark}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:radial-gradient(1100px 560px at 8% -12%,rgba(67,97,238,.12),transparent 60%),radial-gradient(900px 480px at 100% 0,rgba(20,166,201,.12),transparent 55%),var(--bg);color:var(--tx);font:14px/1.5 "Inter","Segoe UI",system-ui,-apple-system,sans-serif;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:10px;padding:10px 18px;background:var(--grad);color:#fff;box-shadow:0 4px 18px rgba(60,60,160,.28)}
+h1{font-size:18px;margin:0;font-weight:700;letter-spacing:.2px}
+.au{flex:1;font-size:12px;padding:2px 10px;margin-left:6px;border-radius:999px;background:rgba(255,255,255,.16);width:max-content;max-width:max-content;flex:0 0 auto;margin-right:auto}
+button,select{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:6px 12px;cursor:pointer;transition:all .18s ease}
+button:hover{border-color:var(--ac);transform:translateY(-1px);box-shadow:0 3px 10px rgba(67,97,238,.2)}
+button.on{background:var(--grad);border-color:transparent;color:#fff;box-shadow:0 3px 12px rgba(67,97,238,.35)}
+header button{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.38)}
+header button:hover{background:rgba(255,255,255,.26);box-shadow:none;border-color:#fff}
+header button.on{background:#fff;color:#3b4cca;border-color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.ico{width:38px;height:38px;padding:0;border-radius:50%;display:grid;place-items:center}button.ico svg{display:block}
+main{flex:1;min-height:0;display:grid;grid-template-columns:190px 1fr 340px;gap:14px;padding:14px}
+aside,#stage,#txt{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:14px;min-height:0;box-shadow:var(--sh)}
+aside{overflow:auto}
+.g{margin-bottom:14px}.g b{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.g b:before{content:"";width:3px;height:12px;border-radius:2px;background:var(--grad)}
+.g div{display:flex;gap:5px;flex-wrap:wrap}.g button{flex:1}
+.g label{display:flex;align-items:center;gap:7px;cursor:pointer;padding:4px 2px}
+input[type=checkbox]{accent-color:var(--ac);width:16px;height:16px}
+#stage{display:flex;flex-direction:column;gap:8px}
+#name{font-weight:700;text-align:center;font-size:18px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+#name small{display:block;color:var(--mu);-webkit-text-fill-color:var(--mu);font-weight:400;font-size:12px;margin-top:1px}
+#sv{flex:1;min-height:0;width:100%;background-color:var(--card);border:1px solid var(--ln);border-radius:12px}
+.t{text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round;font-family:system-ui,sans-serif}
+#bar{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;align-items:center}
+#bar button{padding:4px 10px;min-width:34px;border-radius:999px}
+#txt{overflow:auto}
+#txt h2{font-size:16px;margin:0 0 10px;padding-bottom:7px;color:var(--ac);border-bottom:2px solid var(--ln)}
+#txt p{margin:0 0 8px}
+#txt ul{list-style:none;margin:0 0 8px;padding:0}
+#txt li{position:relative;padding-left:18px;margin-bottom:7px}
+#txt li:before{content:"";position:absolute;left:3px;top:.6em;width:7px;height:7px;border-radius:50%;background:var(--grad)}
+b.or{color:var(--ox)}b.rd{color:var(--o)}b.vi{color:var(--ar)}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--ln);border-radius:8px}
+@media(max-width:900px){body{height:auto}main{grid-template-columns:1fr}#sv{height:70vh;min-height:360px}}
+</style></head><body>
+<header><h1>Fischer- &amp; Haworth-Projektion / Di- &amp; Polysaccharide</h1><span class="au">Matthias Gleich</span><button id="m1" class="on">Monosaccharide</button><button id="m2">Di- und Polysaccharide</button><button id="th" class="ico" aria-label="Hell- und Dunkel-Modus"></button></header>
+<main><aside id="ctl"></aside>
+<section id="stage"><div id="name"></div>
+<svg id="sv" viewBox="0 0 760 400" preserveAspectRatio="xMidYMid meet"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.4" markerHeight="5.4" orient="auto"><path d="M0,2L10,5L0,8L2.2,5z" fill="var(--ar)"/></marker></defs><g id="gx"></g></svg>
+<div id="bar"></div></section>
+<section id="txt"><h2 id="tt"></h2><div id="tb"></div></section></main>
+<script>
+const E=t=>t*t*(3-2*t),L=(a,b,t)=>a+(b-a)*t,K=t=>Math.max(0,Math.min(1,t)),$=i=>document.getElementById(i);
+const CX=380,CY=205,fy=i=>46+50*(i-1);
+let LPP=[0,0,0],pst=0,oz=0,stars=false,nums=false,rp=0,mode='mono',oi='mal',mp=1,S={sug:'glu',ser:1,an:'a',ring:'pyr'},step=0,fwd=true,P={m:0,a:0,p:0,ar:0,z:0},T={m:0,a:0,p:0,ar:0,z:0},cur,prev=null,tr=1,play=false,speed=1,mech=true,idle=0,last=performance.now();
+const TG=[[0,0,0,0,0],[1,0,0,0,1],[1,0,0,1,1],[1,1,0,0,1],[1,1,1,0,1],[1,1,1,0,1]];
+function build(){
+const g=S.sug!='fru',sr=S.ser,st=S.sug=='gal'?{2:1,3:-1,4:-1,5:1}:g?{2:1,3:-1,4:1,5:1}:{3:-1,4:1,5:1};for(const k in st)st[k]*=sr;
+const a=g?1:2,l=g?5:(S.ring=='fur'?5:6),six=l-a==4;
+const R=six?[[100,0],[50,50],[-50,50],[-100,0],[-50,-50]]:[[84,-8],[50,44],[-50,44],[-84,-8]],RO=six?[50,-50]:[0,-50];
+const rp={};for(let i=a;i<=l;i++)rp[i]=R[i-a];
+const hv=(i,d)=>{const[x,y]=rp[i];return[CX+x+(x>70?12:x<-70?-12:0),CY+y+d*36]},nd=i=>[CX+rp[i][0],CY+rp[i][1]];
+const dOH=(S.an=='a'?1:-1)*sr,it={},B=[];
+const add=(id,k,t,f,h,o)=>it[id]=Object.assign({id,k,t,f,h:h||f},o);
+for(let i=1;i<=6;i++){const y=fy(i),ring=i>=a&&i<=l;
+add('N'+i,'n',String(i),[CX-124,y],ring?[CX+rp[i][0]*.78,CY+rp[i][1]*.78]:null,{i,ring});
+if(!ring){const p=i<a?a:l,d=i<a?-dOH:(st[5]==1?-1:1);{const hp=hv(p,d);add('G'+i,'g','CH₂OH',[CX,y],hp,{lf:hp[0]<CX-70})}B.push(['C'+p,'G'+i]);continue}
+add('C'+i,'c','C',[CX,y],nd(i));if(i>a)B.push(['C'+(i-1),'C'+i,'r']);
+if(i==a){add('Oc','o','O',g?[CX+36,y-26]:[CX+46,y],[nd(i)[0]+48,nd(i)[1]],{fin:hv(i,dOH)});B.push(['C'+i,'Oc','d']);
+if(g){add('Hk','h','H',[CX-36,y-26],hv(i,-dOH));B.push(['C'+i,'Hk'])}}
+else if(i==l){const sl=(!g&&l==6)?1:st[5];add('RO','o','O',[CX+sl*44,y],[CX+RO[0],CY+RO[1]]);add('RH','h','H',[CX+sl*72,y],[CX+RO[0]+30,CY+RO[1]-30]);
+B.push(['C'+i,'RO'],['RO','RH','oh'],['RO','C'+a,'cl']);
+if(l==5){add('Hl','h','H',[CX-sl*44,y],hv(i,sl==1?1:-1));B.push(['C'+i,'Hl'])}
+else{add('Ha','h','H',[CX-44,y],hv(i,-1));add('Hb','h','H',[CX,y+32],hv(i,1));B.push(['C'+i,'Ha'],['C'+i,'Hb'])}}
+else{const s=st[i],d=s==1?1:-1,hp=hv(i,d),hx=((six||rp[i][1]>0)&&((rp[i][1]>0&&d<0)||(rp[i][1]<0&&d>0)))?(rp[i][0]>0?-24:24):(rp[i][0]<-70?-24:24);add('X'+i,'o','O',[CX+s*46,y],hp);add('XH'+i,'h','H',[CX+s*72,y],[hp[0]+hx,hp[1]+d*8]);add('H'+i,'h','H',[CX-s*46,y],hv(i,-d));B.push(['C'+i,'X'+i],['X'+i,'XH'+i],['C'+i,'H'+i])}}
+const nm=(S.an=='a'?'α':'β')+'-'+(sr==1?'D':'L')+'-'+(S.sug=='gal'?'Galactopyranose':g?'Glucopyranose':l==5?'Fructofuranose':'Fructopyranose');
+return{items:it,bonds:B,info:{a,l,g,dOH,nm,rp,RO,six,st}}}
+function snap(){if(!cur)return null;const p={};for(const i in cur.items)p[i]={f:cur.items[i].f,h:cur.items[i].h};return p}
+function pos(o){let f=o.f,h=o.h,pv=prev&&tr<1&&prev[o.id];if(pv){const q=E(tr);f=[L(pv.f[0],f[0],q),L(pv.f[1],f[1],q)];h=[L(pv.h[0],h[0],q),L(pv.h[1],h[1],q)]}
+const m=E(P.m);return[L(f[0],h[0],m),L(f[1],h[1],m)]}
+const tx=(x,y,t,c,sz,op)=>op>.02?`<text class="t" x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${c}" font-size="${sz}" opacity="${op.toFixed(2)}">${t}</text>`:'';
+const sg=(x1,y1,x2,y2,w,op,da)=>op>.02?`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="var(--c)" stroke-width="${w}" stroke-linecap="round" opacity="${op.toFixed(2)}"${da?' stroke-dasharray="4 4"':''}/>`:'';
+const ta=(x,y,t,c,sz,op,a_)=>op>.02?`<text class="t" style="text-anchor:${a_}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="${c}" font-size="${sz}" opacity="${op.toFixed(2)}">${t}</text>`:'';
+const an=(p,q)=>(Math.atan2(p[1]-q[1],p[0]-q[0])*180/Math.PI+360)%360;
+function lps(x,y,nb,ops,ob){let vx=0,vy=0;const bs=[];nb.forEach(e=>{const b=Array.isArray(e)?e[0]:e,w=Array.isArray(e)?e[1]:1;vx+=w*Math.cos(b*Math.PI/180);vy+=w*Math.sin(b*Math.PI/180);if(w>.3)bs.push(b)});
+const lin=Math.hypot(vx,vy)<.35,base=lin?(bs[0]+90)%360:(Math.atan2(-vy,-vx)*180/Math.PI+360)%360,off=lin?[0,90,180]:[-60,0,60],dg=d=>{const e=Math.abs(d)%360;return e>180?360-e:e},obs=bs.map(b=>[b,40]).concat((ob||[]).map(b=>[b,28])),pl=[],al=[];let o='';
+for(let k=0;k<3;k++){const a0=base+off[k];let best=a0;for(const dl of[0,10,-10,20,-20,30,-30,40,-40]){const a1=a0+dl;if(obs.every(([b,t])=>dg(a1-b)>=t)&&pl.every(p=>dg(a1-p)>=45)){best=a1;break}}al.push(best);if(ops[k]>.3)pl.push(best);const r=best*Math.PI/180,cx=x+Math.cos(r)*12,cy=y+Math.sin(r)*12,u=-Math.sin(r)*3.8,v=Math.cos(r)*3.8;o+=sg(cx-u,cy-v,cx+u,cy+v,1.8,ops[k])}LPP=al;return o}
+function draw(){if(mode=='oli')return drawO();const m=E(P.m),a=E(P.a),pa=K(P.p*2),pb=K(P.p*2-1),ar=P.ar*(mech?1:0),I=cur.info,it=cur.items,Q={},OP={};
+for(const id in it){const o=it[id];let q=pos(o);if(id=='Oc')q=[L(q[0],o.fin[0],a),L(q[1],o.fin[1],a)];if(id=='RH')q=[q[0]+40*pa,q[1]-14*pa];Q[id]=q;OP[id]=(prev&&tr<1&&!prev[id])?tr:1}
+const rd=o=>({c:9*(1-m),g:8,o:9,h:8,x:8})[o.k]||0;let s='';
+for(const[A,Bn,ty]of cur.bonds){const u=it[A],v=it[Bn],p1=Q[A],p2=Q[Bn],dx=p2[0]-p1[0],dy=p2[1]-p1[1],d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d,r1=rd(u)+2,r2=rd(v)+2;if(d<=r1+r2+3)continue;
+const x1=p1[0]+ux*r1,y1=p1[1]+uy*r1,x2=p2[0]-ux*r2,y2=p2[1]-uy*r2,op=Math.min(OP[A],OP[Bn]);
+if(ty=='cl'){s+=sg(x1,y1,x2,y2,2,a*op)}
+else if(ty=='oh')s+=sg(x1,y1,x2,y2,2,(1-pa)*op);
+else if(ty=='d'){const nx=-uy*2.4,ny=ux*2.4;s+=sg(x1+nx,y1+ny,x2+nx,y2+ny,2,(1-a)*op)+sg(x1-nx,y1-ny,x2-nx,y2-ny,2,(1-a)*op)+sg(x1,y1,x2,y2,2,a*op)}
+else{const bold=ty=='r'&&u.h[1]>CY+30&&v.h[1]>CY+30;s+=sg(x1,y1,x2,y2,bold?2+2.6*m:2,op)}}
+const A=I.a;
+if(m>.9&&a>.3)s+=`<circle cx="${Q['C'+A][0]}" cy="${Q['C'+A][1]}" r="13" fill="none" stroke="var(--ox)" stroke-dasharray="3 3" opacity="${(a*.8).toFixed(2)}"/>`;
+for(const id in it){const o=it[id],q=Q[id],op=OP[id];
+if(o.k=='c')s+=tx(q[0],q[1],'C',+id.slice(1)==A?'var(--ox)':'var(--c)',15,(1-m)*op)+((stars&&I.st[+id.slice(1)])?tx(q[0]+10,q[1]-7,'*','var(--ac)',17,(1-m)*op):'');
+else if(o.k=='n')s+=tx(q[0],q[1],o.t+((stars&&o.ring&&(I.st[o.i]||o.i==A))?`<tspan fill="var(--ac)" font-size="14" opacity="${(I.st[o.i]?K((m-.5)*2):a).toFixed(2)}">*</tspan>`:''),o.i==A?'var(--ox)':'var(--mu)',10,(o.ring?1:1-m)*op);
+else if(o.k=='o'){s+=tx(q[0],q[1],'O','var(--o)',15,op);if(id[0]=='X')s+=lps(q[0],q[1],[an(Q['C'+id.slice(1)],q),an(Q['XH'+id.slice(1)],q)],[op,0,op])}
+else if(o.k=='h')s+=tx(q[0],q[1],'H',id=='RH'&&pa>0?'var(--ar)':'var(--c)',14,op*(id=='RH'?1-K(pa-.6)*2.5:1));
+else if(o.k=='x'){const ho=o.s<0&&m<.5;s+=ta(q[0]+(ho?5.5:-5.5),q[1],ho?'HO':'OH','var(--o)',14,op,ho?'end':'start')+lps(q[0],q[1],[an(Q['C'+id.slice(1)],q),ho?180:0],2,[op,op])}
+else{const f=(o.lf&&m>.5)?-1:1,hh=f>0?11:-19,ss=f>0?19:-9;s+=tx(q[0],q[1],'C','var(--c)',14,op)+tx(q[0]+hh,q[1],'H','var(--c)',14,op)+tx(q[0]+ss,q[1]+4,'₂','var(--c)',10,op)+sg(q[0]+25*f,q[1],q[0]+34*f,q[1],2,op)+tx(q[0]+41*f,q[1],'O','var(--o)',14,op)+sg(q[0]+48*f,q[1],q[0]+55*f,q[1],2,op)+tx(q[0]+61*f,q[1],'H','var(--c)',14,op)+lps(q[0]+41*f,q[1],[180,0],[op,0,op])}}
+const ro=Q.RO,oc=Q.Oc,ca=Q['C'+A];
+const q2=1-a*(1-pa);s+=lps(oc[0],oc[1],[an(ca,oc),[I.dOH==-1?342:18,pb]],[1,a*(1-pb),1],(a>.3&&pb<.7)?[325]:[])+lps(ro[0],ro[1],[an(Q['C'+I.l],ro),[an(Q.RH,ro),1-pa],[an(ca,ro),a]],[q2,a*(1-pa),q2],(a>.3&&pa<.7)?[220]:[]);
+s+=tx(ro[0]-17,ro[1]-14,'⊕','var(--ar)',13,a*(1-pa))+tx(oc[0]+14,oc[1]-10,'⊖','var(--ar)',13,a*(1-pb))+tx(oc[0]+24+(1-K(pb/.7))*50,oc[1]+(I.dOH==-1?-8:8),'H','var(--ar)',14,K(pb/.5))+sg(oc[0]+8.5,oc[1]+(I.dOH==-1?-2.8:2.8),oc[0]+17.5,oc[1]+(I.dOH==-1?-5.8:5.8),2,K((pb-.75)/.25));
+if(ar>.02){const vx=ca[0]-ro[0],vy=ca[1]-ro[1],d=Math.hypot(vx,vy),ux=vx/d,uy=vy/d,pk=(()=>{const t=an(ca,ro),df=z=>{const e=Math.abs(z-t)%360;return e>180?360-e:e};return df(LPP[0])<df(LPP[2])?LPP[0]:LPP[2]})(),sx=ro[0]+Math.cos(pk*Math.PI/180)*12,sy=ro[1]+Math.sin(pk*Math.PI/180)*12,ex=ca[0]-ux*12,ey=ca[1]-uy*12,mx=(sx+ex)/2,my=(sy+ey)/2,cx=mx+.5*(CX-mx),cy=my+.5*(CY-my),cx0=ca[0],cy0=ca[1];
+s+=`<g opacity="${ar.toFixed(2)}" fill="none" stroke="var(--ar)" stroke-width="1.5"><path d="M${sx.toFixed(1)},${sy.toFixed(1)}Q${cx.toFixed(1)},${cy.toFixed(1)} ${ex.toFixed(1)},${ey.toFixed(1)}" marker-end="url(#ah)"/><path d="M${cx0+26},${cy0-3}Q${cx0+42},${cy0-24} ${cx0+50},${cy0-11}" marker-end="url(#ah)"/></g>`
++tx(ro[0]+Math.cos(pk*Math.PI/180)*25,ro[1]+Math.sin(pk*Math.PI/180)*25,'1','var(--ar)',11,ar)+tx(cx0+44,cy0-26,'2','var(--ar)',11,ar)}
+s+=tx(ca[0]+22,ca[1]+13,'δ⁺','var(--ar)',11,P.ar)+tx(oc[0]+16,oc[1]+15,'δ⁻','var(--ar)',11,P.ar)+tx(ro[0]-15,ro[1]-14,'δ⁻','var(--ar)',11,P.ar)+tx(Q.RH[0]+11,Q.RH[1]-12,'δ⁺','var(--ar)',11,P.ar);$('gx').innerHTML=s;const zz=E(P.z),kk=1+.55*zz,ww=760/kk,hh=400/kk;$('sv').setAttribute('viewBox',`${(L(380,420,zz)-ww/2).toFixed(1)} ${(L(200,185,zz)-hh/2).toFixed(1)} ${ww.toFixed(1)} ${hh.toFixed(1)}`)}
+function txt(){if(mode=='oli')return txtO();const g=S.sug!='fru',sn=S.sug=='fru'?'Fructose':S.sug=='gal'?'Galactose':'Glucose',I=cur.info,D=S.ser==1?'D':'L',hk=g?'Halbacetal':'Halbketal',l=I.l,a=I.a,face=I.dOH==-1?'oben':'unten',sym=S.an=='a'?'α':'β',
+ringN=g?'Pyranose (Sechsring aus C1–C5 und O)':l==5?'Furanose (Fünfring aus C2–C5 und O)':'Pyranose (Sechsring aus C2–C6 und O)',carb=g?'Aldehydgruppe (C1)':'Ketogruppe (C2)';
+const H=[
+[`Fischer-Projektion der ${D}-${sn} (Kettenform)`,`<p>C₆H₁₂O₆ ist hier eine <b>${g?'Aldohexose':'Ketohexose'}</b>. Die Kette wird so gedreht, dass alle C–C-Bindungen vom Betrachter weg zeigen (C-Atome auf einem Zylindermantel) und dann „abgerollt“.</p><ul><li>Längste C-Kette senkrecht, das höchstoxidierte C-Atom (<b class="or">C${a}</b>, ${carb}) oben.</li><li>Waagrechte Bindungen zeigen zum Betrachter: Reste links vorn → links, rechts vorn → rechts.</li><li>${g?'4 asymmetrisch substituierte Kohlenstoffatome (C2–C5): 2⁴ = 16':'3 asymmetrisch substituierte Kohlenstoffatome (C3–C5): 2³ = 8'} Stereoisomere.</li><li><b>D/L:</b> OH-Gruppe am untersten asymmetrisch substituierten Kohlenstoffatom (C5) rechts → D, links → L. Hier: <b>${D}</b>. Die L-Form ist das Spiegelbild (Enantiomer): alle OH wechseln die Seite.</li><li>D/L liefert keine Informationen zur Drehrichtung der Schwingungsebene von linear polarisiertem Licht.</li></ul>`],
+['Vorbereitung des Ringschlusses',`<p>${sn} liegt in Lösung kaum als Kette vor (bei Glucose &lt; 1 %). Grund: Der Ringschluss erfolgt durch <b>intramolekularen nucleophilen Angriff</b> des Sauerstoffs der OH-Gruppe an C${l} auf das positiv polarisierte C-Atom der ${carb}.</p><ul><li>${l==5?'Drehung um die C4–C5-Bindung: die OH-Gruppe an C5 kommt in „Angriffsposition“ zu C'+a+(g?' (H und CH₂OH tauschen dabei die Plätze).':'.'):'Die Kette wird so gefaltet, dass die OH-Gruppe an C6 in die Nähe von C2 kommt.'}</li><li>Zickzack-Kette waagrecht; Reste, die in der Fischer-Formel <b>rechts</b> stehen, kommen <b>unten</b> in die Haworth-Formel, Reste <b>links</b> kommen <b>oben</b>.</li>${l==5?`<li>Die endständige CH₂OH-Gruppe steht bei D-Zuckern oben, bei L-Zuckern unten.</li>`:''}</ul>`],
+['Nucleophiler Angriff',`<p>Die C=O-Gruppe ist polar: C${a} ist <b>δ⁺</b>, O ist <b>δ⁻</b>.</p><ul><li><b class="vi">Pfeil 1:</b> Ein freies Elektronenpaar des Hydroxyl-Sauerstoffs (Nucleophil) greift das positivierte C${a} an.</li><li><b class="vi">Pfeil 2:</b> Die π-Bindung der C=O-Gruppe klappt zum Sauerstoff über.</li><li>Intramolekular entsteht so ein ${ringN}.</li></ul>`],
+['Zwischenstufe: Ring geschlossen',`<ul><li>Neue C–O-Bindung (Ring-O mit C${a}). Der Ring-Sauerstoff hat nun drei Bindungspartner: <b class="vi">⊕</b>.</li><li>Der frühere Carbonyl-Sauerstoff trägt als Alkoholat <b class="vi">⊖</b>.</li><li>C${a} ist jetzt sp³-hybridisiert mit vier verschiedenen Substituenten: ein <b>neues asymmetrisch substituiertes Kohlenstoffatom (anomeres C-Atom)</b>.</li><li>Die planare C=O-Gruppe kann von beiden Seiten angegriffen werden. Hier liegt O⁻ <b>${face}</b>, es entsteht das <b>${sym}-Anomer</b>.</li></ul>`],
+['Protonenübertragung',`<p>H⁺ geht vom Ring-O⁺ zum O⁻ über (in Wasser über Lösungsmittelmoleküle; säure- und basenkatalysiert). Beide Ladungen verschwinden.</p><ul><li>Es entsteht die neue OH-Gruppe am anomeren C: die <b>${hk}-Gruppierung</b> (C mit OR und OH${g?'':' und zwei C-Resten'}).</li><li>Die Ringbildung ist reversibel (Ring-Ketten-Tautomerie).</li></ul>`],
+[`Ergebnis: ${I.nm}`,`<ul><li>Anomere (α/β) unterscheiden sich nur in der OH-Stellung an C${a}; sie sind <b>keine</b> Spiegelbilder (Diastereomere) und haben verschiedene Eigenschaften.</li><li>Haworth, D-Reihe: α = anomeres OH unten, β = oben („β = b = oben“). L-Reihe umgekehrt: α oben, β unten. Hier: ${sym}-${D} → OH <b>${face}</b>.</li><li>${D=='L'?'L-Formen sind Enantiomere der D-Formen (gleicher Betrag der Drehung, umgekehrtes Vorzeichen).':''} ${S.sug=='gal'?'D-Galactose (C4-Epimer der Glucose): [α] im Gleichgewicht +80,2° (Mutarotation über die offene Kette).':g?'D-Glucose: α: [α] = +112,2°, ϑm = 146 °C; β: +18,7°, 150 °C; Gleichgewicht +52,7° (Mutarotation über die offene Kette).':'D-Fructose ist linksdrehend (−). In Lösung überwiegt β-D-Fructopyranose neben β-D-Fructofuranose; in Saccharose liegt Fructose als Furanose vor.'}</li></ul>`]][step];
+$('tt').textContent=H[0];$('tb').innerHTML=H[1];$('name').innerHTML=(step>=3?I.nm:(S.ser==1?'D':'L')+'-'+sn)+`<small>${step>=3?hkTxt():'Kettenform → Ringform'}</small>`;function hkTxt(){return (g?'Aldohexose':'Ketohexose')+' · '+ringN}}
+const G=[['sug','Zucker',[['glu','Glucose'],['gal','Galactose'],['fru','Fructose']]],['ser','Reihe',[[1,'D'],[-1,'L']]],['an','Anomer',[['a','α'],['b','β']]],['ring','Ringform (Fructose)',[['pyr','Pyranose'],['fur','Furanose']]]];
+function ctl(){if(mode=='oli')return ctlO();$('ctl').innerHTML=G.map(([k,n,o])=>(k=='ring'&&S.sug!='fru')?'':`<div class="g"><b>${n}</b><div>${o.map(([v,t])=>`<button data-k="${k}" data-v="${v}" class="${S[k]==v?'on':''}">${t}</button>`).join('')}</div></div>`).join('')+`<div class="g"><b>Anzeige</b><div><label style="width:100%"><input type="checkbox" id="mc" ${mech?'checked':''}> Elektronenpfeile</label><label style="width:100%"><input type="checkbox" id="st" ${stars?'checked':''}> Asymmetrische C-Atome (*)</label></div></div><div class="g"><b>Tempo</b><div><select id="sp"><option value="0.5">langsam</option><option value="1" selected>normal</option><option value="2">schnell</option></select></div></div>`;
+$('sp').value=speed;$('sp').onchange=e=>speed=+e.target.value;$('mc').onchange=e=>{mech=e.target.checked};$('st').onchange=e=>{stars=e.target.checked};
+document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;S[k]=(k=='ser')?+b.dataset.v:b.dataset.v;prev=snap();cur=build();tr=0;ctl();txt()})}
+function bar(){$('bar').innerHTML=`<button id="pv">‹</button>`+Array.from({length:lastS()+1},(_,i)=>`<button data-s="${i}" class="${i==step?'on':''}">${i+1}</button>`).join('')+`<button id="nx">›</button><button id="pl" class="${play?'on':''}">▶ Auto</button><button id="rs">↺</button>`;
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>go(+b.dataset.s));$('pv').onclick=()=>go(Math.max(0,step-1));$('nx').onclick=()=>go(Math.min(lastS(),step+1));$('pl').onclick=()=>{play=!play;if(step==lastS()&&play)go(0);idle=0;bar()};$('rs').onclick=()=>{play=false;go(0)}}
+function go(n){fwd=n>=step;pst=step;step=n;if(mode=='oli'){mp=0;rp=0;bar();txt();return}T.m=TG[n][0];T.a=TG[n][1];T.p=TG[n][2];T.ar=TG[n][3];T.z=TG[n][4];bar();txt()}
+function tick(now){const dt=Math.min(.05,(now-last)/1000);last=now;let busy=false;
+for(const k of(fwd?['m','z','a','p']:['p','a','z','m'])){const d=T[k]-P[k];if(Math.abs(d)>.001){P[k]+=Math.sign(d)*Math.min(Math.abs(d),dt*speed*.7);busy=true;break}else P[k]=T[k]}
+const da=T.ar-P.ar;P.ar+=Math.sign(da)*Math.min(Math.abs(da),dt*3);
+if(tr<1){tr=Math.min(1,tr+dt*speed*1.1);busy=true}
+const tz=0;if(!tz&&(step==0||step==6))oz=0;const dz=tz-oz;if(Math.abs(dz)>.001){oz+=Math.sign(dz)*Math.min(Math.abs(dz),dt*speed*.7);busy=true}else oz=tz;
+if(mode=='oli'&&stg()[step]=='rot'&&rp<1){rp=Math.min(1,rp+dt*speed*.2);busy=true}
+if(mp<1){mp=Math.min(1,mp+dt*speed*.8);busy=true}draw();if(play&&!busy){idle+=dt;if(idle>2.2){idle=0;if(step<lastS())go(step+1);else{play=false;bar()}}}else idle=0;requestAnimationFrame(tick)}
+const bn=(p,q,r1,r2,w,op)=>{const dx=q[0]-p[0],dy=q[1]-p[1],d=Math.hypot(dx,dy)||1,ux=dx/d,uy=dy/d;return sg(p[0]+ux*r1,p[1]+uy*r1,q[0]-ux*r2,q[1]-uy*r2,w||2,op==null?1:op)};
+const lpa=(x,y,as)=>as.map(g=>{const r=g*Math.PI/180,cx=x+Math.cos(r)*12,cy=y+Math.sin(r)*12,u=-Math.sin(r)*3.8,v=Math.cos(r)*3.8;return sg(cx-u,cy-v,cx+u,cy+v,1.8,1)}).join('');
+const O_=p=>tx(p[0],p[1],'O','var(--o)',15,1),H_=p=>tx(p[0],p[1],'H','var(--c)',14,1),X_=(p,t,c,z)=>tx(p[0],p[1],t,c,z||14,1);
+const grp=(p,f,m)=>{const e=m?-1:1,hh=m?-19:11,ss=m?-9:19;return X_(p,'C','var(--c)')+tx(p[0]+hh,p[1],'H','var(--c)',14,1)+tx(p[0]+ss,p[1]+4,'₂','var(--c)',10,1)+(f?sg(p[0]+25*e,p[1],p[0]+34*e,p[1],2,1)+tx(p[0]+41*e,p[1],'O','var(--o)',14,1)+sg(p[0]+48*e,p[1],p[0]+55*e,p[1],2,1)+tx(p[0]+61*e,p[1],'H','var(--c)',14,1)+lps(p[0]+41*e,p[1],[180,0],[1,0,1]):'')};
+const RP6=[[100,0],[50,50],[-50,50],[-100,0],[-50,-50]],RO6=[50,-50],RP5=[[84,-8],[50,44],[-50,44],[-84,-8]],RO5=[0,-50];
+const GL=a=>[a=='a'?['H','OH']:['OH','H'],['H','OH'],['OH','H'],['H','OH'],['CH₂OH','H']];
+const RES={glc:GL,gal:a=>{const r=GL(a);r[3]=['OH','H'];return r},fru:a=>[a=='b'?['OH','CH₂OH']:['CH₂OH','OH'],['OH','H'],['H','OH'],['CH₂OH','H']]};
+function ringS(cx,cy,res,fl,o){const t=o.rt==null?(fl?1:0):o.rt,six=res.length==5,R=six?RP6:RP5,RO=six?RO6:RO5,ys=Math.cos(Math.PI*t),si=Math.sin(Math.PI*t),M=(a,b)=>fl==1?[a,b*ys]:fl==2?[a*ys-b*si,a*si+b*ys]:fl==3?[a*ys+b*si,-.8*a*si+b*ys]:[a,b],ab=p=>{const q=fl==3?[p[0]*ys,p[1]-.8*p[0]*si]:M(p[0],p[1]);return[cx+q[0],cy+q[1]]},Pc=R.map(ab),Po=ab(RO),n=Pc.length,SP={},Op={},fd=fl==3?K(Math.abs(ys)*1.8):fl==1?K(Math.abs(ys)*2.5):1;let s='',u='';
+for(let i=0;i<n-1;i++)s+=bn(Pc[i],Pc[i+1],0,0,(R[i][1]>30&&R[i+1][1]>30)?4.6:2);
+s+=bn(Pc[n-1],Po,0,9)+bn(Po,Pc[0],9,0)+O_(Po)+lps(Po[0],Po[1],[an(Pc[n-1],Po),an(Pc[0],Po)],[1,0,1]);
+R.forEach((r,i)=>{const x=r[0],y=r[1],dx0=x>70?12:x<-70?-12:0,hx0=x<-70?-24:24,xx=Pc[i][0]-cx;[0,1].forEach(j=>{let lb=res[i][j];const d0=j?1:-1,key=''+i+j,v=M(dx0,d0*36),p=[Pc[i][0]+v[0],Pc[i][1]+v[1]];SP[key]=p;if(o.sk&&o.sk[key])return;
+if(o.en&&o.en[key]){const sx=o.en[key]=='L'?-1:1;u+=bn(Pc[i],p,0,9)+O_(p)+bn(p,[p[0]+sx*22,p[1]],9,0)+tx(p[0]+sx*36,p[1],'\u00b7\u00b7\u00b7','var(--c)',16,1)+lps(p[0],p[1],[an(Pc[i],p),sx>0?0:180],[1,0,1]);return}
+if(o.rp==key)lb='CH\u2082';
+if(lb=='H')u+=bn(Pc[i],p,0,8)+H_(p);
+else if(lb=='OH'){const inn=(six||y>0)&&((y>0&&d0<0)||(y<0&&d0>0)),hm=M(inn?(x>0?-24:24):hx0,d0*8),hp=[p[0]+hm[0],p[1]+hm[1]];Op[key]=p;u+=bn(Pc[i],p,0,9)+O_(p)+bn(p,hp,9,8)+H_(hp)+lps(p[0],p[1],[an(Pc[i],p),an(hp,p)],[1,0,1])}
+else{Op[key]=[p[0]+(xx<-70?-41:41),p[1]];u+=bn(Pc[i],p,0,8)+grp(p,lb=='CH\u2082OH',xx<-70)}})});
+if(nums||stars){const b0=six?1:2;Pc.forEach((q,i)=>{u+=tx(cx+(q[0]-cx)*.78,cy+(q[1]-cy)*.78,(nums?''+(b0+i):'')+(stars?'*':''),stars?'var(--ac)':'var(--mu)',10,1)})}
+s+=`<g opacity="${fd.toFixed(2)}">${u}</g>`;
+[].concat(o.hl||[]).forEach(k=>{s+=`<circle cx="${Op[k][0]}" cy="${Op[k][1]}" r="15" fill="none" stroke="var(--ox)" stroke-dasharray="3 3"/>`});
+return{s,Pc,SP}}
+function amp5(c){const r=RES.glc('a'),cB=300,cT=100,R=[[165,cB,{sk:{'01':1},en:{'31':'L'}}],[425,cB,{sk:{'01':1,'31':1}}],[685,cB,{sk:{'31':1},rp:'40',en:{'01':'R'}}],[275,cT,{sk:{'01':1},en:{'31':'L'}}],[535,cT,{sk:{'01':1,'31':1}}]].map(([x,y,o])=>ringS(x,y,r,0,o));
+const lk=(P1,P2,c6)=>{const Ob=[(P1[0]+P2[0])/2,(P1[1]+P2[1])/2+(c6?12:40)];return bn(P1,Ob,0,9)+bn(P2,Ob,c6?8:0,9)+O_(Ob)+lps(Ob[0],Ob[1],[an(P1,Ob),an(P2,Ob)],[1,0,1])};
+const s=lk(R[0].Pc[0],R[1].Pc[3])+lk(R[1].Pc[0],R[2].Pc[3])+lk(R[3].Pc[0],R[4].Pc[3])+lk(R[4].Pc[0],R[2].SP['40'],1);
+return `<g transform="translate(40,0) scale(.8)">${R.map(q=>q.s).join('')}${s}</g>`+tx(380,392,c.pc,'var(--mu)',13,1)}
+function scn(c,st,rt){if(st==6&&c.amp)return amp5(c);const rs=c.rs.map(([k,a,f])=>({r:RES[k](a),f})),n=st==5?1:st==0?2:rs.length,cy=215,cxs=st==5?[380]:st==0?[190,570]:n==2?(c.gp?[205,510]:[235,495]):[165,425,685],K=n==3?.86:1,fo=(r,i)=>r[i].indexOf('OH'),dk=i=>'0'+fo(rs[i].r,0),ak=i=>c.at=='c6'?'4'+rs[i].r[4].indexOf('CH₂OH'):''+c.at+fo(rs[i].r,c.at),R_=[];let s='';
+for(let i=0;i<n;i++){const o={};if(st==5){o.hl=c.at=='c6'?[dk(0),ak(0),'3'+fo(rs[0].r,3)]:[dk(0),ak(0)]}else if(st==0){o.hl=i==0?dk(0):ak(1);if(i==1)o.rt=rt}else{o.sk={};o.en={};if(c.poly&&n==3){if(i==0)o.en[ak(0)]='L';if(i==2)o.en[dk(2)]='R'}if(i<n-1)o.sk[dk(i)]=1;if(i>0){if(c.at=='c6')o.rp=ak(i);else o.sk[ak(i)]=1}}R_.push(ringS(cxs[i],cy,rs[i].r,rs[i].f,o))}
+if(st==6)for(let i=0;i<n-1;i++){const j=fo(rs[i].r,0),dU=rs[i].f?1:-1,dl=j?-dU:dU,c6=c.at=='c6',P1=R_[i].Pc[0],P2=c6?R_[i+1].SP[ak(i+1)]:R_[i+1].Pc[c.at],Ob=[(P1[0]+P2[0])/2,(P1[1]+P2[1])/2+dl*(c6?12:c.gp?26:40)];s+=bn(P1,Ob,0,9)+bn(P2,Ob,c6?8:0,9)+O_(Ob)+lps(Ob[0],Ob[1],[an(P1,Ob),an(P2,Ob)],[1,0,1])}
+const cp1=c.cap[1].replace(' (gedreht)','')+((rt||0)>.5&&c.cap[1].indexOf('(gedreht)')>0?' (gedreht)':'');return `<g transform="scale(${K})">${R_.map(r=>r.s).join('')}${s}</g>`+(st==5?tx(380,362,'n Moleküle '+c.cap[0],'var(--mu)',13,1):st==0?tx(380,cy,'+','var(--mu)',30,1)+tx(cxs[0],362,c.cap[0],'var(--mu)',13,1)+tx(cxs[1],362,cp1,'var(--mu)',13,1):tx(380,392,c.pc,'var(--mu)',13,1))}
+const stg=()=>OL[oi].rs[1][2]!=0?['ed','rot','kond','prod']:['ed','kond','prod'],lastS=()=>mode=='oli'?stg().length-1:5;
+const rotBack=(c,t)=>{const f2=c.rs[1][2]>=2,cx=570,cy=215,co=Math.cos(Math.PI*t),sn=Math.sin(Math.PI*t),tr=f2?`matrix(${co.toFixed(3)},${(-.8*sn).toFixed(3)},0,1,0,0)`:`matrix(1,0,0,${co.toFixed(3)},0,0)`;return `<ellipse transform="translate(${cx} ${cy}) ${tr}" rx="150" ry="100" fill="var(--ar)" opacity=".1"/>`+(f2?sg(cx,cy-124,cx,cy-104,1.6,.5,1)+sg(cx,cy+104,cx,cy+124,1.6,.5,1):sg(cx-178,cy,cx-150,cy,1.6,.5,1)+sg(cx+150,cy,cx+178,cy,1.6,.5,1))};
+const rotArr=(c,t)=>{const f2=c.rs[1][2]>=2,cx=570,cy=215,A=f2?[cx-150,cy-70]:[cx+150,cy-58],C=f2?[cx,cy-215]:[cx+210,cy],B=f2?[cx+150,cy-70]:[cx+150,cy+58],q=i=>(1-t)*(1-t)*A[i]+2*(1-t)*t*C[i]+t*t*B[i];return `<path d="M${A[0]},${A[1]}Q${C[0]},${C[1]} ${B[0]},${B[1]}" fill="none" stroke="var(--ar)" stroke-width="1.5" marker-end="url(#ah)" opacity=".4"/><circle cx="${q(0).toFixed(1)}" cy="${q(1).toFixed(1)}" r="4.5" fill="var(--ar)"/>`+tx(cx,26,'Drehwinkel: '+Math.round(t*180)+'\u00b0','var(--ar)',14,1)};
+const wat=(y,pl)=>{const x=pl?428:400,W=[x,y],H1=[x+26,y+10],H2=[x-26,y+10];return tx(345,y,'+','var(--mu)',26,1)+(pl?tx(x-40,y,'n','var(--c)',16,1):'')+O_(W)+bn(W,H1,9,8)+H_(H1)+bn(W,H2,9,8)+H_(H2)+lpa(x,y,[210,330])};
+const OL={
+mal:{n:'Maltose',nm:'α-D-Glucopyranosyl-(1→4)-D-glucopyranose',rs:[['glc','a',0],['glc','a',0]],at:3,cap:['α-D-Glucose','D-Glucose'],pc:'Maltose: α-D-Glucopyranosyl-(1→4)-D-glucopyranose',ed:'α-D-Glucose (anomeres OH) + D-Glucose (OH an C4)',ac:'4-OH',sel:'Hier: Anomeres OH unten → <b>α</b>-glykosidische Bindung (α-1,4).',info:'<li>Bindung: <b>α-1,4-glykosidisch</b>.</li><li><b>Reduzierend:</b> C1 des zweiten Rings ist frei (Halbacetal, Mutarotation).</li><li>Malzzucker, Abbauprodukt der Stärke (Enzym: Maltase).</li>'},
+cel:{n:'Cellobiose',nm:'β-D-Glucopyranosyl-(1→4)-D-glucopyranose',rs:[['glc','b',0],['glc','a',1]],at:3,cap:['β-D-Glucose','D-Glucose (gedreht)'],pc:'Cellobiose: β-D-Glucopyranosyl-(1→4)-D-glucopyranose',ed:'β-D-Glucose (anomeres OH) + D-Glucose (OH an C4)',ac:'4-OH',sel:'Hier: Anomeres OH oben → <b>β</b>-glykosidische Bindung (β-1,4). Der zweite Ring ist um 180° gedreht gezeichnet, damit sein 4-OH nach oben zeigt.',info:'<li>Bindung: <b>β-1,4-glykosidisch</b>.</li><li><b>Reduzierend</b> (freies C1 am zweiten Ring).</li><li>Wiederholungseinheit der Cellulose.</li>'},
+suc:{n:'Saccharose',nm:'α-D-Glucopyranosyl-(1→2)-β-D-fructofuranosid',gp:1,rs:[['glc','a',0],['fru','b',3]],at:0,cap:['α-D-Glucose','β-D-Fructose (gedreht)'],pc:'Saccharose: α-D-Glucopyranosyl-(1→2)-β-D-fructofuranosid',ed:'α-D-Glucose (anomeres OH) + β-D-Fructose (anomeres OH an C2)',ac:'anomere 2-OH-Gruppe der Fructose (Halbketal-OH)',sel:'Hier reagieren beide anomeren OH-Gruppen miteinander: <b>α-1,β-2-glykosidische Bindung</b>.',info:'<li>Bindung: <b>α-1,β-2-glykosidisch</b>, beide anomeren C-Atome sind beteiligt.</li><li><b>Nicht reduzierend:</b> keine freie Halbacetal-/Halbketal-Gruppe, keine Mutarotation.</li><li>Rohr- und Rübenzucker; Hydrolyse (Invertase) liefert Invertzucker (Glucose + Fructose).</li>'},
+lac:{n:'Lactose',nm:'β-D-Galactopyranosyl-(1→4)-D-glucopyranose',rs:[['gal','b',0],['glc','a',1]],at:3,cap:['β-D-Galactose','D-Glucose (gedreht)'],pc:'Lactose: β-D-Galactopyranosyl-(1→4)-D-glucopyranose',ed:'β-D-Galactose (anomeres OH) + D-Glucose (OH an C4)',ac:'4-OH der Glucose',sel:'Hier: Anomeres OH oben → <b>β</b>-glykosidische Bindung (β-1,4).',info:'<li>Bindung: <b>β-1,4-glykosidisch</b>.</li><li><b>Reduzierend</b> (freies C1 am Glucose-Rest).</li><li>Milchzucker; Spaltung durch Lactase (Lactoseintoleranz bei fehlendem Enzym).</li>'},
+amy:{n:'Amylose (Stärke)',nm:'α-1,4-Polyglucan',rs:[['glc','a',0],['glc','a',0],['glc','a',0]],at:3,cap:['α-D-Glucose','α-D-Glucose'],pc:'Amylose: Ausschnitt aus (α-1,4-Glucose)ₙ',poly:1,ed:'n Moleküle α-D-Glucose',ac:'4-OH',sel:'Hier: Anomeres OH unten → α-1,4-Bindung. Der Vorgang wiederholt sich n-mal.',info:'<li>Unverzweigte Kette aus <b>α-1,4-glykosidisch</b> verknüpften Glucose-Einheiten.</li><li>Die Kette bildet eine Helix (ca. 6 Glucose-Einheiten pro Windung); Iod-Stärke-Reaktion: blau.</li><li>Anteil in der Stärke: ca. 20–30 %.</li><li>n Glucose → (Glucose)ₙ + n H₂O</li>'},
+amp:{n:'Amylopektin (Stärke)',nm:'α-1,6-Verzweigung',amp:1,rs:[['glc','a',0],['glc','a',0]],at:'c6',cap:['α-D-Glucose','α-D-Glucose (6-OH)'],pc:'Amylopektin: Verzweigungsstelle, α-1,6-glykosidische Bindung',poly:1,ed:'n Moleküle α-D-Glucose',ac:'6-OH (Verzweigung) und 4-OH (Kette)',sel:'Hier: Anomeres OH unten → <b>α-1,6</b>-Bindung (Verzweigung).',info:'<li>Hauptketten wie bei Amylose <b>α-1,4</b>-verknüpft. An den Verzweigungsstellen kommt eine <b>α-1,6-glykosidische Bindung</b> hinzu (gezeigt: C1 einer Glucose mit der 6-OH-Gruppe einer anderen).</li><li>Verzweigung etwa alle 20–30 Glucose-Einheiten; Iod-Stärke-Reaktion: rotviolett.</li><li>Anteil in der Stärke: ca. 70–80 %.</li>'},
+cll:{n:'Cellulose',nm:'β-1,4-Polyglucan',rs:[['glc','b',0],['glc','b',1],['glc','b',0]],at:3,cap:['β-D-Glucose','D-Glucose (gedreht)'],pc:'Cellulose: Ausschnitt aus (β-1,4-Glucose)ₙ',poly:1,ed:'n Moleküle β-D-Glucose',ac:'4-OH',sel:'Hier: Anomeres OH oben → β-1,4-Bindung. Jede zweite Einheit ist um 180° gedreht gezeichnet.',info:'<li>Unverzweigte Kette aus <b>β-1,4-glykosidisch</b> verknüpften Glucose-Einheiten; Wiederholungseinheit ist die Cellobiose.</li><li>Gestreckte Ketten, Wasserstoffbrücken zwischen den Ketten → Mikrofibrillen, hohe Festigkeit.</li><li>Für den Menschen nicht verdaulich (Ballaststoff).</li>'}};
+function drawO(){const c=OL[oi],zz=E(oz),kk=1+.4*zz,ww=760/kk,hh=400/kk;$('sv').setAttribute('viewBox',`${(L(380,390,zz)-ww/2).toFixed(1)} ${(L(200,205,zz)-hh/2).toFixed(1)} ${ww.toFixed(1)} ${hh.toFixed(1)}`);$('gx').style.opacity=(.15+.85*E(mp)).toFixed(2);$('gx').innerHTML=(()=>{const g=stg()[step];return g=='ed'?(c.poly?scn(c,5):scn(c,0,0)):g=='rot'?(()=>{const rr=E(K((rp-.08)/.84));return rotBack(c,rr)+scn(c,0,rr)+rotArr(c,rr)})():scn(c,6)+(g=='kond'?wat(c.amp?364:348,c.poly):'')})()}
+function ctlO(){const L2=(t,o)=>`<div class="g"><b>${t}</b><div>${o.map(([v,n])=>`<button data-o="${v}" class="${oi==v?'on':''}">${n}</button>`).join('')}</div></div>`;
+$('ctl').innerHTML=L2('Disaccharide',[['mal','Maltose'],['cel','Cellobiose'],['suc','Saccharose'],['lac','Lactose']])+L2('Polysaccharide',[['amy','Amylose'],['amp','Amylopektin'],['cll','Cellulose']])+`<div class="g"><b>Anzeige</b><div><label style="width:100%"><input type="checkbox" id="nm" ${nums?'checked':''}> C-Atome nummerieren</label><label style="width:100%"><input type="checkbox" id="st" ${stars?'checked':''}> Asymmetrische C-Atome (*)</label></div></div><div class="g"><b>Tempo</b><div><select id="sp"><option value="0.5">langsam</option><option value="1">normal</option><option value="2">schnell</option></select></div></div>`;
+$('sp').value=speed;$('sp').onchange=e=>speed=+e.target.value;$('nm').onchange=e=>{nums=e.target.checked};$('st').onchange=e=>{stars=e.target.checked};document.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{oi=b.dataset.o;mp=0;step=0;bar();ctlO();txt()})}
+function txtO(){const c=OL[oi],T7=[
+['Edukte: zwei Monosaccharide',`<p>${c.ed}.</p><ul>${c.poly?`<li>Jedes Monomer besitzt eine <b>Hydroxygruppe am anomeren C-Atom</b> und eine <b>andere Hydroxygruppe</b> (beide markiert), meist am C4 (hier: ${c.ac}).</li><li>Die anomere OH-Gruppe eines Monomers reagiert mit der anderen OH-Gruppe eines weiteren Monomers. Der Vorgang wiederholt sich n-mal.</li>`:`<li>Das eine Monosaccharid reagiert mit seiner <b>Hydroxygruppe am anomeren C-Atom</b> (Halbacetal-OH, markiert).</li><li>Der Reaktionspartner reagiert mit einer <b>anderen Hydroxygruppe</b>, meist der am C4 (hier: ${c.ac}).</li>`}</ul>`],
+['Kondensationsreaktion',`<ul><li>Die beiden markierten OH-Gruppen reagieren unter <b>Wasserabspaltung</b> miteinander: eine <b>Kondensationsreaktion</b>.</li><li>Dargestellt ist die Produktseite: Neben dem Zucker-Produkt entsteht ${c.poly?'<b>n H₂O</b>':'<b>H₂O</b>'}. Es stammt aus der anomeren OH-Gruppe und dem H-Atom der anderen OH-Gruppe.</li><li>Zucker–OH + HO–Zucker′ → Zucker–O–Zucker′ + H₂O</li><li>${c.sel}</li></ul>`],
+['Produkt: '+c.n,`<p><b>${c.nm}</b></p><ul>${c.info}</ul><p>Der verbrückende Sauerstoff trägt zwei freie Elektronenpaare.</p>`]];const f=c.rs[1][2],ROT=['Zweiten Ring drehen',`<ul><li>${f>=2?'Der Fructose-Ring wird um <b>180\u00b0</b> um die senkrechte Achse gedreht (der Ringsauerstoff bleibt hinten).':'Der zweite Ring wird um <b>180\u00b0</b> um die waagrechte Achse umgeklappt (die andere Ringseite zeigt nach oben).'}</li><li>${c.at=='c6'?'Dadurch zeigt die CH\u2082OH-Gruppe (C6) nach unten und liegt dem anomeren OH (\u03b1, unten) des ersten Rings gegen\u00fcber.':f>=2?'Das anomere C2 steht jetzt links: seine CH\u2082OH-Gruppe zeigt nach oben, seine OH-Gruppe nach unten, passend zur \u03b1-OH-Gruppe der Glucose.':'Dadurch zeigt die reagierende 4-OH-Gruppe nach oben, passend zum \u03b2-st\u00e4ndigen anomeren OH des ersten Rings.'}</li><li>Die gestrichelte Linie ist die Drehachse, der Punkt auf dem Pfeil zeigt den Drehwinkel (0\u00b0 bis 180\u00b0).</li><li>Oben und unten vertauschen sich nur durch die Drehung; die Konfiguration des Molek\u00fcls bleibt unver\u00e4ndert.</li></ul>`],Z=(f?[T7[0],ROT,T7[1],T7[2]]:T7)[step];
+$('tt').textContent=Z[0];$('tb').innerHTML=Z[1];$('name').innerHTML=c.n+'<small>'+({ed:'Monosaccharide → glykosidische Bindung',rot:'Drehung des zweiten Rings',kond:'Kondensationsreaktion',prod:c.nm})[stg()[step]]+'</small>'}
+function setMode(m){mode=m;step=0;fwd=true;for(const k in P){P[k]=0;T[k]=0}mp=0;$('m1').className=m=='mono'?'on':'';$('m2').className=m=='oli'?'on':'';$('gx').style.opacity=1;ctl();bar();txt()}
+$('m1').onclick=()=>setMode('mono');$('m2').onclick=()=>setMode('oli');
+const ICO={s:'<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.4 5.4l1.6 1.6M17 17l1.6 1.6M5.4 18.6L7 17M17 7l1.6-1.6"/></svg>',m:'<svg viewBox="0 0 24 24" width="21" height="21"><path d="M20.2 14.6A8.6 8.6 0 0 1 9.4 3.8a8.6 8.6 0 1 0 10.8 10.8z" fill="currentColor"/></svg>'};
+function setTh(d){document.documentElement.dataset.theme=d?'dark':'light';$('th').innerHTML=d?ICO.m:ICO.s;$('th').title=d?'Zum hellen Modus wechseln':'Zum dunklen Modus wechseln'}
+$('th').onclick=()=>setTh(document.documentElement.dataset.theme!='dark');setTh(false);
+cur=build();ctl();bar();txt();requestAnimationFrame(tick);
+</script></body></html>

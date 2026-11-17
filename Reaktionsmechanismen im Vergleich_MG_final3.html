@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reaktionsmechanismen im Vergleich</title>
+<style>
+:root{--bg:#eef3f7;--panel:#fff;--ink:#14243a;--mut:#5b6b80;--line:#d3dde8;--sr:#e8820c;--sn:#1f78d1;--se:#17a673;--ae:#8a4fd6;--e:#d6336c;--na:#0e8f9f;--arw:#c98a00;--stage:#f8fbfd;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1424;--panel:#142038;--ink:#e8eef7;--mut:#93a4bb;--line:#26364f;--sr:#ffa23d;--sn:#58a8ff;--se:#3ddc97;--ae:#c08bff;--e:#ff6fa1;--na:#3dd6e6;--arw:#ffd166;--stage:#0f1a2e}}
+:root[data-theme="dark"]{--bg:#0b1424;--panel:#142038;--ink:#e8eef7;--mut:#93a4bb;--line:#26364f;--sr:#ffa23d;--sn:#58a8ff;--se:#3ddc97;--ae:#c08bff;--e:#ff6fa1;--na:#3dd6e6;--arw:#ffd166;--stage:#0f1a2e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Avenir Next","Segoe UI",system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+h1{font:700 clamp(24px,4vw,38px)/1.1 Georgia,"Times New Roman",serif;margin:0}
+.sub{color:var(--mut);margin:6px 0 0;max-width:62ch}
+.tbtn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit}
+.grid{display:grid;grid-template-columns:300px 1fr;gap:16px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+h2{font-size:15px;margin:0 0 8px;color:var(--mut);font-weight:600}
+.grp{margin-bottom:16px}
+.opts{display:grid;gap:6px}
+.opt{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:8px 11px;cursor:pointer;font:inherit}
+.opt small{color:var(--mut);font-size:13px}
+.opt[aria-pressed="true"]{border-color:var(--sn);background:color-mix(in srgb,var(--sn) 14%,transparent)}
+.sw{display:flex;align-items:center;gap:10px;padding:7px 2px;cursor:pointer}
+.sw input{width:20px;height:20px;accent-color:var(--sn)}
+:focus-visible{outline:3px solid var(--arw);outline-offset:2px}
+.stagehead{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px}
+.badge{font:700 20px Georgia,serif;color:#fff;border-radius:10px;padding:4px 14px;background:var(--mc,var(--mut))}
+.eq{color:var(--mut);font-size:15px}
+.stage{background:var(--stage);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+svg{display:block;width:100%;height:auto}
+.bd{stroke:var(--ink);stroke-width:2.4;stroke-linecap:round}
+.lp{stroke:var(--ink);stroke-width:2.4;stroke-linecap:round}
+.dot{fill:var(--ink)}
+.at{fill:var(--ink);font:600 22px "Avenir Next","Segoe UI",sans-serif}
+.q{fill:var(--ink);font:700 17px sans-serif}
+.dl{fill:var(--mc,var(--sn));font:700 17px sans-serif}
+.big{fill:var(--ink);font:600 20px sans-serif}
+.note{fill:var(--mut);font:500 16px sans-serif}
+.ringp{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linejoin:round}
+.ringc,.arc{fill:none;stroke:var(--ink);stroke-width:2.2}
+.ar{fill:none;stroke:var(--arw);stroke-width:2.6;stroke-linecap:round}
+.dash{stroke-dasharray:6 5}
+.draw{stroke-dasharray:1;stroke-dashoffset:1;animation:dr 1.2s .4s ease forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+.head{opacity:0;animation:hd .25s 1.6s forwards}
+.hf{fill:var(--arw);stroke:none}
+@keyframes hd{to{opacity:1}}
+.scene{animation:fi .6s ease both}
+@keyframes fi{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+.late{opacity:0;animation:hd .6s 1.2s forwards}
+.late2{opacity:0;animation:hd .6s 2.2s forwards}
+svg:not(.go) .draw,svg:not(.go) .head,svg:not(.go) .late,svg:not(.go) .late2{animation-play-state:paused}
+.ed{opacity:0;transition:opacity .4s}
+svg.edon .ed{opacity:.85}
+.none{padding:36px 22px;text-align:center}
+.none b{display:block;font:700 22px Georgia,serif;margin-bottom:8px}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.ctl button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:8px 14px;cursor:pointer;font:inherit}
+.ctl button.main{background:var(--mc,var(--sn));border-color:transparent;color:#fff;font-weight:600}
+.dots{display:flex;gap:6px;margin-left:auto}
+.dots i{width:11px;height:11px;border-radius:50%;background:var(--line);display:block;cursor:pointer}
+.dots i.on{background:var(--mc,var(--sn))}
+.expl h3{margin:0 0 4px;font:700 18px Georgia,serif}
+.expl p{margin:0;max-width:72ch}
+.hint{margin-top:10px;padding:10px 12px;border-left:4px solid var(--mc,var(--sn));background:color-mix(in srgb,var(--mc,var(--sn)) 10%,transparent);border-radius:6px;font-size:15px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--mut);font-size:14px;margin-top:10px}
+.tw{overflow-x:auto;margin-top:16px}
+table{border-collapse:collapse;width:100%;min-width:700px;font-size:15px}
+th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+th{color:var(--mut);font-weight:600}
+tr.act td{background:color-mix(in srgb,var(--mc) 14%,transparent)}
+tr.act td:first-child{font-weight:700;border-left:4px solid var(--mc)}
+@media(prefers-reduced-motion:reduce){.scene,.draw,.late,.late2{animation:none;opacity:1}.draw{stroke-dashoffset:0}.head{animation:none;opacity:1}}
+</style></head><body><div class="wrap">
+<header><div><h1>Reaktionsmechanismen im Vergleich</h1>
+<p class="sub" style="margin-top:4px">Autor: Matthias Gleich</p>
+<p class="sub">Wähle Edukt, angreifendes Teilchen und Bedingungen. Das Programm zeigt, welcher Mechanismus abläuft, und führt Schritt für Schritt durch die Elektronenverschiebung.</p></div>
+<button class="tbtn" id="theme" aria-label="Darstellung wechseln">Hell / Dunkel</button></header>
+<div class="grid">
+<aside class="card">
+<div class="grp"><h2>Eduktmolekül</h2><div class="opts" id="o-ed"></div></div>
+<div class="grp"><h2>Angreifendes Teilchen</h2><div class="opts" id="o-tp"></div></div>
+<div class="grp"><h2>Reaktionsbedingungen</h2>
+<label class="sw"><input type="checkbox" id="c-licht"> Sonnenlicht / UV-Licht</label>
+<label class="sw"><input type="checkbox" id="c-hitze"> Siedehitze</label>
+<label class="sw"><input type="checkbox" id="c-kat"> Katalysator (FeBr₃, Kälte)</label></div>
+</aside>
+<main class="card">
+<div class="stagehead"><span class="badge" id="badge">–</span><span class="eq" id="eq"></span></div>
+<div class="stage"><svg id="svg" viewBox="0 0 760 340" role="img" aria-label="Strukturformeln mit Elektronenpaaren"></svg></div>
+<div class="ctl"><button id="prev" aria-label="Zurück">◀</button><button class="main" id="play">▶ Start</button><button id="next" aria-label="Weiter">▶|</button>
+<label class="sw" style="padding:0"><input type="checkbox" id="dens"> Elektronendichte</label><div class="dots" id="dots"></div></div>
+<div class="expl" id="expl"></div><div class="hint" id="hint" hidden></div>
+<div class="legend"><span>— freies Elektronenpaar</span><span>● Einzelelektron</span><span>◤ Keil: Bindung zum Betrachter · gestrichelt: vom Betrachter weg</span><span style="color:var(--arw)">⟶ Elektronenpaar (Vollpfeil)</span><span style="color:var(--arw)">⇀ Einzelelektron (Halbpfeil)</span></div>
+</main></div>
+<div class="card tw"><h2>Die Mechanismen im Vergleich</h2>
+<table><thead><tr><th>Mechanismus</th><th>Eduktmolekül</th><th>Angreifendes Teilchen</th><th>Bedingungen</th><th>Beispiel</th></tr></thead><tbody id="tb"></tbody></table></div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const MEC={SR:{n:'S<sub>R</sub>',c:'var(--sr)',nm:'Radikalische Substitution',ed:'Alkan, Seitenkette von Alkylbenzolen',tp:'Radikal (Br•)',bd:'Licht oder Siedehitze',bs:'Ethan + Br₂ → Bromethan + HBr'},
+SN:{n:'S<sub>N</sub>',c:'var(--sn)',nm:'Nucleophile Substitution',ed:'Halogenalkan (polare C–Hal-Bindung)',tp:'Nucleophil (OH⁻, NH₃)',bd:'Lösung, ohne starkes Erhitzen',bs:'2-Brompropan + OH⁻ → Propan-2-ol + Br⁻'},
+SE:{n:'S<sub>E</sub>',c:'var(--se)',nm:'Elektrophile Substitution',ed:'Aromat (delokalisierte Elektronen)',tp:'Elektrophil (Br⁺ aus Br₂)',bd:'Katalysator (FeBr₃), Kälte',bs:'Benzol + Br₂ → Brombenzol + HBr'},
+AE:{n:'A<sub>E</sub>',c:'var(--ae)',nm:'Elektrophile Addition',ed:'Alken (C=C-Doppelbindung)',tp:'Elektrophil (Br₂)',bd:'keine besonderen',bs:'Ethen + Br₂ → 1,2-Dibromethan'},
+E:{n:'E2',c:'var(--e)',nm:'Eliminierung',ed:'Halogenalkan mit β-H-Atom',tp:'starke Base (OH⁻)',bd:'Siedehitze, konzentrierte Base',bs:'2-Brompropan + OH⁻ → Propen + H₂O + Br⁻'},
+NA:{n:'A<sub>N</sub>',c:'var(--na)',nm:'Nucleophile Addition',ed:'Aldehyd (polare C=O-Gruppe)',tp:'Nucleophil (Alkohol)',bd:'Lösung, H⁺-Umlagerung',bs:'Ethanal + CH₃OH → Halbacetal'}};
+const ED={ethan:['Ethan','H₃C–CH₃'],brprop:['2-Brompropan','(H₃C)₂CH–Br'],ethen:['Ethen','H₂C=CH₂'],benzol:['Benzol','C₆H₆'],toluol:['Toluol','C₆H₅–CH₃'],ethanal:['Ethanal (Aldehyd)','CH₃–CHO']};
+const TP={rad:['Radikal','Br•'],nuc:['Nucleophil / Base','OH⁻'],nuc2:['Nucleophil (Alkohol)','CH₃OH'],el:['Elektrophil','Br₂ (+ FeBr₃)']};
+const S={ed:'ethan',tp:'rad',licht:true,hitze:false,kat:false,step:0,play:false,dens:false,go:false};
+/* ---- SVG-Bausteine ---- */
+const T=(x,y,s,c='big',a='middle')=>`<text class="${c}" x="${x}" y="${y}" text-anchor="${a}">${s}</text>`;
+const BS=(a,b,c,d,s1=17,s2=17,x='')=>{const L=Math.hypot(c-a,d-b),u=(c-a)/L,v=(d-b)/L;return `<line class="bd ${x}" x1="${a+u*s1}" y1="${b+v*s1}" x2="${c-u*s2}" y2="${d-v*s2}"/>`};
+const OF={u:[0,-17],d:[0,17],l:[-17,0],r:[17,0]};
+const LP=(x,y,d)=>{const[ox,oy]=OF[d],px=x+ox,py=y+oy;return d=='u'||d=='d'?`<line class="lp" x1="${px-6}" y1="${py}" x2="${px+6}" y2="${py}"/>`:`<line class="lp" x1="${px}" y1="${py-6}" x2="${px}" y2="${py+6}"/>`};
+const DT=(x,y,d)=>{const[ox,oy]=OF[d];return `<circle class="dot" cx="${x+ox}" cy="${y+oy}" r="3.6"/>`};
+const AT=(x,y,s,l='',q='')=>{let o=T(x,y+7,s,'at');if(Array.isArray(l))l.forEach(c=>o+=typeof c=='number'?LPA(x,y,c):DTA(x,y,+c.slice(1)));else for(const c of l){const u=c.toLowerCase();o+=c==u?LP(x,y,u):DT(x,y,u)}return o+(q?T(x+19,y-11,q,'q'):'')};
+const HL=(x,y,r,k)=>`<circle class="ed" cx="${x}" cy="${y}" r="${r}" fill="url(#g${k})"/>`;
+/* Pfeil: erst Strich/Bogen, danach kleine Spitze */
+const AR=(a,b,c,d,e,f,h)=>{const dx=e-c,dy=f-d,L=Math.hypot(dx,dy)||1,u=dx/L,v=dy/L,s=7,n=u>0?[v,-u]:[-v,u];
+ const hd=h?`<path class="ar head" d="M${e} ${f} L${e-u*s*1.4+n[0]*s*.8} ${f-v*s*1.4+n[1]*s*.8}"/>`:`<polygon class="head hf" points="${e},${f} ${e-u*s-n[0]*s*.5},${f-v*s-n[1]*s*.5} ${e-u*s+n[0]*s*.5},${f-v*s+n[1]*s*.5}"/>`;
+ return `<path class="ar draw" pathLength="1" d="M${a} ${b} Q${c} ${d} ${e} ${f}"/>${hd}`};
+const V=(cx,cy,r,k,rot)=>[cx+r*Math.cos((-90+60*k+rot)*Math.PI/180),cy+r*Math.sin((-90+60*k+rot)*Math.PI/180)];
+const RING=(cx,cy,r,rot=0)=>`<polygon class="ringp" points="${[0,1,2,3,4,5].map(k=>V(cx,cy,r,k,rot).join(',')).join(' ')}"/><circle class="ringc" cx="${cx}" cy="${cy}" r="${r*.58}"/>`;
+const DB=(x1,y1,x2,y2,g=6)=>{const L=Math.hypot(x2-x1,y2-y1),nx=-(y2-y1)/L*g,ny=(x2-x1)/L*g;return BS(x1+nx,y1+ny,x2+nx,y2+ny,0,0)+BS(x1-nx,y1-ny,x2-nx,y2-ny,0,0)};
+/* σ-Komplex: c = Vertex mit positiver Ladung, ar = Pfeilvariante */
+const SIG=(cx,cy,r,c,tol,ar)=>{const P=k=>V(cx,cy,r,k,0),db=c==4?[[5,0],[1,2]]:c==0?[[4,5],[1,2]]:[[4,5],[0,1]];
+ const f=k=>[cx+(k[0]-cx)*.72,cy+(k[1]-cy)*.72];
+ const ln=db.map(([a,b])=>{const i=f(P(a)),j=f(P(b));return[i[0]+(j[0]-i[0])*.14,i[1]+(j[1]-i[1])*.14,j[0]+(i[0]-j[0])*.14,j[1]+(i[1]-j[1])*.14]});
+ let o=`<polygon class="ringp" points="${[0,1,2,3,4,5].map(k=>P(k).join(',')).join(' ')}"/>`;
+ ln.forEach(l=>o+=`<line class="bd" x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}"/>`);
+ const pc=P(c);o+=T(cx+(pc[0]-cx)*.36,cy+(pc[1]-cy)*.36+6,'⊕','q');
+ if(ar==1||ar==2){const L=ln[ar==1?0:1];o+=AR((L[0]+L[2])/2,(L[1]+L[3])/2,cx,cy,cx+(pc[0]-cx)*.62,cy+(pc[1]-cy)*.62,0)}
+ const p3=P(3),p0=P(0);
+ o+=BX(p3[0],p3[1],p3[0]-28,p3[1]+36,'h',0,16)+AT(p3[0]-28,p3[1]+38,'H')+BX(p3[0],p3[1],p3[0]+28,p3[1]+36,'w',0,17)+AT(p3[0]+28,p3[1]+38,'Br',[342,122,52]);
+ if(ar==3)o+=AR(p3[0]-13,p3[1]+16,p3[0]-46,p3[1]+10,p3[0]-34,p3[1]-8,0);
+ if(tol)o+=BS(p0[0],p0[1],p0[0],p0[1]-30,0,15)+AT(p0[0],p0[1]-40,'CH₃');
+ return o};
+const BRACE=(x,d)=>`<path class="arc late" d="M${x+14*d} 38 Q${x} 38 ${x} 56 L${x} 135 Q${x} 150 ${x-14*d} 150 Q${x} 150 ${x} 165 L${x} 238 Q${x} 256 ${x+14*d} 256"/>`;
+/* ---- Geometrie-Helfer (VSEPR: Winkel, Keil/Strich, freie Paare) ---- */
+const D2R=Math.PI/180,PT=(x,y,a,L)=>[x+L*Math.cos(a*D2R),y+L*Math.sin(a*D2R)];
+const L3=b=>{const m=((b%360)+360)%360;return m%90==0?[m+90,m-90,m+180]:[b+110,b-110,b+180]},L2=(a,c)=>{const m=Math.atan2(-(Math.sin(a*D2R)+Math.sin(c*D2R)),-(Math.cos(a*D2R)+Math.cos(c*D2R)))/D2R;return[m+52,m-52]};
+const LPA=(x,y,a)=>{const[px,py]=PT(x,y,a,18),n=PT(0,0,a+90,6);return `<line class="lp" x1="${px-n[0]}" y1="${py-n[1]}" x2="${px+n[0]}" y2="${py+n[1]}"/>`};
+const DTA=(x,y,a)=>{const[px,py]=PT(x,y,a,18);return `<circle class="dot" cx="${px}" cy="${py}" r="3.6"/>`};
+const BX=(x1,y1,x2,y2,st='n',s1=15,s2=15)=>{const L=Math.hypot(x2-x1,y2-y1),u=(x2-x1)/L,v=(y2-y1)/L,a=[x1+u*s1,y1+v*s1],b=[x2-u*s2,y2-v*s2];
+ if(st=='w')return `<polygon class="dot" points="${a[0]},${a[1]} ${b[0]-v*5},${b[1]+u*5} ${b[0]+v*5},${b[1]-u*5}"/>`;
+ if(st=='h'){let o='';for(let i=1;i<=5;i++){const t=i/5,w=5*t,p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];o+=`<line class="bd" style="stroke-width:1.8" x1="${p[0]+v*w}" y1="${p[1]-u*w}" x2="${p[0]-v*w}" y2="${p[1]+u*w}"/>`}return o}
+ return `<line class="bd" x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}"/>`};
+const SU=(x,y,a,L,s,l='',st='n',q='')=>{const[p,r]=PT(x,y,a,L);return BX(x,y,p,r,st)+AT(p,r,s,l==='x'?L3(a+180):l,q)};
+const TE=(x,y,ty,s)=>{const A=ty=='U'?[-145,-35,125,55]:[145,35,-125,-55],S=['n','n','w','h'];return s.map((e,i)=>e?SU(x,y,A[i],e[2]||58,e[0],e[1]||'',S[i],e[3]||''):'').join('')};
+/* ---- Szenen ---- */
+function sn(i){const x=390,y=160,hal=HL(485,y,55,'r')+HL(x,y,45,'b');
+ if(i==0)return hal+AT(x,y,'C')+SU(x,y,-120,55,'H')+SU(x,y,125,62,'H₃C','','w')+SU(x,y,55,62,'CH₃','','h')+BX(x,y,485,y)+AT(485,y,'Br',L3(180))+T(x+26,y-24,'δ⁺','dl')+T(502,y-32,'δ⁻','dl')+AT(190,y,'H')+BX(190,y,230,y)+AT(230,y,'O',[90,-90,0],'−')+T(210,300,'Nucleophil','note')+T(485,300,'polare C–Br-Bindung','note');
+ if(i==1)return hal+AT(x,y,'C')+SU(x,y,-90,55,'H')+SU(x,y,150,62,'H₃C','','w')+SU(x,y,30,62,'CH₃','','h')+AT(250,y,'H')+BX(250,y,290,y)+AT(290,y,'O',[90,-90,0],'−')+`<line class="bd dash" x1="312" y1="${y}" x2="368" y2="${y}"/><line class="bd dash" x1="412" y1="${y}" x2="466" y2="${y}"/>`+AT(485,y,'Br',L3(180))+AR(308,y-14,345,y-70,370,y-14,0)+AR(412,y-14,450,y-66,478,y-20,0)+T(390,48,'Übergangszustand [HO···C···Br]⁻ (planares C-Zentrum)','note');
+ return AT(x,y,'C')+SU(x,y,-60,55,'H')+SU(x,y,55,62,'CH₃','','w')+SU(x,y,125,62,'H₃C','','h')+BX(320,y,x,y)+AT(320,y,'O',L2(0,-110))+SU(320,y,-110,48,'H')+AT(580,y,'Br',[0,90,180,-90],'−')+T(400,310,'Propan-2-ol','big')+T(580,225,'Bromid-Ion','note')+T(430,62,'Walden-Umkehr: die drei Reste klappen um','note');}
+const srR=ph=>ph?RING(129,98,38,125)+BX(160,120,209,154,'n',0,15):AT(160,120,'C')+TE(160,120,'D',[['H'],null,['H'],['H']])+BX(160,120,209,154);
+const srC=(rad,sub)=>AT(209,154,'C',rad?['d-35']:'')+TE(209,154,'U',[null,sub,['H'],['H']]);
+function sr(i,t){
+ if(i==0)return T(380,52,'Start: hν oder Δ','note')+AT(340,150,'Br',L3(0))+BX(340,150,420,150)+AT(420,150,'Br',L3(180))+AR(380,150,366,96,353,130,1)+AR(380,150,394,96,407,130,1)+T(380,210,'↓','big')+AT(300,262,'Br',[90,-90,180,'d0'])+AT(460,262,'Br',[90,-90,0,'d180'])+T(380,318,'zwei Brom-Radikale: je 3 freie Elektronenpaare und 1 Einzelelektron','note');
+ if(i==1)return srR(t)+srC(0,['H'])+AT(440,121,'Br',[90,-90,0,'d180'])+AR(425,108,350,60,268,110,1)+AR(236,129,218,122,208,138,1)+T(400,318,'Das Br-Radikal entreißt dem Molekül ein H-Atom','note');
+ if(i==2)return srR(t)+srC(1,null)+AT(390,121,'Br',L3(0))+BX(390,121,500,121)+AT(500,121,'Br',L3(180))+AR(228,134,300,70,372,108,1)+AR(446,110,490,72,522,108,1)+AT(590,262,'H')+BX(590,262,650,262)+AT(650,262,'Br',L3(180))+T(620,310,'H–Br aus Schritt 1','note');
+ return srR(t)+srC(0,['Br','x',62])+AT(540,170,'Br',[90,-90,0,'d180'])+T(200,300,t?'Benzylbromid':'Bromethan','big')+T(540,222,'Br•-Radikal','note');}
+function se(i,t){const X=i?250:200,y=185,r=60,m=t?BS(X,y-r,X,92,0,15)+AT(X,86,'CH₃'):'';
+ if(i==0)return HL(X,y,85,'r')+RING(X,y,r)+m+T(X,285,'π-Elektronen: hohe Elektronendichte','note')+AT(400,y,'Br',L3(0))+BX(400,y,470,y)+AT(470,y,'Br',L3(180))+T(402,y-32,'δ⁺','dl')+T(472,y-32,'δ⁻','dl')+T(610,y+7,'FeBr₃','big')+AR(234,163,310,92,384,156,0)+AR(435,165,515,110,578,168,0)+T(520,255,'Polarisierung durch den Katalysator','note');
+ if(i==1){let o='';[[215,4,1],[380,0,2],[545,2,0]].forEach(([x,c,a],k)=>o+=`<g class="${k?'late':''}" ${k==2?'style="animation-delay:2.2s"':''}>${SIG(x,150,40,c,t,a)}</g>`);
+  return o+BRACE(95,1)+BRACE(665,-1)+`<g class="late">${T(297,160,'↔','big')}</g><g class="late2">${T(462,160,'↔','big')}</g>`+T(380,300,'σ-Komplex: Grenzstrukturen, die positive Ladung ist über ortho- und para-Position verteilt','note')+T(380,326,'Gegenion: [FeBr₄]⁻','note')}
+ if(i==2)return SIG(250,150,46,4,t,3)+T(380,160,'H⁺ wird abgespalten und reagiert mit [FeBr₄]⁻','note','start')+T(380,190,'→ HBr + FeBr₃','big','start');
+ return RING(X,y,r)+m+BS(X,y+r,X,y+r+30,0,0)+AT(X,y+r+46,'Br',L3(-90))+T(500,y+7,'+ HBr + FeBr₃','big')+T(X,332,t?'4-Bromtoluol':'Brombenzol','big');}
+function ae(i){
+ const eth=AT(300,190,'C')+AT(400,190,'C')+SU(300,190,150,55,'H')+SU(300,190,-150,55,'H')+SU(400,190,30,55,'H')+SU(400,190,-30,55,'H')+DB(317,190,383,190,6);
+ if(i<2)return (i==0?HL(350,190,75,'r'):'')+eth+AT(350,100,'Br',L3(-90))+BX(350,100,350,40)+AT(350,40,'Br',L3(90))+(i==0?T(384,108,'δ⁺','dl')+T(384,46,'δ⁻','dl')+T(380,310,'π-Elektronen polarisieren das Br₂-Molekül','note'):AR(352,180,310,148,336,122,0)+AR(356,72,396,76,377,52,0)+T(380,310,'π-Elektronenpaar greift das δ⁺-Br-Atom an','note'));
+ if(i<4)return AT(310,190,'C')+AT(390,190,'C')+SU(310,190,150,55,'H','','w')+SU(310,190,210,55,'H','','h')+SU(390,190,30,55,'H','','w')+SU(390,190,-30,55,'H','','h')+BX(310,190,390,190)+AT(350,120,'Br',L2(120,60),'+')+BX(350,120,310,190)+BX(350,120,390,190)+AT(350,285,'Br',[0,90,180,-90],'−')+(i==3?AR(366,272,392,255,392,208,0)+AR(376,158,396,128,368,128,0)+T(540,290,'Rückseitenangriff','note'):T(540,290,'Bromonium-Ion + Br⁻','note'));
+ return AT(290,150,'C')+TE(290,150,'D',[['Br','x',62],null,['H'],['H']])+BX(290,150,339,185)+AT(339,185,'C')+TE(339,185,'U',[null,['Br','x',62],['H'],['H']])+T(340,300,'1,2-Dibromethan','big');}
+function e2(i){
+ const cb=AT(310,200,'C')+TE(310,200,'U',[['H'],null,['H'],['H']])+BX(310,200,361,164)+AT(361,164,'C')+TE(361,164,'D',[null,['Br','x',62],['H'],['CH₃']]);
+ if(i<2)return (i==0?HL(361,164,50,'b'):'')+cb+AT(180,105,'O',[37,107,327],'−')+SU(180,105,217,48,'H')+(i==0?T(340,138,'δ⁺','dl')+T(380,310,'Die Base nimmt ein β-H als H⁺ auf','note'):AR(200,112,238,112,252,156,0)+AR(288,176,312,150,335,174,0)+AR(388,176,418,168,428,190,0)+T(380,310,'drei Elektronenpaare verschieben sich gleichzeitig','note'));
+ return AT(310,190,'C')+AT(400,190,'C')+DB(327,190,383,190,6)+SU(310,190,150,55,'H')+SU(310,190,-150,55,'H')+SU(400,190,-30,55,'CH₃')+SU(400,190,30,55,'H')+AT(150,90,'O',[-142,-38])+SU(150,90,38,48,'H')+SU(150,90,142,48,'H')+T(150,165,'Wasser','note')+AT(610,190,'Br',[0,90,180,-90],'−')+T(610,238,'Bromid-Ion','note')+T(355,300,'Propen','big');}
+function na(i,k){const r1=k?'H₃C':'H',r2='H₃C',cy=i<2?180:190;
+ if(i<=1)return (i==0?HL(400,180,50,'b')+HL(400,110,45,'r'):'')+AT(400,180,'C')+AT(400,110,'O',[210,-30])+DB(400,168,400,125,6)+SU(400,180,150,60,r1)+SU(400,180,30,60,r2)+AT(170,170,'O',[15,119])+SU(170,170,195,55,'H₃C')+SU(170,170,-61,45,'H')+
+  (i==0?T(430,166,'δ⁺','dl')+T(436,100,'δ⁻','dl')+T(150,232,'Nucleophil','note')+T(400,318,'EN: C 2,5 · O 3,5 → die C=O-Gruppe ist stark polar','note'):AR(192,170,290,150,384,177,0)+AR(410,148,470,98,405,92,0)+T(400,318,'nucleophiler Angriff auf das δ⁺-C-Atom','note'));
+ const C=AT(400,190,'C')+SU(400,190,125,60,r1,'','w')+SU(400,190,55,60,r2,'','h')+BX(400,190,349,154)+BX(400,190,451,154);
+ if(i<=3)return C+AT(349,154,'O',[107],'+')+SU(349,154,180,55,'H₃C')+SU(349,154,-80,50,'H')+AT(451,154,'O',L3(145),'−')+(i==3?AR(446,137,420,70,373,100,0)+AR(358,126,334,124,339,142,0)+T(400,318,'H⁺-Umlagerung (Protonenübertragung)','note'):T(400,318,'Zwitterion: O⁻ (Alkoxid) und O⁺','note'));
+ return C+AT(451,154,'O',L2(145,40))+SU(451,154,40,40,'H')+AT(349,154,'O',L2(35,140))+SU(349,154,140,55,'H₃C')+T(400,318,k?'Halbketal':'Halbacetal','big');}
+/* ---- Entscheidungslogik ---- */
+function decide(){const{ed,tp,licht,hitze,kat}=S,ar=ed=='benzol'||ed=='toluol',tol=ed=='toluol',co=ed=='ethanal',no=w=>({ok:0,w});
+ if(tp=='rad'){if(!licht&&!hitze)return no('Radikale entstehen erst, wenn Licht oder Siedehitze die Br–Br-Bindung homolytisch spalten. Schalte eine dieser Bedingungen ein.');
+  if(ed=='ethan'||tol)return{ok:1,m:'SR',n:4,t:tol,eq:tol?'Toluol + Br₂ → Benzylbromid + HBr':'Ethan + Br₂ → Bromethan + HBr'};
+  return no('Für dieses Edukt wird die radikalische Substitution hier nicht modelliert.');}
+ if(tp=='nuc'){if(ed=='brprop')return hitze?{ok:1,m:'E',n:3,eq:'2-Brompropan + OH⁻ → Propen + H₂O + Br⁻'}:{ok:1,m:'SN',n:3,eq:'2-Brompropan + OH⁻ → Propan-2-ol + Br⁻'};
+  return no(ed=='ethan'?'Die C–H-Bindung im Alkan ist kaum polar. Das Nucleophil findet kein positiv polarisiertes C-Atom.':ar?'Der Benzolring hat hohe Elektronendichte. Das negative Teilchen wird abgestoßen.':ed=='ethen'?'Die C=C-Doppelbindung ist elektronenreich und stößt das Nucleophil ab.':'Mit OH⁻ bildet sich an der Carbonylgruppe ein Hydrat. Wähle hier Methanol als Nucleophil.');}
+ if(tp=='nuc2'){if(co)return{ok:1,m:'NA',n:5,k:0,eq:'Ethanal + CH₃OH → Halbacetal'};
+  return no('Methanol ist ein schwaches Nucleophil und braucht ein stark positiv polarisiertes C-Atom, wie in der Carbonylgruppe.');}
+ if(ed=='ethen')return{ok:1,m:'AE',n:5,eq:'Ethen + Br₂ → 1,2-Dibromethan'};
+ if(ar){if(!kat)return no('Br₂ ist unpolar und als Elektrophil zu schwach. Erst der Katalysator FeBr₃ polarisiert das Molekül. Schalte den Katalysator ein.');
+  return{ok:1,m:'SE',n:4,t:tol,eq:tol?'Toluol + Br₂ → 4-Bromtoluol + HBr (neben 2-Bromtoluol)':'Benzol + Br₂ → Brombenzol + HBr'};}
+ return no(co?'Das C-Atom der Carbonylgruppe ist selbst positiv polarisiert und stößt ein Elektrophil ab.':ed=='ethan'?'Alkane haben keine Bereiche hoher Elektronendichte. Das Elektrophil findet keinen Angriffspunkt.':'Das Edukt bietet keine Region hoher Elektronendichte für ein Elektrophil.');}
+const TX={SR:[['Start: Bildung der Radikale','Licht oder Hitze spaltet das Br₂-Molekül homolytisch: Jedes Br-Atom erhält ein Elektron der Bindung (Halbpfeile). Es entstehen zwei Radikale mit drei freien Elektronenpaaren und einem Einzelelektron.'],['Kettenreaktion 1: H-Abspaltung','Das Br-Radikal nimmt ein H-Atom samt einem Elektron der C–H-Bindung auf. Es entstehen H–Br und ein Alkyl-Radikal.'],['Kettenreaktion 2: Bildung des Produkts','Das Alkyl-Radikal greift ein Br₂-Molekül an und spaltet die Br–Br-Bindung homolytisch. Ein neues Br• entsteht, die Kette läuft weiter.'],['Produkt und Abbruch','Es entsteht das Bromalkan und wieder ein Br-Radikal. Treffen zwei Radikale aufeinander (Br•+Br•, R•+Br•, R•+R•), bilden sie ein Molekül und die Kette bricht ab.']],
+SN:[['Polare Bindung und Nucleophil','Br (EN 2,8) zieht die Bindungselektronen stärker an als C (EN 2,5). Das C-Atom trägt δ⁺. OH⁻ hat freie Elektronenpaare und sucht positive Zentren.'],['Rückseitenangriff','Das Nucleophil greift das C-Atom von der dem Br gegenüberliegenden Seite an. Während die C–O-Bindung entsteht, bricht die C–Br-Bindung (S<sub>N</sub>2).'],['Produkt','Das Br-Atom verlässt das Molekül samt Bindungselektronenpaar als Bromid-Ion. Die OH-Gruppe ersetzt das Br-Atom: Es entsteht Propan-2-ol.']],
+SE:[['Polarisierung und Angriff auf das Elektrophil','Der Katalysator FeBr₃ polarisiert Br₂. Das δ⁺-Br-Atom ist ein Elektrophil. Die delokalisierten π-Elektronen des Rings greifen es an (Pfeil vom Ring zum Br).'],['Angriff: σ-Komplex','Zwei π-Elektronen bilden die neue C–Br-Bindung. Das aromatische System ist unterbrochen. Die positive Ladung ist über drei C-Atome verteilt: mesomere Grenzstrukturen.'],['Abspaltung von H⁺','Das Elektronenpaar der C–H-Bindung stellt das aromatische System wieder her. H⁺ wird auf [FeBr₄]⁻ übertragen.'],['Produkt und Katalysator','Der Aromat bleibt erhalten: Ein H-Atom wurde durch Br ersetzt. FeBr₃ wird zurückgebildet. Bei Toluol entsteht vor allem das para-Produkt neben dem ortho-Produkt.']],
+AE:[['Polarisierung von Br₂','Die C=C-Doppelbindung hat hohe Elektronendichte (π-Elektronen). Nähert sich Br₂, wird es polarisiert: Das nähere Br-Atom wird δ⁺ und reagiert als Elektrophil.'],['Elektrophiler Angriff','Das π-Elektronenpaar bildet eine Bindung zum δ⁺-Br-Atom. Gleichzeitig wandert das Bindungselektronenpaar der Br–Br-Bindung zum zweiten Br-Atom.'],['Bromonium-Ion','Es entsteht ein dreigliedriger Ring mit positiv geladenem Brom (Bromonium-Ion) und ein Bromid-Ion.'],['Rückseitenangriff','Das Bromid-Ion greift ein C-Atom von der dem Brom abgewandten Seite an. Der Ring öffnet sich, das Elektronenpaar der C–Br⁺-Bindung geht an das Brom.'],['Produkt','Beide Br-Atome sind addiert: 1,2-Dibromethan. Die Doppelbindung ist verschwunden. Das ist eine Addition und keine Substitution.']],
+E:[['Base und β-H-Atom','OH⁻ wirkt hier als Base, nicht als Nucleophil. Neben dem C–Br-Kohlenstoff sitzt ein H-Atom (β-H), das als H⁺ abgegeben werden kann. Siedehitze und konzentrierte Base begünstigen die Eliminierung.'],['Konzertierter Ablauf (E2)','Gleichzeitig: OH⁻ nimmt das H⁺ auf, das C–H-Elektronenpaar bildet die C=C-Doppelbindung, Br verlässt das Molekül mit dem Bindungselektronenpaar.'],['Produkte','Es entstehen Propen, Wasser und ein Bromid-Ion. Aus einer Einfachbindung wird eine Doppelbindung: Eliminierung, die Umkehrung der Addition.']],
+NA:[['Polarität der Carbonylgruppe','Sauerstoff (EN 3,5) ist elektronegativer als Kohlenstoff (EN 2,5). Das Bindungselektronenpaar der C=O-Bindung ist zum O-Atom verschoben: C trägt δ⁺, O trägt δ⁻. Das C-Atom ist deshalb das Ziel eines nucleophilen Angriffs.'],['Nucleophiler Angriff','Das Nucleophil (Methanol, freies Elektronenpaar am O) greift das δ⁺-C-Atom an und bildet eine C–O-Bindung. Das π-Elektronenpaar der C=O-Bindung wandert zum Sauerstoff.'],['Zwischenstufe','Es entsteht ein Zwitterion: O⁻ (Alkoxid) an der früheren Carbonylgruppe und O⁺ am Nucleophil. Das C-Atom ist jetzt sp³-hybridisiert.'],['Umlagerung von H⁺','Ein H⁺ wandert vom O⁺ zum O⁻ (Protonenübertragung). Die Ladungen gleichen sich aus.'],['Produkt','Halbacetal. Mechanismus: nucleophile Addition (A<sub>N</sub>) mit Umlagerung von H⁺. Mit einem zweiten Alkohol und H⁺ folgt ein Additions-Eliminations-Mechanismus zum Acetal.']]};
+const SC={SR:(i,d)=>sr(i,d.t),SN:sn,SE:(i,d)=>se(i,d.t),AE:ae,E:e2,NA:(i,d)=>na(i,d.k)};
+const DEFS=`<defs><radialGradient id="gr"><stop offset="0" stop-color="#ff3b30" stop-opacity=".75"/><stop offset="1" stop-color="#ff3b30" stop-opacity="0"/></radialGradient><radialGradient id="gb"><stop offset="0" stop-color="#2f6bff" stop-opacity=".75"/><stop offset="1" stop-color="#2f6bff" stop-opacity="0"/></radialGradient></defs>`;
+let timer;
+function render(){const d=decide(),sv=$('#svg'),root=document.documentElement.style;
+ sv.classList.toggle('edon',S.dens);sv.classList.toggle('go',S.go);
+ if(!d.ok){root.setProperty('--mc','var(--mut)');$('#badge').textContent='keine Reaktion';$('#eq').textContent='';
+  sv.innerHTML=DEFS+`<foreignObject x="0" y="0" width="760" height="340"><div xmlns="http://www.w3.org/1999/xhtml" class="none" style="color:var(--ink);font:16px/1.5 sans-serif"><b>Hier läuft keine passende Reaktion ab</b>${d.w}</div></foreignObject>`;
+  $('#expl').innerHTML='';$('#dots').innerHTML='';stop();hint(d);table(null);return}
+ const m=MEC[d.m];root.setProperty('--mc',m.c);$('#badge').innerHTML=m.n;$('#eq').textContent=m.nm+' · '+d.eq;
+ S.step=Math.min(S.step,d.n-1);
+ sv.innerHTML=DEFS+`<g class="scene">`+SC[d.m](S.step,d)+'</g>';
+ const[tt,tx]=TX[d.m][S.step];$('#expl').innerHTML=`<h3>Schritt ${S.step+1} von ${d.n}: ${tt}</h3><p>${tx}</p>`;
+ $('#dots').innerHTML=Array.from({length:d.n},(_,k)=>`<i class="${k==S.step?'on':''}" data-k="${k}"></i>`).join('');
+ hint(d);table(d.m)}
+function hint(d){const h=$('#hint'),k=S.kat&&!S.licht&&!S.hitze,s=(S.licht||S.hitze)&&!S.kat;let t='';
+ if(S.ed=='toluol')t=k?'<b>KKK-Regel:</b> Kälte, Katalysator, Kern → elektrophile Substitution am Ring.':s?'<b>SSS-Regel:</b> Sonnenlicht, Siedehitze, Seitenkette → radikalische Substitution an der CH₃-Gruppe.':'Toluol reagiert je nach Bedingungen an zwei Stellen. Wähle entweder Katalysator in der Kälte (KKK) oder Licht/Siedehitze (SSS).';
+ else if(S.ed=='brprop'&&S.tp=='nuc')t='<b>Substitution oder Eliminierung?</b> Ohne Siedehitze überwiegt S<sub>N</sub> (OH⁻ als Nucleophil). Mit Siedehitze und konzentrierter Base überwiegt E2 (OH⁻ als Base).';
+ else if(d&&d.m=='NA')t='<b>Nucleophiler Angriff:</b> Er ist möglich, weil die C=O-Gruppe polar ist (C δ⁺, O δ⁻). Das gilt auch für die Bildung von Cyanhydrinen oder die Grignard-Reaktion.';
+ h.hidden=!t;h.innerHTML=t}
+function table(a){$('#tb').innerHTML=Object.entries(MEC).map(([k,m])=>`<tr class="${k==a?'act':''}" style="--mc:${m.c}"><td>${m.n} ${m.nm}</td><td>${m.ed}</td><td>${m.tp}</td><td>${m.bd}</td><td>${m.bs}</td></tr>`).join('')}
+function stop(){S.play=false;clearInterval(timer);$('#play').textContent=S.go?'▶ Abspielen':'▶ Start'}
+function go(d){const x=decide();if(!x.ok)return;S.step=(S.step+d+x.n)%x.n;render()}
+function opts(id,obj,key){$(id).innerHTML=Object.entries(obj).map(([k,v])=>`<button class="opt" data-k="${k}" aria-pressed="${S[key]==k}"><span>${v[0]}</span><small>${v[1]}</small></button>`).join('');
+ $(id).onclick=e=>{const b=e.target.closest('.opt');if(!b)return;S[key]=b.dataset.k;S.step=0;S.go=false;stop();opts('#o-ed',ED,'ed');opts('#o-tp',TP,'tp');render()}}
+opts('#o-ed',ED,'ed');opts('#o-tp',TP,'tp');
+['licht','hitze','kat'].forEach(k=>{const e=$('#c-'+k);e.checked=S[k];e.onchange=()=>{S[k]=e.checked;S.step=0;S.go=false;stop();render()}});
+$('#dens').onchange=e=>{S.dens=e.target.checked;render()};
+$('#prev').onclick=()=>{S.go=true;stop();go(-1)};$('#next').onclick=()=>{S.go=true;stop();go(1)};
+$('#dots').onclick=e=>{const i=e.target.closest('i');if(i){S.go=true;stop();S.step=+i.dataset.k;render()}};
+$('#play').onclick=()=>{if(S.play){stop();return}const x=decide();if(!x.ok)return;S.go=true;S.play=true;render();$('#play').textContent='⏸ Pause';timer=setInterval(()=>go(1),5000)};
+$('#theme').onclick=()=>{const r=document.documentElement,dk=matchMedia('(prefers-color-scheme:dark)').matches;const cur=r.dataset.theme||(dk?'dark':'light');r.dataset.theme=cur=='dark'?'light':'dark'};
+render();
+</script></body></html>

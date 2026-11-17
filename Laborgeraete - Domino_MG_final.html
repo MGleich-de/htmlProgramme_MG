@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Labor-Domino</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&display=swap">
+<style>
+:root{--bg:#e9eef0;--grid:#d3dde1;--panel:#f7fafb;--ink:#1d2b33;--acc:#d9791f;--felt:#d6e4e8;--h:84px;--w:216px;--fs:15px;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#122a31;--grid:#1b3943;--panel:#183640;--ink:#e6f0f2;--acc:#f2b134;--felt:#0f2127;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#122a31;--grid:#1b3943;--panel:#183640;--ink:#e6f0f2;--acc:#f2b134;--felt:#0f2127;color-scheme:dark}
+@media(max-width:600px){:root{--h:66px;--w:172px;--fs:12.5px}}
+html,body{height:100%;margin:0}
+body{display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;overflow:hidden}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:10px 16px}
+.tt{margin-right:auto}h1{font-size:22px;font-weight:800;margin:0;letter-spacing:-.3px}.au{display:block;font-size:12px;font-weight:600;opacity:.7}
+.st{display:flex;gap:14px;font-weight:600;font-variant-numeric:tabular-nums}
+button{font:inherit;font-weight:700;color:var(--ink);background:var(--panel);border:2px solid var(--grid);border-radius:10px;padding:7px 13px;cursor:pointer}
+button:hover{border-color:var(--acc)}button.p{background:var(--acc);color:#1b1305;border-color:var(--acc)}
+.bar{height:6px;margin:0 16px;background:var(--grid);border-radius:4px;overflow:hidden}
+#fill{display:block;height:100%;width:0;background:var(--acc);transition:width .4s}
+#board,#pool{display:flex;flex-wrap:wrap;align-content:flex-start;gap:16px 12px;padding:18px;overflow:auto;margin:10px 16px 0;border-radius:16px}
+#board{flex:0 1 46%;min-height:130px;background:var(--felt);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+#pool{flex:1;background:var(--panel);margin-bottom:12px;gap:20px 16px}
+.stone{--c:#4c9bd6;position:relative;flex:none;display:grid;grid-template-columns:var(--h) 10px 1fr;width:var(--w);height:var(--h);border-radius:14px;background:linear-gradient(145deg,#fffdf6,#efe6d0 70%,#e2d6b8);color:#26323a;box-shadow:inset 0 -5px 0 var(--c),inset 0 1px 0 #fff,0 5px 0 #bdb08e,0 10px 14px rgba(0,0,0,.28);user-select:none;-webkit-user-select:none;touch-action:none;transition:transform .15s}
+.stone[data-g=h]{--c:#8a94a1}.stone[data-g=f]{--c:#e8892b}.stone[data-g=x]{--c:#4fae6b}
+.stone::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,rgba(255,255,255,.55),rgba(255,255,255,0) 38%);pointer-events:none}
+.stone .l{border-radius:14px 0 0 14px;background:radial-gradient(circle at 50% 45%,#fff,#f4efe0)}
+.stone svg{width:100%;height:100%;padding:7px 7px 11px;box-sizing:border-box;display:block}
+.mid{position:relative}.mid::before{content:"";position:absolute;left:4px;top:9px;bottom:13px;width:2px;background:#c9bc99;box-shadow:1px 0 0 #fff}
+.mid b{position:absolute;left:0;top:calc(50% - 7px);width:10px;height:10px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3c2,#a97a22);box-shadow:0 1px 1px rgba(0,0,0,.4)}
+.r{display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:var(--fs);line-height:1.1;padding:0 6px 5px;hyphens:auto;overflow-wrap:anywhere}
+.r.long{font-size:calc(var(--fs) * .8)}
+#pool .stone{cursor:grab}#pool .stone:hover{transform:translateY(-4px) rotate(0)!important}
+.stone:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.ghost{opacity:.25}.drag{position:fixed;z-index:60;pointer-events:none;transform:scale(1.07) rotate(-2deg);box-shadow:inset 0 -5px 0 var(--c),0 5px 0 #bdb08e,0 22px 28px rgba(0,0,0,.4)}
+.hint{animation:glow .8s ease-in-out infinite alternate}
+@keyframes glow{to{box-shadow:inset 0 -5px 0 var(--c),0 5px 0 #bdb08e,0 0 0 4px var(--acc),0 0 24px var(--acc)}}
+.snap{animation:snap .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes snap{from{transform:scale(1.25);filter:brightness(1.2)}to{transform:none}}
+.slot{flex:none;width:var(--w);height:var(--h);box-sizing:border-box;border:3px dashed var(--acc);border-radius:14px;display:grid;place-items:center;color:var(--acc);font-weight:700;font-size:13px;animation:pl 1.6s ease-in-out infinite;transition:transform .15s,background .15s}
+@keyframes pl{50%{background:rgba(217,121,31,.12)}}
+.slot.over{transform:scale(1.05);background:rgba(79,174,107,.25);border-color:#4fae6b;color:#4fae6b}
+.slot.bad{animation:shake .4s;border-color:#e0483b;color:#e0483b}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.ring{align-self:center;font-weight:800;color:#4fae6b}
+.ov{position:fixed;inset:0;z-index:80;background:rgba(8,22,27,.82);display:grid;place-items:center;padding:16px;box-sizing:border-box;overflow:auto}
+.ov[hidden]{display:none}
+.card{background:var(--panel);color:var(--ink);border-radius:20px;padding:26px;max-width:620px;width:100%;box-sizing:border-box;box-shadow:0 20px 50px rgba(0,0,0,.45);text-align:center;max-height:100%;overflow:auto}
+.card h2{font-size:32px;margin:0 0 8px;font-weight:800}.card p{margin:6px auto 16px;max-width:46ch;line-height:1.45}
+.lv{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.lv button{padding:12px 18px;font-size:16px}
+.stars{font-size:42px;color:var(--acc);letter-spacing:6px}
+.ref{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin:14px 0;text-align:center;font-size:12px;font-weight:600}
+.ref figure{margin:0;background:#fffaf0;color:#26323a;border-radius:10px;padding:4px}.ref svg{width:100%;height:56px}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:90}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+svg *{stroke-linecap:round;stroke-linejoin:round}
+body.dragging,body.dragging #board,body.dragging #pool{overflow:hidden!important;touch-action:none;overscroll-behavior:none;user-select:none;-webkit-user-select:none;cursor:grabbing}
+.k{fill:none;stroke:#2f3640;stroke-width:2.6}.wa{fill:#a5d8f2}.sc{fill:none;stroke:#8d98a5;stroke-width:2}
+.wd{fill:#dba765;stroke:#7a4f1d;stroke-width:2}.ck{fill:#e3a468;stroke:#b0662a;stroke-width:2}
+.mt{fill:#b4bcc6;stroke:#3f4753;stroke-width:2}.wh{fill:#f4f1ea;stroke:#2f3640;stroke-width:2.4}
+</style>
+</head>
+<body>
+<header>
+<div class="tt"><h1>Labor-Domino</h1><span class="au">Matthias Gleich</span></div>
+<div class="st"><span id="tm">0:00</span><span id="er">Fehler 0</span><span id="pg">1/12</span></div>
+<div><button id="hint" class="p">Tipp</button> <button id="snd">Ton an</button> <button id="menu">Neustart</button></div>
+</header>
+<div class="bar"><i id="fill"></i></div>
+<div id="board" aria-label="Dominokette"></div>
+<div id="pool" aria-label="Vorrat"></div>
+<div class="ov" id="start"><div class="card"><h2>Labor-Domino</h2><div class="au" style="margin-bottom:10px">Matthias Gleich</div>
+<p>Ziehe Steine auf das gestrichelte Feld. Die Bezeichnung am rechten Ende der Kette gehört zur Abbildung auf dem nächsten Stein.</p>
+<div class="lv" style="margin-bottom:14px"><button id="look">Alle Geräte ansehen</button></div><div class="lv"><button data-n="12">Leicht, 12 Geräte</button><button data-n="24">Mittel, 24 Geräte</button><button data-n="36" class="p">Alle, 36 Geräte</button></div></div></div>
+<div class="ov" id="end" hidden><div class="card"><h2>Kette geschlossen!</h2><div class="stars" id="stars"></div><p id="res"></p><div class="ref" id="ref"></div>
+<div class="lv"><button id="again" class="p">Nochmal spielen</button><button id="lvl">Stufe wählen</button></div></div></div>
+<div class="ov" id="view" hidden><div class="card"><h2>Alle Geräte</h2><p>Präge dir die Abbildungen und Bezeichnungen ein. Dann kann das Spiel beginnen.</p><div class="ref" id="all"></div><button id="back" class="p">Zurück zum Start</button></div></div>
+<canvas id="cv"></canvas>
+<script>
+const sl='M12 56q14 22 28 4t24-30q8-8 24-2';
+function ph(){const c=['#e8402f','#f26b30','#f6a33a','#f3d03e','#b3cc3b','#6aa23a','#3f7a3a','#26305a'];let s='';c.forEach((k,i)=>{const a=i*Math.PI/4-Math.PI/2,b=a+Math.PI/4,R=36;s+=`<path d="M46 50L${46+R*Math.cos(a)} ${50+R*Math.sin(a)}A${R} ${R} 0 0 1 ${46+R*Math.cos(b)} ${50+R*Math.sin(b)}z" fill="${k}" stroke="#fff" stroke-width="1.5"/>`});return s+'<circle cx="46" cy="50" r="10" fill="#fff"/><path d="M66 70l18 12" stroke="#e5cf7a" stroke-width="8"/>'}
+const D=[
+['Becherglas','g',`<path class="k" d="M26 18v60q0 7 7 7h34q7 0 7-7V18"/><path class="sc" d="M58 34h10M63 46h5M58 58h10"/>`],
+['Erlenmeyerkolben','g',`<path class="k" d="M42 12v24L23 76q-3 10 8 10h38q11 0 8-10L58 36V12"/><path class="sc" d="M62 58h6M60 66h8"/>`],
+['Messzylinder','g',`<path class="k" d="M38 8v80h24V8M30 88h40"/><path class="sc" d="M62 20h-7M62 32h-5M62 44h-7M62 56h-5M62 68h-7"/>`],
+['Reagenzglas','g',`<path class="k" d="M40 12v62q0 14 10 14t10-14V12"/>`],
+['Rundkolben','g',`<path class="k" d="M43 10v27a28 28 0 1 0 14 0V10"/>`],
+['Uhrglas','g',`<path class="k" d="M14 42q36 38 72 0"/><path class="sc" d="M24 52q26 20 52 0"/>`],
+['Pipette','g',`<ellipse cx="50" cy="22" rx="11" ry="14" fill="#d9625a" stroke="#8c3b36" stroke-width="2"/><path class="k" d="M45 36v34l3 20M55 36v34l-3 20"/>`],
+['Standzylinder','g',`<path class="k" d="M38 6v78h24V6"/><rect class="mt" x="28" y="84" width="44" height="8" rx="2"/>`],
+['Trichter','g',`<path class="k" d="M16 20l30 32v28M84 20L54 52v28"/>`],
+['Wanne','x',`<path class="k" d="M16 24v56h68V24"/>`],
+['U-Rohr','g',`<path class="k" d="M32 12v48a18 18 0 0 0 36 0V12M42 12v48a8 8 0 0 0 16 0V12"/>`],
+['Glasrohr','g',`<g transform="translate(12 6)"><path class="k" d="M10 75h40a15 15 0 0 0 15-15V12"/><path class="k" d="M10 65h40a5 5 0 0 0 5-5V12"/></g>`],
+['Waschflasche','g',`<path class="k" d="M37 26v8q-10 6-10 22v28q0 6 6 6h34q6 0 6-6V56q0-16-10-22v-8"/><rect class="ck" x="35" y="22" width="30" height="11"/><path class="k" d="M41 8v70M46 8v70M55 8v26M60 8v26"/>`],
+['Messpipette','g',`<path class="k" d="M43 8v64l5 16M57 8v64l-5 16"/><path class="sc" d="M57 16h-6M57 26h-4M57 36h-6M57 46h-4M57 56h-6"/>`],
+['Brenner','f',`<path d="M50 6q-11 14-7 32h14q4-18-7-32z" fill="#9ec0ff" stroke="#4660b5" stroke-width="2"/><path d="M50 18q-4 8-2 16h4q2-8-2-16z" fill="#7b3fc4"/><rect class="mt" x="42" y="38" width="5" height="40"/><rect class="mt" x="53" y="38" width="5" height="40"/><path class="k" d="M57 70h12"/><path d="M20 90h60l-9-12H29z" fill="#4a6fc4" stroke="#2f3640" stroke-width="2.4"/>`],
+['Dreifuß mit Drahtnetz','h',`<rect class="mt" x="20" y="32" width="60" height="8" rx="2"/><path class="sc" d="M26 32v8M34 32v8M42 32v8M50 32v8M58 32v8M66 32v8M74 32v8"/><path class="k" d="M26 40L16 88M74 40l10 48M50 40v48"/>`],
+['Stativ','h',`<rect class="mt" x="30" y="6" width="7" height="82" rx="3"/><rect class="mt" x="12" y="84" width="62" height="8" rx="3"/>`],
+['Petrischale','g',`<path class="k" d="M12 50V42q0-4 4-4h68q4 0 4 4v8"/><path class="k" d="M16 62v10q0 4 4 4h60q4 0 4-4V62"/>`],
+['Universalklemme','h',`<rect class="mt" x="8" y="47" width="46" height="6" rx="3"/><circle class="mt" cx="22" cy="50" r="7"/><path class="mt" d="M50 38h14v24H50z"/><rect x="62" y="36" width="26" height="11" rx="5" fill="#2f5fb3" stroke="#1d3a73" stroke-width="2"/><rect x="62" y="53" width="26" height="11" rx="5" fill="#2f5fb3" stroke="#1d3a73" stroke-width="2"/>`],
+['Abdampfschale','f',`<path class="wh" d="M10 40q2 40 40 40t40-40h-6q-2 32-34 32t-34-32z"/>`],
+['Mörser mit Pistill','x',`<path class="wh" d="M33 74l-3 10h40l-3-10z"/><path class="wh" d="M12 34L22 68q2 8 12 8h32q10 0 12-8L88 34h-14l-6 28q-1 6-8 6H40q-7 0-8-6L26 34z"/><path d="M76 6L53 48" stroke="#2f3640" stroke-width="10" fill="none"/><circle cx="50" cy="56" r="10.5" fill="#2f3640"/><path d="M76 6L53 48" stroke="#f4f1ea" stroke-width="6" fill="none"/><circle cx="50" cy="56" r="8" fill="#f4f1ea"/>`],
+['Tiegel','f',`<path class="wh" d="M26 32l8 46q1 8 8 8h16q7 0 8-8l8-46h-6l-7 42q-1 4-5 4H44q-4 0-5-4l-7-42z"/>`],
+['Tüpfelplatte','x',`<rect class="wh" x="10" y="26" width="80" height="48" rx="6"/><g class="wh"><circle cx="29" cy="42" r="8"/><circle cx="50" cy="42" r="8"/><circle cx="71" cy="42" r="8"/><circle cx="29" cy="60" r="8"/><circle cx="50" cy="60" r="8"/><circle cx="71" cy="60" r="8"/></g>`],
+['Spritzflasche','g',`<path class="k" d="M36 34v10q-9 6-9 18v22q0 6 6 6h34q6 0 6-6V62q0-12-9-18V34"/><rect class="ck" x="35" y="28" width="30" height="12"/><path class="k" d="M47 28V14l11-8M53 28V17l11-8"/><rect x="34" y="56" width="32" height="11" rx="3" fill="#fff" stroke="#2f3640" stroke-width="1.5"/><text x="50" y="64.5" font-size="7.5" font-weight="700" text-anchor="middle" fill="#2f3640">Wasser</text>`],
+['Magnesiarinne','f',`<path class="mt" d="M12 62l68-16 10 2-3 6-62 20q-10 0-13-12z"/>`],
+['pH-Papier','x',ph()],
+['Reagenzglasgestell','h',`<rect class="wd" x="12" y="26" width="7" height="48"/><rect class="wd" x="81" y="26" width="7" height="48"/><rect class="wd" x="12" y="36" width="76" height="6"/><rect class="wd" x="12" y="58" width="76" height="6"/>`],
+['Reagenzglasklammer','h',`<path class="wd" d="M6 42h44l42 5v3H6z"/><path class="wd" d="M6 50h86v3l-42 5H6z"/><ellipse cx="76" cy="50" rx="6" ry="3" fill="#f6f1e2" stroke="#7a4f1d" stroke-width="2"/><ellipse cx="54" cy="50" rx="6" ry="12" fill="none" stroke="#6b7480" stroke-width="2.5"/><path d="M50 44h8M50 56h8" stroke="#6b7480" stroke-width="2"/>`],
+['Tiegelzange','h',`<path class="k" style="stroke-width:4" d="M8 34L88 57M8 66L88 43M88 57l4-4M88 43l4 4"/><circle class="wh" cx="64" cy="50" r="4"/>`],
+['Stopfen','h',`<path class="ck" d="M26 22h48l-4 56H30z"/><g fill="#c98446"><circle cx="42" cy="36" r="1.8"/><circle cx="58" cy="44" r="1.8"/><circle cx="46" cy="58" r="1.8"/><circle cx="56" cy="68" r="1.8"/><circle cx="62" cy="30" r="1.8"/></g>`],
+['Lochstopfen','h',`<path class="ck" d="M26 22h20v56H30z"/><path class="ck" d="M54 22h20l-4 56H54z"/>`],
+['Glasstab','g',`<rect class="wh" x="8" y="45" width="84" height="10" rx="5"/>`],
+['Glimmspan','f',`<rect class="wd" x="8" y="46" width="84" height="8" rx="2"/><rect x="8" y="46" width="16" height="8" rx="2" fill="#40281a"/>`],
+['Schlauch','h',`<path d="${sl}" fill="none" stroke="#8a1f1b" stroke-width="13" style="stroke-linecap:butt"/><path d="${sl}" fill="none" stroke="#d1352f" stroke-width="9" style="stroke-linecap:butt"/><path d="${sl}" fill="none" stroke="#f6f1e2" stroke-width="4" style="stroke-linecap:butt"/>`],
+['Spatel','x',`<ellipse class="mt" cx="20" cy="50" rx="11" ry="7"/><path class="k" style="stroke-width:4" d="M30 50h44"/><path class="mt" d="M72 43l16 3v8l-16 3z"/>`],
+['Filterpapier','x',`<path class="wh" d="M18 24L50 84 82 24"/><path class="sc" d="M50 84V34"/>`]
+].map(([name,g,s])=>({name,g,svg:`<svg viewBox="0 0 100 100" aria-hidden="true">${s}</svg>`}));
+
+const $=s=>document.querySelector(s),sh=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+let G,timer,snd=true,ac,lastN=36;
+function beep(f,d,t='sine'){if(!snd)return;try{const AC=window.AudioContext||window.webkitAudioContext;ac=ac||new AC();if(ac.state==='suspended')ac.resume();const n=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.2,n);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g);g.connect(ac.destination);o.start(n);o.stop(n+d)}catch(e){}}
+function mk(s,tilt){const e=document.createElement('div');e.className='stone';e.dataset.g=s.L.g;e._s=s;
+ e.innerHTML=`<div class="l">${s.L.svg}</div><i class="mid"><b></b></i><span class="r${s.R.name.length>12?' long':''}">${s.R.name}</span>`;
+ if(tilt)e.style.transform=`rotate(${(Math.random()*6-3).toFixed(1)}deg)`;return e}
+function start(n){lastN=n;const dv=sh(D).slice(0,n),st=dv.map((d,i)=>({L:d,R:dv[(i+1)%n]}));
+ G={n,dv,err:0,hint:0,t0:Date.now(),done:false,chain:[st[0]],pool:sh(st.slice(1))};
+ $('#start').hidden=$('#end').hidden=true;
+ const b=$('#board');b.innerHTML='';b.append(mk(st[0]));addSlot();
+ const p=$('#pool');p.innerHTML='';G.pool.forEach(s=>{const e=mk(s,1);e.tabIndex=0;e.setAttribute('role','button');e.setAttribute('aria-label','Stein mit Bezeichnung '+s.R.name);
+  e.onpointerdown=ev=>drag(ev,e);e.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();try_(s,e)}};p.append(e)});
+ upd();clearInterval(timer);timer=setInterval(tick,500);tick()}
+function addSlot(){const s=document.createElement('div');s.className='slot';s.id='slot';s.textContent='Hier ablegen';$('#board').append(s);s.scrollIntoView({block:'nearest',behavior:'smooth'})}
+function tick(){const t=Math.floor((Date.now()-G.t0)/1000);$('#tm').textContent=Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
+function upd(){$('#er').textContent='Fehler '+G.err;$('#pg').textContent=G.chain.length+'/'+G.n;$('#fill').style.width=G.chain.length/G.n*100+'%'}
+function need(){return G.chain[G.chain.length-1].R.name}
+function try_(s,el){if(G.done)return false;
+ if(s.L.name===need()){G.pool.splice(G.pool.indexOf(s),1);G.chain.push(s);el.remove();
+  const sl=$('#slot');sl.remove();const ne=mk(s);ne.classList.add('snap');$('#board').append(ne);beep(520,.15);setTimeout(()=>beep(780,.2),90);
+  upd();if(G.chain.length<G.n)addSlot();else finish();return true}
+ G.err++;upd();const sl=$('#slot');sl.classList.remove('bad');void sl.offsetWidth;sl.classList.add('bad');beep(150,.3,'square');return false}
+function drag(e,el){if(G.done)return;e.preventDefault();const sl0=$('#slot');if(sl0)sl0.scrollIntoView({block:'nearest',behavior:'instant'});try{el.setPointerCapture(e.pointerId)}catch(_){}document.body.classList.add('dragging');const r=el.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,c=el.cloneNode(true);
+ c.classList.add('drag');c.style.cssText=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;c.removeAttribute('tabindex');document.body.append(c);el.classList.add('ghost');
+ const slot=$('#slot'),hit=()=>{const a=slot.getBoundingClientRect(),b=c.getBoundingClientRect(),x=b.left+b.width/2,y=b.top+b.height/2;return x>a.left-12&&x<a.right+12&&y>a.top-12&&y<a.bottom+12};
+ const mv=ev=>{c.style.left=ev.clientX-dx+'px';c.style.top=ev.clientY-dy+'px';slot.classList.toggle('over',hit())};
+ const up=()=>{document.body.classList.remove('dragging');removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);const ok=hit();slot.classList.remove('over');
+  if(ok&&try_(el._s,el)){c.remove();return}
+  if(ok){c.style.transition='left .3s,top .3s';}else c.style.transition='left .3s,top .3s';
+  c.style.left=r.left+'px';c.style.top=r.top+'px';setTimeout(()=>{c.remove();el.classList.remove('ghost')},300)};
+ addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up);mv(e)}
+$('#hint').onclick=()=>{if(G.done)return;const s=G.pool.find(s=>s.L.name===need());const el=[...$('#pool').children].find(x=>x._s===s);if(!el)return;G.hint++;
+ el.classList.add('hint');el.scrollIntoView({block:'nearest',behavior:'smooth'});setTimeout(()=>el.classList.remove('hint'),2800)};
+$('#snd').onclick=e=>{snd=!snd;e.target.textContent=snd?'Ton an':'Ton aus';e.target.setAttribute('aria-pressed',snd);if(snd)beep(660,.25)};
+$('#menu').onclick=()=>{clearInterval(timer);$('#end').hidden=true;$('#start').hidden=false};
+$('#lvl').onclick=$('#menu').onclick;$('#again').onclick=()=>start(lastN);
+document.querySelectorAll('#start [data-n]').forEach(b=>b.onclick=()=>start(+b.dataset.n));
+function finish(){G.done=true;clearInterval(timer);const pen=G.err+G.hint*2,stars=pen===0?3:pen<=4?2:1,t=$('#tm').textContent;
+ $('#board').append(Object.assign(document.createElement('span'),{className:'ring',textContent:'Kreis geschlossen ✓'}));
+ $('#stars').textContent='★'.repeat(stars)+'☆'.repeat(3-stars);
+ $('#res').textContent=`Zeit ${t}, ${G.err} Fehler, ${G.hint} Tipps. Das waren deine ${G.n} Geräte:`;
+ $('#ref').innerHTML=G.dv.map(d=>`<figure>${d.svg}<figcaption>${d.name}</figcaption></figure>`).join('');
+ confetti();[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.3),i*140));setTimeout(()=>$('#end').hidden=false,1400)}
+function confetti(){const cv=$('#cv'),x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;
+ const P=Array.from({length:140},()=>({x:Math.random()*cv.width,y:-20-Math.random()*200,v:2+Math.random()*4,w:6+Math.random()*6,a:Math.random()*6,c:['#e8402f','#f6a33a','#4fae6b','#4c9bd6','#f3d03e'][Math.random()*5|0]}));let f=0;
+ (function a(){x.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.y+=p.v;p.a+=.1;x.fillStyle=p.c;x.fillRect(p.x+Math.sin(p.a)*20,p.y,p.w,p.w*.6)});if(++f<260)requestAnimationFrame(a);else x.clearRect(0,0,cv.width,cv.height)})()}
+$('#all').innerHTML=D.map(d=>`<figure>${d.svg}<figcaption>${d.name}</figcaption></figure>`).join('');
+$('#look').onclick=()=>{$('#start').hidden=true;$('#view').hidden=false};
+$('#back').onclick=()=>{$('#view').hidden=true;$('#start').hidden=false};
+const noScroll=e=>{if(document.body.classList.contains('dragging'))e.preventDefault()};addEventListener('touchmove',noScroll,{passive:false});addEventListener('wheel',noScroll,{passive:false});
+G={n:12,chain:[],err:0};
+</script>
+</body>
+</html>

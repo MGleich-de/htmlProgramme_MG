@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Domino: Organische Stoffklassen</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg1:#e9f2f6;--bg2:#c9dde6;--fg:#14283a;--pn:#ffffffd9;--ac:#0e7c86;--bd:#14283a2a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#12293b;--bg2:#091620;--fg:#e8f0f5;--pn:#142a3ccc;--ac:#4fd0d8;--bd:#ffffff2a}}
+:root[data-theme="dark"]{--bg1:#12293b;--bg2:#091620;--fg:#e8f0f5;--pn:#142a3ccc;--ac:#4fd0d8;--bd:#ffffff2a}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--fg);background:radial-gradient(circle at 30% 0,var(--bg1),var(--bg2)) fixed;padding:6px 12px 8px}
+header{text-align:center;margin-bottom:6px}
+h1{margin:0;font:700 clamp(18px,4.6vw,26px) Georgia,serif;letter-spacing:.02em}
+.au{margin:4px 0 0;opacity:.75;font-size:14px}
+.sub{margin:2px 0 0;opacity:.7;font-size:13px}
+.panel{background:var(--pn);border:1px solid var(--bd);border-radius:18px;padding:16px;max-width:760px;margin:0 auto 12px;box-shadow:0 8px 24px #0002;backdrop-filter:blur(6px)}
+h2{font-size:16px;margin:0 0 10px}h3{font-size:14px;margin:0 0 8px;opacity:.8}
+#chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.chip{border:1.5px solid var(--bd);background:transparent;color:var(--fg);border-radius:999px;padding:8px 14px;font:600 14px inherit;cursor:pointer;transition:.15s}
+.chip.on{background:var(--ac);border-color:var(--ac);color:#fff;transform:translateY(-1px);box-shadow:0 4px 10px #0003}
+.sm{border:1px solid var(--bd);background:transparent;color:var(--fg);border-radius:10px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+input[type=range]{width:100%;accent-color:var(--ac);margin:4px 0}
+.hint{font-size:13px;opacity:.7;margin:4px 0 14px}
+.go{width:100%;border:0;border-radius:14px;padding:14px;font:700 17px inherit;color:#fff;background:linear-gradient(135deg,#0e7c86,#2a9d8f);cursor:pointer;box-shadow:0 6px 16px #0e7c8660}
+.go:disabled{opacity:.4;cursor:not-allowed}
+.bar{display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;font-size:14px;margin-bottom:10px}
+.board{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-content:flex-start;overflow-y:auto;padding:8px 6px;flex:none;border-radius:18px;background:linear-gradient(160deg,#1f6a55,#154c3e);box-shadow:inset 0 0 40px #0008,0 6px 18px #0003;border:6px solid #6b4423;margin-bottom:12px}
+.tray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:2px 0}
+.stone{width:var(--w);height:calc(var(--w)/2.5);display:flex;position:relative;border-radius:16px;background:linear-gradient(160deg,#fffef8,#f0e6cc 65%,#e2d3ae);box-shadow:0 1px 0 #fff inset,0 -4px 8px #8a6d2c26 inset,0 8px 14px #0006;container-type:inline-size;flex:none;touch-action:none;user-select:none;-webkit-user-select:none;color:#1b2a41}
+.stone::before{content:"";position:absolute;inset:5px;border:1.5px solid #b8a36d80;border-radius:12px;pointer-events:none}
+.tray .stone{cursor:grab}.tray .stone:hover{transform:translateY(-3px) rotate(-1deg)}
+.half{flex:0 0 50%;display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden;position:relative}
+.half svg{position:absolute;inset:3cqw 2cqw;width:calc(100% - 4cqw);height:calc(100% - 6cqw)}
+.half.n span{font:700 5.6cqw/1.15 Georgia,serif;text-align:center;overflow-wrap:anywhere;text-wrap:balance;padding:0 2cqw}
+.half.t span{font:800 5cqw/1 Georgia,serif;letter-spacing:.25em;color:#8a5a00;text-shadow:0 1px 0 #fff}
+.rivet{position:absolute;left:50%;top:13%;bottom:13%;border-left:2px solid #b8a36d;box-shadow:1px 0 0 #fff}
+.rivet::after{content:"";position:absolute;left:0;top:50%;width:13px;height:13px;margin:-7px 0 0 -7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffeaa8,#b8862b 70%);box-shadow:0 1px 3px #0007}
+.zone{width:var(--w);height:calc(var(--w)/2.5);font-size:clamp(9px,calc(var(--w)/24),14px);border:3px dashed #ffe9a6;border-radius:16px;display:grid;place-items:center;color:#ffe9a6;font-weight:600;animation:pl 1.6s infinite;flex:none;text-align:center}
+.zone.hot{background:#ffe9a633;border-style:solid;animation:none}
+.zone.bad{border-color:#ff6b6b;color:#ff6b6b;animation:sh .35s}
+@keyframes pl{50%{opacity:.5}}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes pop{from{transform:scale(.8) rotate(-4deg);opacity:0}}
+.pop{animation:pop .35s}
+.ghost{position:fixed;z-index:50;pointer-events:none;transform:rotate(-3deg) scale(1.04);box-shadow:0 18px 30px #0008}
+#win{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:99;padding:20px}
+#win .panel{text-align:center;max-width:420px}
+#game{--w:300px}#game:not([hidden]){flex:1;min-height:0;display:flex;flex-direction:column}
+#setup{flex:1;overflow:auto}
+#game .panel{flex:1;min-height:0;overflow:auto;padding:6px 10px;margin:0;max-width:none;width:100%}
+.board .stone{cursor:zoom-in}
+#zm{position:fixed;inset:0;background:#000c;z-index:120;display:grid;place-items:center;cursor:zoom-out;padding:12px}
+#zm small{position:absolute;bottom:12px;color:#fff;opacity:.7;font-size:13px}
+#zm .stone{cursor:zoom-out;box-shadow:0 20px 50px #000a}
+.zv{flex-direction:column;height:calc(var(--w)*1.7)}
+.zv .rivet{left:13%;right:13%;top:50%;bottom:auto;border-left:0;border-top:2px solid #b8a36d;box-shadow:0 1px 0 #fff}
+.zv .rivet::after{left:50%;top:0}
+.zv .half.n span{font-size:9cqw}.zv .half.t span{font-size:8cqw}
+.sm:disabled{opacity:.4}
+#modes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+#ov{position:fixed;inset:0;z-index:110;background:var(--bg2);overflow:auto;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 20px}
+#ov .ob{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;background:var(--bg2);padding:6px 0;z-index:1}
+#ov h3{margin:14px 0 6px;font-size:16px;opacity:1}
+.og{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.oc{background:linear-gradient(160deg,#fffef8,#efe5ca);border-radius:12px;padding:8px;color:#1b2a41;text-align:center;box-shadow:0 3px 8px #0003}
+.oc svg{width:100%;height:120px}
+.oc b{display:block;text-wrap:balance;font:700 15px Georgia,serif;margin-top:4px;overflow-wrap:anywhere}
+</style></head><body>
+<header><h1>Domino: Organische Stoffklassen</h1><p class="au">Autor: Matthias Gleich · Strukturformel ↔ systematischer Name</p></header>
+
+<main id="setup"><section class="panel">
+<h2>1 · Stoffklassen wählen</h2><div id="chips"></div>
+<div style="display:flex;gap:8px;margin-bottom:16px"><button class="sm" id="all">Alle</button><button class="sm" id="none">Keine</button></div>
+<h2>2 · Anzahl der Dominosteine: <b id="nv"></b></h2>
+<input id="rng" type="range" min="4" step="1"><p class="hint" id="info"></p>
+<h2>3 · Darstellung der Formeln</h2><div id="modes"><button class="chip" data-m="l">Strukturformel (linear)</button><button class="chip" data-m="k">Keilstrichformel</button></div><p class="hint">Linear: Kohlenstoffkette waagerecht, Reste senkrecht. Keilstrich: räumlich mit Bindungswinkeln.</p>
+<button class="sm" id="ovb" style="width:100%;margin-bottom:10px;padding:10px">Moleküle Übersicht</button><button class="go" id="go">Spiel starten</button></section></main>
+
+<main id="game" hidden>
+<div class="bar"><span>Züge <b id="mv">0</b></span><span>Fehler <b id="er">0</b></span><span>⏱ <b id="tm">0:00</b></span><button class="sm" id="menu">Menü</button></div>
+<div class="board" id="board"></div>
+<section class="panel"><h3 id="trl"></h3><div class="tray" id="tray"></div></section></main>
+
+<div id="ov" hidden></div>
+<div id="zm" hidden></div>
+<div id="win" hidden><div class="panel"><h2 style="font-size:24px">🎉 Geschafft!</h2><p id="ws"></p>
+<button class="go" id="again">Nochmal spielen</button><br><br><button class="sm" id="wm">Zu den Einstellungen</button></div></div>
+
+<script>
+const V={C:4,O:2,N:3,H:1},LP={O:2,N:1},COL={C:'#1b2a41',H:'#5f6f80',O:'#c62828',N:'#1d4ed8'};
+const D=44,S=66,V2={l:[-1,0],r:[1,0],u:[0,-1],d:[0,1]},OP={l:'r',r:'l',u:'d',d:'u'};
+function draw(sp,subs={}){
+ const at=[],bd=[];for(const c of sp){'-=#'.includes(c)?bd.push('-=#'.indexOf(c)+1):at.push(c)}
+ let o='',x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+ const bb=(x,y)=>{x0=Math.min(x0,x-14);x1=Math.max(x1,x+14);y0=Math.min(y0,y-20);y1=Math.max(y1,y+20)};
+ const B=(x,y,dx,dy,n,len)=>{const px=-dy,py=dx;(n==1?[0]:n==2?[-3.5,3.5]:[-6,0,6]).forEach(f=>{
+  o+=`<line x1="${x+dx*12+px*f}" y1="${y+dy*12+py*f}" x2="${x+dx*(len-12)+px*f}" y2="${y+dy*(len-12)+py*f}"/>`})};
+ const atom=(el,x,y,used,out,bs,sub)=>{
+  o+=`<text x="${x}" y="${y}" fill="${COL[el]}">${el}</text>`;bb(x,y);
+  const free=['l','r','u','d'].filter(s=>!used.includes(s));
+  const ord=[...new Set(sub?[out,'r','l','u','d']:el=='C'?[out,'l','r','u','d']:[out,'d','u','r','l'])];
+  const hs=ord.filter(s=>free.includes(s)).slice(0,V[el]-bs);
+  hs.forEach(s=>{const[dx,dy]=V2[s];B(x,y,dx,dy,1,D);o+=`<text x="${x+dx*D}" y="${y+dy*D}" fill="${COL.H}">H</text>`;bb(x+dx*D,y+dy*D)});
+  ['l','r','u','d'].filter(s=>free.includes(s)&&!hs.includes(s)).slice(0,LP[el]||0).forEach(s=>{
+   const[dx,dy]=V2[s],cx=x+dx*18,cy=y+dy*18;
+   o+=dx?`<line class="lp" stroke="${COL[el]}" x1="${cx}" y1="${cy-6}" x2="${cx}" y2="${cy+6}"/>`:`<line class="lp" stroke="${COL[el]}" x1="${cx-6}" y1="${cy}" x2="${cx+6}" y2="${cy}"/>`;
+   bb(cx,cy)})};
+ at.forEach((el,i)=>{
+  const x=i*S,n=at.length,used=[],sb=subs[i];let bs=0;
+  if(i>0){used.push('l');bs+=bd[i-1]}if(i<n-1){used.push('r');bs+=bd[i]}
+  const out=i==n-1&&n>1?'r':'l';
+  if(i<n-1)B(x,0,1,0,bd[i],S);
+  if(sb){const dir=sb[0],ord=('-=#'.indexOf(sb[1]))+1,[dx,dy]=V2[dir];used.push(dir);bs+=ord;
+   B(x,0,dx,dy,ord,D);atom(sb[2],x+dx*D,dy*D,[OP[dir]],dir,ord,true)}
+  atom(el,x,0,used,out,bs,false)});
+ return `<svg viewBox="${x0-6} ${y0-6} ${x1-x0+12} ${y1-y0+12}" preserveAspectRatio="xMidYMid meet" font-family="Georgia,serif" font-size="23" font-weight="700" text-anchor="middle" dominant-baseline="central" stroke="#1b2a41" stroke-width="2.6" stroke-linecap="round" fill="none">${o}</svg>`}
+
+function drawL(sp,subs){
+ const at=[],bd=[];for(const c of sp)'-=#'.includes(c)?bd.push('-=#'.indexOf(c)+1):at.push(c);
+ const n=at.length,S=80,D=50,Hh=40,V2={l:[-1,0],r:[1,0],u:[0,-1],d:[0,1]},OP={l:'r',r:'l',u:'d',d:'u'};let o='',x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+ const bb=(x,y)=>{x0=Math.min(x0,x-14);x1=Math.max(x1,x+14);y0=Math.min(y0,y-18);y1=Math.max(y1,y+18)};
+ const lab=(el,x,y)=>{o+=`<text stroke="none" dominant-baseline="alphabetic" x="${x}" y="${y+8}" fill="${COL[el]}">${el}</text>`;bb(x,y)};
+ const B=(x,y,dir,len,ord)=>{const[dx,dy]=V2[dir],px=-dy,py=dx,s=14+(ord>1?2:0),e=len-s;(ord==2?[-3.5,3.5]:ord==3?[-6,0,6]:[0]).forEach(g=>{o+=`<line x1="${x+dx*s+px*g}" y1="${y+dy*s+py*g}" x2="${x+dx*e+px*g}" y2="${y+dy*e+py*g}"/>`})};
+ const lp=(el,x,y,dir)=>{const[dx,dy]=V2[dir],cx=x+dx*21,cy=y+dy*21,qx=-dy*6,qy=dx*6;o+=`<line stroke="${COL[el]}" stroke-width="3" x1="${cx-qx}" y1="${cy-qy}" x2="${cx+qx}" y2="${cy+qy}"/>`;bb(cx,cy)};
+ const fillA=(el,x,y,free,ho,nH)=>{const hs=ho.filter(s=>free.includes(s)).slice(0,nH);
+  hs.forEach(s=>{const[dx,dy]=V2[s],len=dx?Hh:D;B(x,y,s,len,1);lab('H',x+dx*len,y+dy*len)});
+  const rest=free.filter(s=>!hs.includes(s));['l','r','u','d'].filter(s=>rest.includes(s)).slice(0,LP[el]||0).forEach(s=>lp(el,x,y,s))};
+ function sub(x,y,dir,q){const[dx,dy]=V2[dir];B(x,y,dir,D,q.ord);const nx=x+dx*D,ny=y+dy*D,el=q.el,used=[OP[dir]];lab(el,nx,ny);
+  if(q.rest){used.push(dir);sub(nx,ny,dir,{ord:1,el:q.rest[0],rest:q.rest.slice(1)})}
+  fillA(el,nx,ny,['l','r','u','d'].filter(s=>!used.includes(s)),el=='O'?[dir,'l','r']:['l','r',dir],V[el]-q.ord-(q.rest?1:0))}
+ const sbs=i=>[].concat(subs[i]||[]).map(s=>({ord:'-=#'.indexOf(s[1])+1,el:s[2],rest:s.slice(3)}));let tg='u';
+ at.forEach((el,i)=>{const x=i*S,q=sbs(i),used=[];let bs=(i?bd[i-1]:0)+(i<n-1?bd[i]:0);
+  if(i)used.push('l');if(i<n-1){used.push('r');B(x,0,'r',S,bd[i])}
+  const ch=q.length==1&&(q[0].el=='C'||q[0].el=='N'),dirs=q.length>1?['u','d']:q.length?[ch?tg:'u']:[];
+  if(ch)tg=OP[tg];
+  q.forEach((g,k)=>{used.push(dirs[k]);bs+=g.ord;sub(x,0,dirs[k],g)});
+  lab(el,x,0);
+  const out=i==0?'l':'r',ho=n==1?['l','r','u','d']:el=='C'?(i==0||i==n-1?[out,'u','d']:['u','d']):[out,'d','u'];
+  fillA(el,x,0,['l','r','u','d'].filter(s=>!used.includes(s)),ho,V[el]-bs)});
+ return `<svg viewBox="${x0-6} ${y0-6} ${x1-x0+12} ${y1-y0+12}" preserveAspectRatio="xMidYMid meet" font-family="Georgia,serif" font-size="23" font-weight="700" text-anchor="middle" stroke="#1b2a41" stroke-width="2.6" stroke-linecap="round" fill="none">${o}</svg>`}
+let MODE='l';
+let QQ=0;
+function drawG(sp,subs){let b=null;const n=sp.replace(/[-=#]/g,'').length;
+ for(const sc of[1,1.2,1.4])for(let m=0;m<(1<<n);m++){const s=drawO(sp,subs,m,sc);if(QQ>=30)return s;if(!b||QQ>b.q)b={s,q:QQ}}
+ return b.s}
+function drawO(sp,subs,mk0,sc){
+ const at=[],bd=[];for(const c of sp)'-=#'.includes(c)?bd.push('-=#'.indexOf(c)+1):at.push(c);
+ const n=at.length,R=Math.PI/180,L=64*sc,Dd=56*sc,pts=[],sg=[],lbl=[],bl=[];const sgd=(px,py,x1,y1,x2,y2)=>{const dx=x2-x1,dy=y2-y1,t=Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(px-x1-t*dx,py-y1-t*dy)};let o='',x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+ const bb=(x,y)=>{x0=Math.min(x0,x-14);x1=Math.max(x1,x+14);y0=Math.min(y0,y-18);y1=Math.max(y1,y+18)};
+ const P=(x,y,a,l)=>[x+l*Math.cos(a*R),y+l*Math.sin(a*R)];
+ const bis=(a,b)=>Math.atan2(-(Math.sin(a*R)+Math.sin(b*R)),-(Math.cos(a*R)+Math.cos(b*R)))/R;
+ const th=(el,h)=>h=='sp'?180:h=='sp2'?120:el=='C'?109.5:el=='O'?104.5:107;
+ const lab=(el,x,y)=>{o+=`<text stroke="none" dominant-baseline="alphabetic" x="${x}" y="${y+8}" fill="${COL[el]}">${el}</text>`;bb(x,y);lbl.push([x,y]);pts.push([x,y])};
+ const lp=(el,x,y,a)=>{const[cx,cy]=P(x,y,a,21),qx=-Math.sin(a*R)*6,qy=Math.cos(a*R)*6;o+=`<line stroke="${COL[el]}" stroke-width="3" x1="${cx-qx}" y1="${cy-qy}" x2="${cx+qx}" y2="${cy+qy}"/>`;bb(cx,cy)};
+ const mk=(el,b,sb)=>[...(sb||[]).map(q=>({t:'s',ord:q.ord,el:q.el,rest:q.rest})),...Array(V[el]-b).fill({t:'H'}),...Array(LP[el]||0).fill({t:'L'})];
+ const pd=a=>{const c=Math.abs(Math.cos(a*R)),q=Math.abs(Math.sin(a*R));return Math.min(c>.001?10/c:1e9,q>.001?10/q:1e9)+4};
+ function bond(x,y,a,len,ord,st){const ux=Math.cos(a*R),uy=Math.sin(a*R),px=-uy,py=ux,s=pd(a)+(ord>1?2:0),e=len-s;bl.push([x,y,x+ux*len,y+uy*len]);sg.push(bl[bl.length-1]);
+  if(st=='w')o+=`<polygon points="${x+ux*s},${y+uy*s} ${x+ux*e+px*5},${y+uy*e+py*5} ${x+ux*e-px*5},${y+uy*e-py*5}" fill="#1b2a41"/>`;
+  else if(st=='d')for(let k=1;k<=6;k++){const t=s+(e-s)*k/6,w=5*k/6;o+=`<line stroke-width="2" x1="${x+ux*t+px*w}" y1="${y+uy*t+py*w}" x2="${x+ux*t-px*w}" y2="${y+uy*t-py*w}"/>`}
+  else(ord==2?[-3.5,3.5]:ord==3?[-6,0,6]:[0]).forEach(g=>{o+=`<line x1="${x+ux*s+px*g}" y1="${y+uy*s+py*g}" x2="${x+ux*e+px*g}" y2="${y+uy*e+py*g}"/>`})}
+ function slT(el,al,h,c){
+  if(h=='sp')return[[{a:al+180}]];
+  if(h=='sp2')return[[{a:al+120},{a:al-120}],[{a:al-120},{a:al+120}]];
+  const t=th(el,h),k=[al+t,al-t],sm2=(u,w)=>Math.abs(Math.sin((u-w)*R/2))<1e-6;if(c==null&&Math.cos(k[0]*R)<Math.cos(k[1]*R))k.reverse();const c0=c==null?k[0]:c,c1=sm2(c0,k[0])?k[1]:k[0],W=[];
+  for(const cc of[c0,c1]){const b=bis(al,cc);W.push([{a:cc},{a:b-28,st:'w'},{a:b+28,st:'d'}],[{a:cc},{a:b+28,st:'w'},{a:b-28,st:'d'}])}return W}
+ function best(x,y,dm,svs){let r=null,bq=-1;
+ for(const len of[Dd,Dd*1.25,Dd*1.5])for(const sl of svs){
+  const ch=[];dm.forEach((d,k)=>{if(d.t!='L'&&sl[k])ch.push(P(x,y,sl[k].a,len))});let q=1e9;
+  ch.forEach(([cx,cy])=>{pts.forEach(([u,v])=>{const dd=Math.hypot(cx-u,cy-v);if(dd>1)q=Math.min(q,dd);if(Math.hypot(u-x,v-y)>1)q=Math.min(q,sgd(u,v,x,y,cx,cy)*2.1)});sg.forEach(([a,b2,c,d2])=>{q=Math.min(q,sgd(cx,cy,a,b2,c,d2)*2.1)})});
+  if(q>=30)return{sl,len};if(q>bq){bq=q;r={sl,len}}}
+ return r}
+ function fill(el,x,y,dm,svs){const bt=best(x,y,dm,svs),sl=bt.sl,len=bt.len;dm.forEach((d,k)=>{const s=sl[k];if(d.t!='L'&&s){const q=P(x,y,s.a,len);pts.push(q);sg.push([x,y,q[0],q[1]])}});dm.forEach((d,k)=>{const s=sl[k];if(!s)return;
+  if(d.t=='L')return lp(el,x,y,s.a);
+  const[tx,ty]=P(x,y,s.a,len);bond(x,y,s.a,len,d.t=='s'?d.ord:1,s.st);
+  if(d.t=='H')lab('H',tx,ty);else node(d.el,tx,ty,s.a+180,d.ord,d.rest)})}
+ function node(el,x,y,al,ord,rest){lab(el,x,y);fill(el,x,y,mk(el,ord+(rest?1:0),rest?[{ord:1,el:rest[0],rest:rest.slice(1)}]:[]),slT(el,al,ord==2?'sp2':'sp3',null))}
+ const sbs=i=>[].concat(subs[i]||[]).map(s=>({ord:'-=#'.indexOf(s[1])+1,el:s[2],rest:s.slice(3)})),so=i=>sbs(i).reduce((a,q)=>a+q.ord,0),sm=i=>Math.max(0,...sbs(i).map(q=>q.ord));
+ const bs=at.map((e,i)=>(i?bd[i-1]:0)+(i<n-1?bd[i]:0)+so(i));
+ const hy=at.map((e,i)=>{const m=Math.max(i?bd[i-1]:0,i<n-1?bd[i]:0,sm(i));return m==3?'sp':m==2?'sp2':'sp3'});
+ const ph=[];let s=1,f=n>2?-(180-th(at[1],hy[1]))/2:0;ph.push(f);
+ for(let k=1;k<=n-2;k++){const t=180-th(at[k],hy[k]);f+=s*t;ph.push(f);if(t>0)s=-s}
+ const pos=[[0,0]];for(let i=0;i<n-1;i++){pos.push(P(pos[i][0],pos[i][1],ph[i],L));bond(pos[i][0],pos[i][1],ph[i],L,bd[i])}pts.push(...pos);
+ at.forEach((el,i)=>{
+  const[x,y]=pos[i],h=hy[i],dm=mk(el,bs[i],sbs(i));let sl;lab(el,x,y);
+  if(n==1)sl=[h=='sp3'?[{a:145},{a:35},{a:-55,st:'w'},{a:-125,st:'d'}]:[{a:-90},{a:30},{a:150}]];
+  else if(i>0&&i<n-1){const om=bis(ph[i-1]+180,ph[i]),q=dm.filter(d=>d.t=='s').length>1?42:28;sl=h=='sp3'?[[{a:om-q,st:'w'},{a:om+q,st:'d'}],[{a:om+q,st:'w'},{a:om-q,st:'d'}]]:[[{a:om}]]}
+  else if(i==0){const al=ph[0],t=th(el,h),c=[al+t,al-t].find(c=>Math.sin(c*R)*Math.sin(al*R)>.01)??al-t;sl=slT(el,al,h,c)}
+  else{const al=ph[n-2]+180;sl=slT(el,al,h,ph[n-2]+s*(180-th(el,h)))}
+  if((mk0>>i)&1)sl=[...sl].reverse();fill(el,x,y,dm,sl)});
+ QQ=1e9;lbl.forEach(([x,y],i)=>{for(let j=i+1;j<lbl.length;j++)QQ=Math.min(QQ,Math.hypot(x-lbl[j][0],y-lbl[j][1]));bl.forEach(([a,b2,c,d2])=>{if(Math.hypot(x-a,y-b2)>1&&Math.hypot(x-c,y-d2)>1)QQ=Math.min(QQ,sgd(x,y,a,b2,c,d2)*2.1)})});
+ return `<svg viewBox="${x0-6} ${y0-6} ${x1-x0+12} ${y1-y0+12}" preserveAspectRatio="xMidYMid meet" font-family="Georgia,serif" font-size="23" font-weight="700" text-anchor="middle" dominant-baseline="central" stroke="#1b2a41" stroke-width="2.6" stroke-linecap="round" fill="none">${o}</svg>`}
+const CL={
+'Alkan':[['Methan','C'],['Ethan','C-C'],['Propan','C-C-C'],['Butan','C-C-C-C'],['Pentan','C-C-C-C-C']],
+'verzweigte Alkane':[['2-Methylbutan','C-C-C-C',{1:'u-C'}],['3-Ethylpentan','C-C-C-C-C',{2:'u-CC'}],['2,2-Dimethylpropan','C-C-C',{1:['u-C','u-C']}],['2,3-Dimethylbutan','C-C-C-C',{1:'u-C',2:'u-C'}],['2,2-Dimethylbutan','C-C-C-C',{1:['u-C','u-C']}]],
+'Alken':[['Ethen','C=C'],['Propen','C=C-C'],['But-1-en','C=C-C-C'],['But-2-en','C-C=C-C'],['Pent-1-en','C=C-C-C-C']],
+'Alkin':[['Ethin','C#C'],['Propin','C#C-C'],['But-1-in','C#C-C-C'],['But-2-in','C-C#C-C'],['Pent-1-in','C#C-C-C-C']],
+'Alkanol':[['Methanol','C-O'],['Ethanol','C-C-O'],['Propan-1-ol','C-C-C-O'],['Propan-2-ol','C-C-C',{1:'u-O'}],['Butan-1-ol','C-C-C-C-O']],
+'Alkanal':[['Methanal','C',{0:'u=O'}],['Ethanal','C-C',{1:'u=O'}],['Propanal','C-C-C',{2:'u=O'}],['Butanal','C-C-C-C',{3:'u=O'}]],
+'Alkanon':[['Propanon','C-C-C',{1:'u=O'}],['Butanon','C-C-C-C',{1:'u=O'}],['Pentan-2-on','C-C-C-C-C',{1:'u=O'}],['Pentan-3-on','C-C-C-C-C',{2:'u=O'}]],
+'Alkansäure':[['Methansäure','C-O',{0:'u=O'}],['Ethansäure','C-C-O',{1:'u=O'}],['Propansäure','C-C-C-O',{2:'u=O'}],['Butansäure','C-C-C-C-O',{3:'u=O'}]],
+'Hydroxycarbonsäuren':[['2-Hydroxypropansäure','C-C-C-O',{1:'u-O',2:'u=O'}],['2-Hydroxybutandisäure','O-C-C-C-C-O',{1:'u=O',2:'u-O',4:'u=O'}],['2-Hydroxyethansäure','O-C-C-O',{2:'u=O'}],['2,3-Dihydroxybutandisäure','O-C-C-C-C-O',{1:'u=O',2:'u-O',3:'u-O',4:'u=O'}],['3-Hydroxypropansäure','O-C-C-C-O',{3:'u=O'}]],
+'Ester':[['Ameisensäure&shy;methylester','C-O-C',{0:'u=O'}],['Essigsäure&shy;methylester','C-C-O-C',{1:'u=O'}],['Ameisensäure&shy;ethylester','C-O-C-C',{0:'u=O'}],['Essigsäure&shy;ethylester','C-C-O-C-C',{1:'u=O'}],['Propansäure&shy;methylester','C-C-C-O-C',{2:'u=O'}]],
+'Amin':[['Methanamin','C-N'],['Ethanamin','C-C-N'],['Propan-1-amin','C-C-C-N'],['Propan-2-amin','C-C-C',{1:'u-N'}],['Butan-1-amin','C-C-C-C-N']]};
+const hy=s=>s.replace(/&shy;/g,'').replace(/(?<=säure)(?=(?:methyl|ethyl)ester)/,'&shy;').replace(/(?<=[a-zäö])(?=säure)/g,'&shy;').replace(/(?<=yl|xy)(?=(?:meth|eth|prop|but|pent)an)/g,'&shy;');
+const ALL={};for(const k in CL)ALL[k]=CL[k].map(([name,sp,sb])=>({name:hy(name),get svg(){return MODE=='k'?(this._k??=drawG(sp,sb||{})):(this._l??=drawL(sp,sb||{}))}}));
+
+const $=s=>document.querySelector(s),shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+let sel=new Set(['Alkan','Alken','Alkanol','Alkanal']),N=8,placed,tray,mv,er,t0,timer;
+const pool=()=>[...sel].reduce((s,k)=>s+ALL[k].length,0);
+function setup(){
+ $('#chips').innerHTML=Object.keys(ALL).map(k=>`<button class="chip${sel.has(k)?' on':''}" data-k="${k}">${k} (${ALL[k].length})</button>`).join('');
+ const max=Math.min(20,pool()+1),r=$('#rng');N=Math.max(4,Math.min(N,max));r.max=Math.max(4,max);r.value=N;
+ $('#nv').textContent=N;$('#info').textContent=sel.size?`Verfügbar: ${pool()} Verbindungen → höchstens ${max} Steine (der Startstein zählt mit).`:'Bitte mindestens eine Stoffklasse wählen.';
+ $('#go').disabled=!sel.size;$('#ovb').disabled=!sel.size;document.querySelectorAll('#modes .chip').forEach(c=>c.classList.toggle('on',c.dataset.m==MODE))}
+$('#chips').onclick=e=>{const k=e.target.dataset.k;if(!k)return;sel.has(k)?sel.delete(k):sel.add(k);setup()};
+$('#all').onclick=()=>{sel=new Set(Object.keys(ALL));setup()};$('#none').onclick=()=>{sel.clear();setup()};
+$('#rng').oninput=e=>{N=+e.target.value;$('#nv').textContent=N};
+
+const half=h=>h.t?`<div class="half t"><span>${h.t=='S'?'START':'ENDE'}</span></div>`:h.n?`<div class="half n"><span>${h.n.name}</span></div>`:`<div class="half">${h.s.svg}</div>`;
+const stoneEl=st=>{const d=document.createElement('div');d.className='stone';d.innerHTML=half(st.l)+'<i class="rivet"></i>'+half(st.r);return d};
+
+function start(){
+ const it=shuf([...sel].flatMap(k=>ALL[k])).slice(0,N-1),st=[{l:{t:'S'},r:{n:it[0]}}];
+ for(let i=1;i<N-1;i++)st.push({l:{s:it[i-1]},r:{n:it[i]}});
+ st.push({l:{s:it[N-2]},r:{t:'E'}});
+ placed=[st[0]];tray=shuf(st.slice(1));mv=er=0;t0=Date.now();
+ $('#setup').hidden=true;$('#game').hidden=false;$('#win').hidden=true;fit();
+ clearInterval(timer);timer=setInterval(tick,1000);tick();render(false)}
+function fit(){const g=$('#game'),W=g.clientWidth-30,H=g.clientHeight-$('.bar').offsetHeight-96,gp=8;let w=360;
+ for(;w>120;w-=6){const c=Math.max(1,((W+gp)/(w+gp))|0);if((Math.ceil((N+1)/c)+Math.ceil((N-1)/c))*(w/2.5+gp)<=H)break}
+ const c=Math.max(1,((W+gp)/(w+gp))|0);g.style.setProperty('--w',w+'px');$('#board').style.height=Math.ceil((N+1)/c)*(w/2.5+gp)+28+'px'}
+addEventListener('resize',()=>{if(!$('#game').hidden)fit()});
+function zoom(st){const z=$('#zm'),e=stoneEl(st),p=innerHeight>innerWidth*1.1;
+ e.style.setProperty('--w',(p?Math.min(innerWidth-24,(innerHeight-90)/1.7):Math.min(innerWidth-40,(innerHeight-90)*2.5,1100))+'px');
+ if(p)e.classList.add('zv');z.innerHTML='';z.append(e);z.insertAdjacentHTML('beforeend','<small>Tippen zum Schließen</small>');z.hidden=false}
+$('#zm').onclick=()=>{$('#zm').hidden=true};addEventListener('keydown',e=>{if(e.key=='Escape')$('#zm').hidden=true});
+function overview(){const o=$('#ov'),ks=Object.keys(ALL).filter(k=>sel.has(k));
+ o.innerHTML='<div class="ob"><h2>Moleküle Übersicht</h2><button class="sm" id="oc">Schließen</button></div>'+ks.map(k=>`<h3>${k}</h3><div class="og">${ALL[k].map(m=>`<div class="oc">${m.svg}<b>${m.name}</b></div>`).join('')}</div>`).join('');
+ o.hidden=false;o.scrollTop=0;$('#oc').onclick=()=>{o.hidden=true}}
+$('#ovb').onclick=overview;
+$('#modes').onclick=e=>{const m=e.target.dataset.m;if(m){MODE=m;setup()}};
+function tick(){const s=(Date.now()-t0)/1000|0;$('#tm').textContent=(s/60|0)+':'+String(s%60).padStart(2,'0')}
+function render(pop){
+ const b=$('#board');b.innerHTML='';
+ placed.forEach((st,i)=>{const e=stoneEl(st);if(pop&&i==placed.length-1)e.classList.add('pop');e.onclick=()=>zoom(st);b.appendChild(e)});
+ if(tray.length){const z=document.createElement('div');z.className='zone';z.textContent='Hier ablegen';b.appendChild(z)}
+ const t=$('#tray');t.innerHTML='';
+ tray.forEach(st=>{const e=stoneEl(st);e.onpointerdown=ev=>down(ev,st,e);t.appendChild(e)});
+ $('#trl').textContent=tray.length?`Deine Steine (${tray.length}) · per Drag and Drop an die Kette ziehen`:'Alle Steine gelegt';
+ $('#mv').textContent=mv;$('#er').textContent=er}
+const near=(ev,z)=>{const r=z.getBoundingClientRect();return ev.clientX>r.left-50&&ev.clientX<r.right+50&&ev.clientY>r.top-50&&ev.clientY<r.bottom+50};
+function down(e,st,el){
+ e.preventDefault();const r=el.getBoundingClientRect(),dx=e.clientX-r.left,dy=e.clientY-r.top,z=$('.zone');
+ const g=el.cloneNode(true);g.classList.add('ghost');g.style.cssText=`width:${r.width}px;--w:${r.width}px;left:${r.left}px;top:${r.top}px`;document.body.appendChild(g);el.style.opacity=.25;
+ const mvf=ev=>{g.style.left=ev.clientX-dx+'px';g.style.top=ev.clientY-dy+'px';z&&z.classList.toggle('hot',near(ev,z))};
+ const up=ev=>{removeEventListener('pointermove',mvf);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);
+  g.remove();el.style.opacity='';z&&z.classList.remove('hot');if(ev.type=='pointerup'&&Math.hypot(ev.clientX-e.clientX,ev.clientY-e.clientY)<6)zoom(st);else if(z&&near(ev,z))drop(st,z)};
+ addEventListener('pointermove',mvf);addEventListener('pointerup',up);addEventListener('pointercancel',up)}
+function drop(st,z){
+ if(st.l.s===placed[placed.length-1].r.n){placed.push(st);tray=tray.filter(x=>x!==st);mv++;render(true);if(!tray.length)win()}
+ else{er++;$('#er').textContent=er;z.classList.remove('bad');void z.offsetWidth;z.classList.add('bad')}}
+function win(){clearInterval(timer);setTimeout(()=>{$('#ws').textContent=`${N} Steine · ${er} Fehler · Zeit ${$('#tm').textContent}`;$('#win').hidden=false},500)}
+function menu(){clearInterval(timer);$('#game').hidden=true;$('#win').hidden=true;$('#setup').hidden=false;setup()}
+$('#go').onclick=start;$('#again').onclick=start;$('#menu').onclick=menu;$('#wm').onclick=menu;setup();
+</script></body></html>

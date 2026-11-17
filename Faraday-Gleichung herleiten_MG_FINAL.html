@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Faraday-Gleichung herleiten</title>
+<style>
+/* Farben als Variablen (hell/dunkel) */
+:root{--bg:#f5f7fa;--c:#fff;--fg:#1c2530;--mu:#5a6a7a;--ln:#d3dce5;--cu:#b87333;--lo:#8ec5f0;--ac:#1d6cb0;--ok:#1e8a4c;--er:#c0392b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12181f;--c:#1b232c;--fg:#e6edf3;--mu:#9aabbb;--ln:#34414e;--lo:#2f6d9c;--ac:#6db3f2;--ok:#4cc380;--er:#ff7b6b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12181f;--c:#1b232c;--fg:#e6edf3;--mu:#9aabbb;--ln:#34414e;--lo:#2f6d9c;--ac:#6db3f2;--ok:#4cc380;--er:#ff7b6b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 Georgia,"Times New Roman",serif}
+main{max-width:860px;margin:0 auto;padding:12px}
+h1{font-size:1.35rem;margin:6px 0}h2{font-size:1.05rem;margin:0 0 8px}
+.cd{background:var(--c);border:1px solid var(--ln);border-radius:10px;padding:12px;margin:12px 0}
+button,select,input{font:inherit;color:var(--fg);background:var(--c);border:1px solid var(--ln);border-radius:8px;padding:10px 12px;min-height:44px}
+button{cursor:pointer}button.on,button.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+input[type=range]{flex:1;min-width:140px;padding:0}
+label.sw{display:flex;gap:8px;align-items:center;min-height:36px}
+input[type=checkbox]{width:22px;height:22px;min-height:0}
+canvas{width:100%;display:block}svg{width:100%;height:auto;display:block}
+table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{border-bottom:1px solid var(--ln);padding:4px;text-align:right}
+.mu{color:var(--mu);font-size:.9rem}.ok{color:var(--ok)}.er{color:var(--er)}
+.eq{font-family:"Courier New",monospace;font-size:.9rem}
+.top{display:grid;grid-template-columns:1fr;gap:12px;margin:12px 0}.top .cd{margin:0}.top button{padding:5px 9px}
+@media(min-width:480px){.top{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}}
+.vs{display:flex;flex-direction:column;align-items:center;gap:4px}
+input.v{writing-mode:vertical-lr;direction:rtl;width:44px;height:150px;min-width:0;flex:none;padding:0}   /* senkrechter Schieberegler: oben 1,0 A, unten 0,1 A */
+.vc{display:flex;flex-direction:column;gap:8px;justify-content:center;flex:1}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tg{width:44px;height:44px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;flex:none;color:var(--fg)}.tg svg{width:22px;height:22px}
+:root[data-theme="dark"] .tg{color:#f4d03f}
+/* Layout: Messwerte stehen im Kopfbereich; auf großen Bildschirmen Aufbau | Bedienung | Messwerte nebeneinander */
+.tw{overflow:auto}.tw thead th{position:sticky;top:0;background:var(--c)}.tw td,.tw th{padding:2px 4px}.top .tw button{min-height:24px;padding:2px 8px}   /* nur die letzten drei Zeilen sichtbar, Rest per Scrollen */.top .mw{grid-column:1/-1}
+@media(min-width:1100px){main{max-width:1480px}.top{grid-template-columns:minmax(0,1.15fr) minmax(0,2.15fr);align-items:stretch}.top>.cd:first-child{grid-row:1/3;display:flex;flex-direction:column}.top>.cd:first-child svg{margin:auto 0}.top .mw{grid-column:auto}}   /* Aufbau links, rechts Bedienung über Messwerten */
+.top button{min-height:32px}.bd{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}.bd .row,#bed h2{margin:0}.bd .sw{min-height:28px}#bed.cd{padding:6px 10px}.hl{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;margin-top:6px}.hl h2{margin:0}.hl .mu{font-size:.8rem}.bd input[type=range]{flex:none;width:150px;min-width:0}#bed h2{margin-bottom:6px}
+[hidden]{display:none!important}
+</style></head><body><main>
+<div class="hd"><h1>Faraday-Gleichung selbst herleiten</h1><button id="th" class="tg" aria-label="Hell/Dunkel umschalten"></button></div>
+<p class="mu">Autor: Matthias Gleich</p>
+<p><b>Arbeitsauftrag:</b> Starte die Elektrolyse und wiege die Elektroden mehrmals in verschiedenen Zeitabständen. Führe den Versuch bei verschiedenen Stromstärken und mit verschiedenen Metall/Metallsalzlösung-Kombinationen durch.</p>
+<p class="mu" id="intro"></p>
+
+<div class="top">
+<section class="cd"><h2>Versuchsaufbau</h2>
+<div class="row"><button data-m="cu" class="on">Kupfer in CuSO₄-Lösung</button><button data-m="ag">Silber in AgNO₃-Lösung</button><button data-m="au">Gold in AuCl₃-Lösung</button></div>
+<svg viewBox="0 0 360 238" role="img" aria-label="Versuchsaufbau">
+<rect x="8" y="8" width="84" height="48" rx="6" fill="none" stroke="var(--mu)"/>
+<text x="50" y="30" text-anchor="middle" font-size="10" fill="var(--fg)">Spannungsquelle</text>
+<text x="30" y="50" text-anchor="middle" font-size="12" fill="var(--er)">+</text><text x="70" y="50" text-anchor="middle" font-size="12" fill="var(--ac)">−</text>
+<path d="M30 56V80H171V92" fill="none" stroke="var(--er)" stroke-width="2"/>
+<path d="M70 56V66H261V92" fill="none" stroke="var(--ac)" stroke-width="2"/>
+<circle cx="100" cy="80" r="17" fill="var(--c)" stroke="var(--mu)"/><text x="100" y="78" text-anchor="middle" font-size="10" fill="var(--fg)" id="am">0,8</text><text x="100" y="89" text-anchor="middle" font-size="8" fill="var(--mu)">A</text>
+<circle cx="316" cy="40" r="28" fill="var(--c)" stroke="var(--mu)"/><text x="316" y="38" text-anchor="middle" font-size="13" fill="var(--fg)" id="sw">0</text><text x="316" y="52" text-anchor="middle" font-size="8" fill="var(--mu)">Δt in s</text>
+<rect id="sl" x="130" y="105" width="160" height="110" fill="var(--lo)" opacity=".75"/>
+<path d="M130 95V215H290V95" fill="none" stroke="var(--mu)" stroke-width="2"/>
+<rect id="ea" x="165" y="92" width="12" height="98" fill="var(--cu)"/><rect id="ek" x="255" y="92" width="12" height="98" fill="var(--cu)"/>
+<text x="171" y="231" text-anchor="middle" font-size="10" fill="var(--fg)">Anode (+)</text>
+<text x="261" y="231" text-anchor="middle" font-size="10" fill="var(--fg)">Kathode (−)</text></svg>
+<div class="row"><button id="wg">Elektroden wiegen</button><span class="mu" id="wv"></span></div>
+</section>
+
+<section class="cd" id="bed" aria-label="Bedienung">
+<div class="bd">
+<div class="row"><span>I = <b id="iv">0,8</b> A</span><input type="range" id="I" min="0.1" max="1" step="0.1" value="0.8" aria-label="Stromstärke"><button id="i4" title="Stromstärke der Durchführung">0,4 A</button><button id="i8" title="Stromstärke der Messwerte">0,8 A</button></div>
+<div class="row"><button class="pri" id="go">Start</button><button id="st">Stopp</button><button id="rs">Zurücksetzen</button></div>
+<div class="row"><span class="mu">Zeitraffer:</span><button data-sp="1" class="on">1×</button><button data-sp="10">10×</button><button data-sp="50">50×</button></div>
+<label class="sw"><input type="checkbox" id="re"> Realistische Messfehler</label>
+<label class="sw"><input type="checkbox" id="pa"> Teilchenebene anzeigen</label>
+</div></section>
+
+<section class="cd mw"><h2>Messwerte</h2>
+<div class="tw"><table><thead><tr><th>Stoff, I/A</th><th>Δt/s</th><th>Q/C</th><th>Δm(A)/g</th><th>Δm(K)/g</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="hl"><h2>Diagramm A: Δm(Kathode) gegen Δt</h2><span class="mu">Farbe = Lauf · Kreis Cu · Quadrat Ag · Dreieck Au · „Zurücksetzen“ löscht alle Kurven</span></div><canvas id="cA" height="250"></canvas></section>
+</div>
+<section class="cd" id="pc" hidden><h2>Teilchenebene (stark vereinfacht)</h2>
+<canvas id="pv" height="256"></canvas>
+<p class="mu" id="pn2"></p>
+<p class="eq" id="peq"></p>
+<p class="mu" id="plg"></p></section>
+
+
+<section class="cd"><h2>Herleitung</h2>
+<div class="row" id="nv"></div><div id="pn"></div></section>
+</main>
+<script>
+/* ===== Konstanten und Zustand ===== */
+const $=s=>document.querySelector(s),F=96485,M0A=1.151,M0K=1.292;let M=63.5,Z=2;   /* M, z je nach Elektrodensystem (setMat) */
+const f=(x,d=3)=>x.toFixed(d).replace('.',','),pr=v=>String(+v.toPrecision(2)).replace('.',',');
+const S={I:.8,t:0,run:false,sp:1,rows:[],runs:[],fl:1,ne:0},PAL=["#d94a3d","#1d6cb0","#1e8a4c","#8e44ad","#e08a00","#0e9aa7","#c2185b","#6d4c41"];
+const th=(I,t)=>I*t*M/(Z*F);                 /* Δm = I·Δt·M/(z·F) */
+const nz=()=>(Math.random()+Math.random()-1)*.0012;   /* Wägerauschen ca. ±0,001 g */
+const dmT=()=>th(S.t>0?S.runs[S.runs.length-1].I:S.I,S.t)*S.fl;
+const real=()=>$('#re').checked;
+
+/* ===== Schritte (Panels) ===== */
+const ERR=[['Restwasser an den Elektroden','erhöht die Masse beider Bleche (Kathode scheint schwerer).'],['Abgefallene Kupferpartikel','die Anode verliert zusätzlich Masse, die nicht abgeschieden wird.'],['Ablesefehler am Amperemeter','I stimmt nicht genau, die berechnete Ladung weicht ab.'],['Schwankende Stromstärke','Q ist nicht exakt I·Δt.'],['Zeitmessung','Start und Stopp von Hand sind ungenau.'],['Wägefehler','Waage hat nur ±0,001 g Genauigkeit; bei kleinen Δm fällt das stark ins Gewicht.']];
+const SEL=(id,o)=>`<select id="${id}">${['— wählen —',...o].map((x,i)=>`<option value="${i}">${x}</option>`).join('')}</select>`;
+const P=[
+`<p>Starte den Versuch und wiege die Elektroden nach einiger Zeit („Elektroden wiegen“). Jedes Wiegen trägt eine Zeile in die Tabelle ein.</p><p>Wie verhalten sich Δm(Anode) und Δm(Kathode)?</p>${SEL('q1',['Entgegengesetztes Vorzeichen, ähnlicher Betrag','Beide nehmen zu','Beide nehmen ab'])}<p id="f1"></p>`,
+`<p>Diagramm A (Δm gegen Δt): Wiege während eines Laufs mehrmals in Abständen. Diagramm B: Starte weitere Läufe mit anderen Stromstärken und wiege jeweils mehrmals. Das Diagramm liest aus allen Kurven Δm zu drei festen Zeiten ab (zwischen den Wägungen wird linear interpoliert). Wechsle zwischen Kupfer und Silber: alle Kurven bleiben im selben Diagramm.</p><canvas id="cA2" height="230"></canvas><canvas id="cB" height="230"></canvas>
+<p>Je länger Δt, desto … Δm: ${SEL('q2',['größer','kleiner','gleich'])}</p><p>Je größer I, desto … Δm: ${SEL('q3',['größer','kleiner','gleich'])}</p><p id="f2"></p>`,
+`<p>Die Ladung Q = I·Δt fasst beide Größen zusammen. Trage Läufe mit verschiedenen Metallen ein.</p><canvas id="cC" height="230"></canvas><p>Für jedes Metall liegen die Punkte auf einer Ursprungsgeraden (gestrichelt): Δm ~ Q (1. Faradaysches Gesetz). Die Steigungen k = Δm/Q:<br><b id="kk">–</b></p><p>Warum sind die Steigungen der Metalle verschieden? Überlege, bevor du zu Schritt 4 gehst.</p>`,
+`<p id="t4"></p><canvas id="cD" height="230"></canvas><p>Steigung n/Q: <b id="kn">–</b><br>z·F = 1/Steigung: <b id="zf">–</b></p><p>Pro Ladung setzen die Metalle nicht gleich viel Stoffmenge um. Vergleiche die Steigungen: Welches Verhältnis ergibt sich? Was bedeutet das für die Zahl der Elektronen pro Atom? (weiter in Schritt 5)</p>`,
+`<p>Ladungszahl z: F ist die Ladung von 1 mol Elektronen (F = N_A·e = 96485 C/mol). Teile z·F aus Diagramm D durch F. Wie viele Elektronen überträgt ein Atom?</p><div class="row">z(Cu) = <input id="zc" size="3" inputmode="numeric"> z(Ag) = <input id="za" size="3" inputmode="numeric"> z(Au) = <input id="zg" size="3" inputmode="numeric"> <button id="zk">Prüfen</button></div><p id="fz"></p><p id="t5"></p><div id="dv"></div><div class="row"><button id="nx">Nächster Schritt</button></div>
+<p id="t5b"></p><div class="row">n = <input id="an" size="5" inputmode="decimal"> ·10⁻³ mol &nbsp; m = <input id="am2" size="5" inputmode="decimal"> g <button id="ck">Prüfen</button> <button id="ls">Lösung anzeigen</button></div><p id="f5"></p><div id="l5" class="eq" hidden></div>`,
+`<p>Vergleiche deine letzte Messung mit dem theoretischen Wert.</p><p id="dev" class="eq"></p><p>Mögliche Fehlerquellen (anhaken; Schalter „Realistische Messfehler“ nutzen):</p>${ERR.map((e,i)=>`<label class="sw"><input type="checkbox" class="eb" data-i="${i}"> ${e[0]}</label>`).join('')}<p class="mu" id="eh"></p>`];
+const NM=['1 Beobachten','2 Abhängigkeiten','3 Ladung Q','4 Stoffmenge','5 Deutung','6 Auswertung'];
+$('#nv').innerHTML=NM.map((n,i)=>`<button data-s="${i}">${n}</button>`).join('');
+$('#pn').innerHTML=P.map((h,i)=>`<div id="p${i}" ${i?'hidden':''}>${h}</div>`).join('');
+let cur=0;
+$('#nv').onclick=e=>{const s=e.target.dataset.s;if(s==null)return;cur=+s;P.forEach((_,i)=>$('#p'+i).hidden=i!=cur);[...$('#nv').children].forEach((b,i)=>b.classList.toggle('on',i==cur));upd()};
+$('#nv').children[0].classList.add('on');
+const fb=(id,ok,m)=>{const e=$(id);e.className=ok?'ok':'er';e.textContent=m};
+$('#p0').onchange=()=>fb('#f1',$('#q1').value==1,$('#q1').value==1?'Richtig: Δm ist betragsmäßig (fast) gleich, Abweichungen sind Messfehler.':'Schau auf die Tabelle: Vorzeichen und Beträge vergleichen.');
+$('#p1').onchange=()=>{const ok=$('#q2').value==1&&$('#q3').value==1;if($('#q2').value>0&&$('#q3').value>0)fb('#f2',ok,ok?'Richtig: Δm ist proportional zu Δt und zu I.':'Prüfe die Diagramme A und B noch einmal.')};
+const DV=()=>['Q = I·Δt (geflossene Ladung)','n(e⁻) = Q/F mit F = N_A·e = 96485 C/mol',`n(${mat.at}) = n(e⁻)/z mit z = ${Z} (${mat.ion} + ${Z==1?'':Z+' '}e⁻ → ${mat.at})`,'n = I·Δt / (z·F)'];let dn=0;
+$('#nx').onclick=()=>{if(dn<4)dn++;$('#dv').innerHTML=DV().slice(0,dn).map(x=>`<div class="eq">${x}</div>`).join('')};
+const num=s=>parseFloat(String($(s).value).replace(',','.'));
+$('#ck').onclick=()=>{const n=num('#an'),m=num('#am2'),nr=.8*616/(Z*F)*1e3,mr=nr*1e-3*M,a=Math.abs(n-nr)<.02*nr,b=Math.abs(m-mr)<.015*mr;fb('#f5',a&&b,a&&b?`Richtig: n ≈ ${f(nr,2)}·10⁻³ mol, m ≈ ${f(mr,3)} g.`:(a?'n stimmt, rechne m = n·M.':'Rechne n = I·Δt/(z·F) in mol.'))};
+/* Lösung mit Lösungsweg für den gewählten Stoff ein-/ausblenden */
+$('#ls').onclick=()=>{const d=$('#l5');if(!d.hidden){d.hidden=true;$('#ls').textContent='Lösung anzeigen';return}
+const at=mat.at,Q=.8*616,ne=Q/F,n=ne/Z,m=n*M;
+d.innerHTML=`<b>Lösungsweg (${at}):</b><br>1) Ladung: Q = I·Δt = 0,8 A · 616 s = ${f(Q,1)} C<br>2) Elektronen: n(e⁻) = Q/F = ${f(Q,1)} C / 96485 C/mol = ${sci(ne)} mol<br>3) Stoffmenge: n(${at}) = n(e⁻)/z = ${sci(ne)} mol / ${Z} = <b>${sci(n)} mol</b><br>4) Masse: m = n·M = ${sci(n)} mol · ${f(M,1)} g/mol = <b>${f(m,3)} g</b><br>Kurz: n = I·Δt/(z·F) und m = n·M`;d.hidden=false;$('#ls').textContent='Lösung ausblenden'};
+$('#zk').onclick=()=>{const ok=num('#zc')==2&&num('#za')==1&&(isNaN(num('#zg'))||num('#zg')==3);fb('#fz',ok,ok?'Richtig: Cu²⁺ + 2 e⁻ → Cu (z = 2), Ag⁺ + e⁻ → Ag (z = 1), Au³⁺ + 3 e⁻ → Au (z = 3). Allgemein: n(Stoff) = n(e⁻)/z.':'Teile die z·F-Werte aus Diagramm D durch F = 96485 C/mol.')};
+$('#p5').onchange=e=>{if(e.target.dataset.i!=null)$('#eh').textContent=ERR[e.target.dataset.i][0]+': '+ERR[e.target.dataset.i][1]};
+
+/* ===== Steuerung ===== */
+const setI=v=>{if(S.run)return;S.I=v;$('#I').value=v;upd()};
+$('#I').oninput=e=>setI(+e.target.value);$('#i4').onclick=()=>setI(.4);$('#i8').onclick=()=>setI(.8);
+$('#go').onclick=()=>{if(S.run)return;S.t=0;S.ne=0;S.runs.push({I:S.I,el:mat.k});resetAnim();S.fl=real()?1+(Math.random()-.5)*.03:1;S.run=true;$('#I').disabled=true;last=performance.now()};
+function stop(){if(!S.run)return;S.run=false;$('#I').disabled=false;upd()}
+$('#st').onclick=stop;
+$('#rs').onclick=()=>{S.run=false;$('#I').disabled=false;S.t=0;S.ne=0;S.rows=[];S.runs=[];resetAnim();$('#wv').textContent='';upd()};
+document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{S.sp=+b.dataset.sp;document.querySelectorAll('[data-sp]').forEach(x=>x.classList.toggle('on',x==b))});
+/* Wiegen jederzeit möglich (auch während des Laufs); jede Wägung wird als Zeile übernommen */
+$('#wg').onclick=()=>{if(S.t<1||!S.runs.length)return;const r=real(),I=S.runs[S.runs.length-1].I,d=dmT(),dt=Math.round(S.t),a=M0A-d*(r?1.012:1)+nz(),k=M0K+d*(r?.988:1)+nz();
+$('#wv').innerHTML=`Δt = ${dt} s<br>Anode: ${f(M0A)} g → ${f(a)} g<br>Kathode: ${f(M0K)} g → ${f(k)} g`;S.rows.push({I,dt,Q:I*dt,a:a-M0A,k:k-M0K,run:S.runs.length-1});upd()};
+$('#tb').onclick=e=>{const i=e.target.dataset.d;if(i!=null){S.rows.splice(i,1);upd()}};
+$('#pa').onchange=upd;
+/* Hell/Dunkel-Umschalter: Standard hell; Mond = in den dunklen Modus wechseln, Sonne = zurück zu hell */
+const MOON=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2z"/></svg>`,SUN=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>`;
+$('#th').innerHTML=MOON;
+$('#th').onclick=()=>{const d=document.documentElement.getAttribute('data-theme')!='dark';document.documentElement.setAttribute('data-theme',d?'dark':'light');$('#th').innerHTML=d?SUN:MOON;upd();pdraw()};
+
+/* ===== Diagramme (Canvas, ohne Bibliothek) ===== */
+const sci=v=>{const[a,b]=v.toExponential(2).split('e');return a.replace('.',',')+'·10'+String(+b).replace('-','⁻').replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d])};
+/* "schöne" Skalenschritte (1, 2, 5 · 10^n); Achsenenden passen sich den Daten an */
+const nice=m=>{const r=m/5,p=Math.pow(10,Math.floor(Math.log10(r))),q=r/p;return(q<=1?1:q<=2?2:q<=5?5:10)*p};
+/* ser: [{c:Farbe, g:Stoff, sq:Quadrat?, l:Legende, pts:[[x,y],…]}]; line: Punkte verbinden; fit: Ausgleichsgerade je Stoff durch den Ursprung */
+function chart(id,ser,xl,yl,line,fit){const c=$(id);if(!c||!c.clientWidth)return null;const w=c.width=c.clientWidth,h=c.height=+c.getAttribute('height')||230,g=c.getContext('2d'),cs=getComputedStyle(document.documentElement),fg=cs.getPropertyValue('--fg'),mu=cs.getPropertyValue('--mu'),gl=cs.getPropertyValue('--ln');
+const all=ser.flatMap(q=>q.pts),T=10,R=14,B=44;let dx=Math.max(1e-9,...all.map(p=>p[0])),dy=Math.max(1e-9,...all.map(p=>p[1]));if(!all.length){dx=1;dy=1}
+const sx=nice(dx*1.05),sy=nice(dy*1.1),mx=Math.ceil(dx*1.05/sx-1e-9)*sx,my=Math.ceil(dy*1.1/sy-1e-9)*sy,nx=Math.round(mx/sx),ny=Math.round(my/sy);
+const dc=v=>Math.min(6,Math.max(0,-Math.floor(Math.log10(v)+1e-9))),fx=v=>v.toFixed(dc(sx)).replace('.',','),fy=v=>v.toFixed(dc(sy)).replace('.',',');
+g.clearRect(0,0,w,h);g.font='11px sans-serif';let L=28;for(let i=0;i<=ny;i++)L=Math.max(L,g.measureText(fy(i*sy)).width+30);
+const X=v=>L+(w-L-R)*v/mx,Y=v=>h-B-(h-B-T)*v/my;g.lineWidth=1;g.strokeStyle=gl;g.fillStyle=mu;g.textBaseline='alphabetic';
+g.textAlign='right';for(let i=0;i<=ny;i++){g.beginPath();g.moveTo(L,Y(i*sy));g.lineTo(w-R,Y(i*sy));g.stroke();g.fillText(fy(i*sy),L-5,Y(i*sy)+4)}
+g.textAlign='center';for(let i=0;i<=nx;i++){g.beginPath();g.moveTo(X(i*sx),T);g.lineTo(X(i*sx),h-B);g.stroke();g.fillText(fx(i*sx),X(i*sx),h-B+14)}
+g.strokeStyle=fg;g.beginPath();g.moveTo(L,T);g.lineTo(L,h-B);g.lineTo(w-R,h-B);g.stroke();
+g.fillStyle=fg;g.font='12px sans-serif';g.fillText(xl,(L+w-R)/2,h-8);g.save();g.translate(12,(T+h-B)/2);g.rotate(-Math.PI/2);g.fillText(yl,0,0);g.restore();
+const ks={};if(fit){const gs={};ser.forEach(q=>{(gs[q.g]=gs[q.g]||[]).push(...q.pts)});
+Object.keys(gs).forEach(e=>{const a=gs[e];if(a.length>1){const k=a.reduce((s,p)=>s+p[0]*p[1],0)/a.reduce((s,p)=>s+p[0]*p[0],0),xe=Math.min(mx,my/k);ks[e]=k;g.strokeStyle=e=='ag'?'#7b8794':e=='au'?'#b8941f':'#b87333';g.lineWidth=1.5;g.setLineDash([6,4]);g.beginPath();g.moveTo(X(0),Y(0));g.lineTo(X(xe),Y(k*xe));g.stroke();g.setLineDash([])}})}
+g.font='11px sans-serif';ser.forEach((q,i)=>{g.fillStyle=q.c;g.strokeStyle=q.c;g.lineWidth=2;
+if(line){g.beginPath();g.moveTo(X(0),Y(0));q.pts.slice().sort((a,b)=>a[0]-b[0]).forEach(p=>g.lineTo(X(p[0]),Y(p[1])));g.stroke()}
+q.pts.forEach(p=>{const x=X(p[0]),y=Y(p[1]);if(q.g=='ag')g.fillRect(x-4,y-4,8,8);else if(q.g=='au'){g.beginPath();g.moveTo(x,y-5.5);g.lineTo(x+5,y+4);g.lineTo(x-5,y+4);g.fill()}else{g.beginPath();g.arc(x,y,4.5,0,7);g.fill()}});
+if(q.l){g.textAlign='left';g.fillText((q.g=='ag'?'■ ':q.g=='au'?'▲ ':'● ')+q.l,L+8,T+12+i*14)}});return fit?ks:null}
+function charts(){const R=S.rows,l=R[R.length-1],runs=S.runs.map((r,i)=>({c:PAL[i%8],I:r.I,el:r.el,rows:R.filter(x=>x.run==i)})).filter(q=>q.rows.length);
+const mk=(fn,leg)=>runs.map(q=>({c:q.c,g:q.el,sq:q.el=='ag',l:leg?MAT[q.el].at+' · I = '+f(q.I,1)+' A':'',pts:q.rows.map(r=>fn(r,q.el))}));
+chart('#cA',mk(r=>[r.dt,r.k],1),'Δt in s','Δm(Kathode) in g',1);chart('#cA2',mk(r=>[r.dt,r.k],1),'Δt in s','Δm(Kathode) in g',1);
+/* B: pro Lauf die Wägung, die der letzten Wägezeit am nächsten liegt (±15 %) */
+/* B: aus jeder Kurve wird Δm zu festen Zeiten abgelesen (linear interpoliert, keine Extrapolation); je Stoff und Zeit eine Kurve Δm(I) */
+const at=(q,t)=>{const a=[[0,0],...q.rows.map(r=>[r.dt,r.k])].sort((x,y)=>x[0]-y[0]);if(t>a[a.length-1][0]*1.001)return null;for(let i=1;i<a.length;i++)if(t<=a[i][0]){const u=a[i-1],v=a[i];return v[0]==u[0]?v[1]:u[1]+(v[1]-u[1])*(t-u[0])/(v[0]-u[0])}return null};
+const tm=Math.max(0,...R.map(r=>r.dt)),ts=[...new Set([1/3,2/3,1].map(x=>Math.max(1,Math.floor(tm*x/10)*10)))],TC=['#1d6cb0','#1e8a4c','#8e44ad'],sb=[];
+[...new Set(runs.map(q=>q.el))].forEach(e=>ts.forEach((t,i)=>{const pts=runs.filter(q=>q.el==e).map(q=>[q.I,at(q,t)]).filter(p=>p[1]!=null);if(pts.length)sb.push({c:TC[i%3],g:e,sq:e=='ag',l:MAT[e].at+' · Δt = '+t+' s',pts})}));
+chart('#cB',sb,'I in A','Δm(Kathode) in g',1);
+const kc=chart('#cC',mk(r=>[r.Q,r.k],1),'Q in C','Δm(Kathode) in g',1,1),kd=chart('#cD',mk((r,e)=>[r.Q,r.k/MAT[e].M],1),'Q in C','n(Stoff) in mol',1,1);
+const ln=(o,fn)=>Object.keys(o||{}).map(e=>MAT[e].at+': '+fn(o[e])).join(' · ')||'–';
+$('#kk').textContent=ln(kc,k=>sci(k)+' g/C');$('#kn').textContent=ln(kd,k=>sci(k)+' mol/C');$('#zf').textContent=ln(kd,k=>Math.round(1/k).toLocaleString('de-DE')+' C/mol')}
+
+/* ===== Anzeige ===== */
+function upd(light){const d=dmT()*31.75*Z/M,w=v=>Math.max(4,Math.min(20,v));
+$('#ea').setAttribute('width',w(12-8*d/.4));$('#ea').setAttribute('x',171-w(12-8*d/.4)/2);
+$('#ek').setAttribute('width',w(12+8*d/.4));$('#ek').setAttribute('x',261-w(12+8*d/.4)/2);
+$('#am').textContent=f(S.I,1);$('#iv').textContent=f(S.I,1);$('#sw').textContent=Math.round(S.t);
+if(light)return;   /* während des Laufs nur Aufbau/Stoppuhr aktualisieren */
+$('#tb').innerHTML=S.rows.map((r,i)=>`<tr><td style="color:${PAL[r.run%8]}">●&nbsp;${MAT[S.runs[r.run].el].at} ${f(r.I,1)}</td><td>${r.dt}</td><td>${f(r.Q,1)}</td><td>${f(r.a)}</td><td>${f(r.k)}</td><td><button data-d="${i}" aria-label="Zeile löschen">✕</button></td></tr>`).join('');
+try{const tw=$('.tw'),r=tw.querySelector('tbody tr'),hh=tw.querySelector('thead').offsetHeight;tw.style.maxHeight=Math.round(hh+2*(r?r.offsetHeight:32)+2)+'px';tw.scrollTop=tw.scrollHeight}catch(e){}   /* 2 Zeilen sichtbar, neueste unten */
+$('#pc').hidden=!$('#pa').checked;
+const l=S.rows[S.rows.length-1];if(l){const e=MAT[S.runs[l.run].el],t=l.I*l.dt*e.M/(e.z*F),dv=Math.abs(l.k-t)/t*100;$('#dev').innerHTML=`Stoff: ${e.at}<br>Δm gemessen = ${f(l.k)} g<br>Δm theoretisch = ${f(t,4)} g<br>rel. Abweichung = ${f(dv,1)} %`}else $('#dev').textContent='Noch keine Messung vorhanden.';
+try{charts()}catch(e){console.error(e)}}
+addEventListener('resize',()=>{upd();pdraw()});
+
+/* ===== Teilchenebene (stöchiometrisch, fließende Bewegung) =====
+   Wie im Elektrolyse-Labor: Teilchen bewegen sich kontinuierlich (Drift + leichte Diffusion), Elektronen fließen gleichmäßig durch den Draht.
+   Anode: ein Atom wird oxidiert -> verschwindet aus dem Gitter, an seiner Stelle entsteht ein Kation, z Elektronen starten.
+   Kathode: erreicht ein Kation die Elektrode und stehen z Elektronen bereit, wird es reduziert und lagert sich als Atom an. */
+let SP=18;const YS=62,AX=38,NCAP=36,NDIV=5;   /* Gitterabstand (passt sich der Breite an), Flüssigkeitsoberfläche (y), Abstand der Elektroden zur Becherwand, max. Ereignisse, Ladung (C) je Animations-Elektron */
+let ion=[],tok=[],done=[],ec=0,dl=0,dq=0,lastE=0,NC=4,rate=0,last=performance.now();   /* Ionen, Elektronen im Draht, angelagerte Atome, Elektronenvorrat an der Kathode, Zähler */
+const ay=r=>34+SP*r;
+const anPos=k=>[AX+SP/2+SP*(3-Math.floor(k/9)),ay(2+k%9)];         /* Platz des k-ten abgebauten Anodenatoms */
+const kaPos=(j,w)=>[w-AX-SP/2-SP*(3+Math.floor(j/9)),ay(2+j%9)];   /* Platz des j-ten angelagerten Kathodenatoms */
+const geo=w=>{SP=w<430?14:18;return{xl:AX+SP*(4-Math.floor(lastE/9))+6,xr:w-AX-SP*(3+Math.ceil(dq/9))-6}};   /* Lösungsraum zwischen den (wachsenden/schrumpfenden) Elektroden */
+const YT=YS+14,YB=222;
+function resetAnim(){tok=[];done=[];ec=0;dl=0;dq=0;lastE=0;rate=0;ion=[];NC=mat.z==3?3:4;const na=NC*mat.z/mat.qa,w=$('#pv').clientWidth||340,q=geo(w);   /* Ionenzahl ladungsneutral: NC·z = na·|Anionenladung| */
+for(let i=0;i<NC;i++)ion.push({t:0,x:q.xl+(i+.5)/NC*(q.xr-q.xl),y:YT+((i*.45+.15)%1)*(YB-YT),vx:0,vy:0});
+for(let i=0;i<na;i++)ion.push({t:1,x:q.xl+(i+.5)/na*(q.xr-q.xl),y:YT+((i*.61+.3)%1)*(YB-YT),vx:0,vy:0})}
+/* Elektrodensysteme der Animation: z = Elektronen pro Atom, Farben, Reaktionsgleichungen */
+const MAT={cu:{k:'cu',z:2,M:63.5,so:.75,ec:'#b87333',es:'#7a4a1f',at:'Cu',ion:'Cu²⁺',an:'SO₄²⁻',qa:2,ac:'#d94a3d',tc:'#fff',ic:'#2f7fd0',bk:'rgba(184,115,51,.3)',sa:.55,
+eq:'Anode (Oxidation): Cu → Cu²⁺ + 2 e⁻<br>Kathode (Reduktion): Cu²⁺ + 2 e⁻ → Cu<br>Bilanz: Kupfer wird von der Anode zur Kathode transportiert.',
+lg:'Rot: Cu-Atome · gelb: Elektronen (e⁻) · blau: Cu²⁺-Ionen · blasse Kreise: SO₄²⁻-Anionen. 1 Teilchen in der Animation steht für sehr viele Teilchen in Wirklichkeit. Nutze den Zeitraffer, damit die Animation zügig läuft.'},
+ag:{k:'ag',z:1,M:107.9,so:.3,ec:'#c9d1d9',es:'#7b8794',at:'Ag',ion:'Ag⁺',an:'NO₃⁻',qa:1,ac:'#b9c2cc',tc:'#1c2530',ic:'#2f7fd0',bk:'rgba(170,180,190,.35)',sa:.22,
+eq:'Anode (Oxidation): Ag → Ag⁺ + e⁻<br>Kathode (Reduktion): Ag⁺ + e⁻ → Ag<br>Bilanz: Silber wird von der Anode zur Kathode transportiert.',
+lg:'Silbergrau: Ag-Atome · gelb: Elektronen (e⁻) · blau: Ag⁺-Ionen · blasse Kreise: NO₃⁻-Anionen. Hier gibt jedes Ag-Atom nur 1 Elektron ab (z = 1). 1 Teilchen in der Animation steht für sehr viele Teilchen in Wirklichkeit. Nutze den Zeitraffer, damit die Animation zügig läuft.'},
+au:{k:'au',z:3,M:197.0,so:.4,ec:'#d4af37',es:'#8a6d1a',at:'Au',ion:'Au³⁺',an:'Cl⁻',qa:1,ac:'#c9961a',tc:'#1c2530',ic:'#2f7fd0',bk:'rgba(212,175,55,.35)',sa:.3,
+eq:'Anode (Oxidation): Au → Au³⁺ + 3 e⁻<br>Kathode (Reduktion): Au³⁺ + 3 e⁻ → Au<br>Bilanz: Gold wird von der Anode zur Kathode transportiert.',
+lg:'Goldfarben: Au-Atome · gelb: Elektronen (e⁻) · blau: Au³⁺-Ionen · blasse Kreise: Cl⁻-Anionen. Jedes Au-Atom gibt 3 Elektronen ab (z = 3). 1 Teilchen in der Animation steht für sehr viele Teilchen in Wirklichkeit. Nutze den Zeitraffer, damit die Animation zügig läuft.'}};
+let mat=MAT.cu;const nAt=()=>Math.floor(S.ne/mat.z);   /* Zahl der umgesetzten Atome */
+function setMat(k){mat=MAT[k];M=mat.M;Z=mat.z;const at=mat.at;   /* Elektrodensystem wechseln: laufender Versuch endet, bisherige Kurven bleiben im Diagramm */
+S.run=false;$('#I').disabled=false;S.t=0;S.ne=0;$('#wv').textContent='';dn=0;$('#dv').innerHTML='';$('#f5').textContent='';$('#l5').hidden=true;$('#ls').textContent='Lösung anzeigen';
+document.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m==k));
+$('#intro').textContent=k=='cu'?'Kupfer-Elektrolyse: Elektroden aus Kupfer in CuSO₄-Lösung. Experimentiere und leite die Gleichung in sechs Schritten her.':k=='ag'?'Silber-Elektrolyse: Elektroden aus Silber in Silbernitrat-Lösung (AgNO₃). Experimentiere und leite die Gleichung in sechs Schritten her.':'Gold-Elektrolyse: Elektroden aus Gold in Gold(III)-chlorid-Lösung (AuCl₃). Experimentiere und leite die Gleichung in sechs Schritten her.';
+$('#t4').textContent='Stoffmenge: n = m/M mit M(Cu) = 63,5 g/mol, M(Ag) = 107,9 g/mol und M(Au) = 197,0 g/mol.';
+$('#t5').textContent=`Deutung: Jedes ${at}-Atom gibt an der Anode ${Z==1?'1 Elektron':Z+' Elektronen'} ab (z = ${Z}). Blende die Herleitung Schritt für Schritt ein:`;
+$('#t5b').textContent=`Setze ein: I = 0,8 A, Δt = 616 s, F = 96485 C/mol, M = ${f(M,1)} g/mol.`;
+$('#peq').innerHTML=mat.eq;$('#plg').textContent=mat.lg+' Ablauf: Ein Atom der Anode gibt z Elektronen ab und wird dabei zum Kation; die Elektronen fließen durch den Draht. Die Kationen driften zur Kathode, die Anionen zur Anode. An der Kathode nimmt ein Kation, das sie erreicht, die z Elektronen auf und lagert sich als Atom an.';$('#sl').setAttribute('opacity',mat.so);
+['#ea','#ek'].forEach(x=>{$(x).setAttribute('fill',mat.ec);$(x).setAttribute('stroke',mat.es)});
+resetAnim();upd()}
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>setMat(b.dataset.m));setMat('cu');
+function pdraw(){const c=$('#pv');if(!c||!c.clientWidth)return;const w=c.width=c.clientWidth,h=c.height=256,g=c.getContext('2d'),cs=getComputedStyle(document.documentElement),fg=cs.getPropertyValue('--fg'),mu=cs.getPropertyValue('--mu');
+geo(w);const ra=SP*.45,fs=Math.round(ra*.95),bot=ay(10)+SP*.6,x1=AX+2*SP,x2=w-AX-1.5*SP;
+const lab=(t,x,y,sz,col)=>{g.fillStyle=col;g.font=sz+'px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(t,x,y)};
+const ball=(x,y,r,fill,t,sz,col,al)=>{g.globalAlpha=al==null?1:al;g.fillStyle=fill;g.beginPath();g.arc(x,y,r,0,7);g.fill();lab(t,x,y,sz,col);g.globalAlpha=1};
+const cat=(x,y)=>ball(x,y,ra+1,mat.ic,mat.ion,fs-1,'#fff'),atom=(x,y)=>ball(x,y,ra,mat.ac,mat.at,fs,mat.tc);
+g.clearRect(0,0,w,h);
+/* Becherglas mit Lösung (ab y = YS); beide Elektroden tauchen ein */
+g.fillStyle=cs.getPropertyValue('--lo');g.globalAlpha=mat.sa;g.fillRect(4,YS,w-8,h-6-YS);g.globalAlpha=1;
+g.strokeStyle=mu;g.lineWidth=2;g.beginPath();g.moveTo(4,40);g.lineTo(4,h-6);g.lineTo(w-4,h-6);g.lineTo(w-4,40);g.stroke();
+g.fillStyle=mat.bk;g.fillRect(AX-4,24,4*SP+8,bot-24);g.fillRect(w-AX-3*SP-4,24,3*SP+8,bot-24);
+/* Anode: 4 Spalten; von der Lösungsseite her wird je oxidiertem Atom 1 Atom abgebaut */
+let k=0;for(let col=3;col>=0;col--)for(let r=0;r<11;r++){if(r>=2&&k++<lastE)continue;atom(AX+SP/2+SP*col,ay(r))}
+/* Kathode: Basisgitter (3 Spalten) + angelagerte Atome (wachsen zur Lösung hin) */
+for(let col=0;col<3;col++)for(let r=0;r<11;r++)atom(w-AX-SP/2-SP*col,ay(r));
+for(let j=0;j<done.length;j++)if(done[j]){const q=kaPos(j,w);atom(q[0],q[1])}
+lab('Anode (+)',x1,h-12,11,fg);lab('Kathode (−)',x2,h-12,11,fg);
+/* Ionen: Anionen blass, Kationen blau */
+ion.forEach(p=>{if(p.t==1)ball(p.x,p.y,ra+1,'#9aa7b4',mat.an,fs-2,fg,.35)});
+ion.forEach(p=>{if(p.t==0)cat(p.x,p.y)});
+/* Draht mit Spannungsquelle */
+g.strokeStyle=fg;g.lineWidth=2;g.beginPath();g.moveTo(x1,24);g.lineTo(x1,10);g.lineTo(x2,10);g.lineTo(x2,24);g.stroke();
+g.fillStyle=cs.getPropertyValue('--c');g.fillRect(w/2-50,2,100,16);g.strokeRect(w/2-50,2,100,16);lab('Spannungsquelle',w/2,10,10,fg);
+/* Elektronen: vom oxidierten Atom nach oben, durch den Draht, in die Kathode */
+tok.forEach(t=>{if(t.p<0)return;const L0=t.a[1]-10,L1=Math.abs(x2-t.a[0]),d=t.p*t.L;let x,y;
+if(d<L0){x=t.a[0];y=t.a[1]-d}else if(d<L0+L1){x=t.a[0]+(x2-t.a[0])*(d-L0)/L1;y=10}else{x=x2;y=10+d-L0-L1}ball(x,y,5,'#f4d03f','e⁻',6,'#000')});
+$('#pn2').innerHTML=`Elektronen: <b>${lastE*mat.z}</b> (= ${mat.z} · Atome) · oxidierte ${mat.at}-Atome (Anode): <b>${lastE}</b> · abgeschiedene ${mat.at}-Atome (Kathode): <b>${dl}</b> · n(${mat.at}) = Δm/M = <b>${(dmT()/M).toExponential(2).replace('.',',')}</b> mol${lastE>=NCAP?' · Animation: Gitter aufgebraucht':''}`}
+/* Oxidation an der Anode: Atom j verschwindet, an seiner Stelle entsteht ein Kation, z Elektronen starten */
+function ev(j,w){const a=anPos(j),x2=w-AX-1.5*SP,L=a[1]-10+Math.abs(x2-a[0])+14;for(let i=0;i<mat.z;i++)tok.push({a,L,p:-i*.05});ion.push({t:0,x:a[0],y:a[1],vx:.4,vy:0,f:1})}
+function loop(now){try{loopStep(now)}catch(e){console.error(e)}requestAnimationFrame(loop)}   /* Schleife läuft auch nach Fehlern weiter */
+function loopStep(now){const dt=Math.min(.1,(now-last)/1000),fr=dt*60,w=$('#pv').clientWidth||340;last=now;
+if(S.run){S.t+=dt*S.sp;if(S.t>=1200){S.t=1200;stop()}
+S.ne=Math.floor(S.I*S.t/NDIV);rate=S.I*S.sp/(NDIV*mat.z);   /* Ereignisse pro Sekunde */
+const E=Math.min(NCAP,nAt());for(let j=lastE;j<E;j++)ev(j,w);lastE=E;upd(1)}
+const q=geo(w),x2=w-AX-1.5*SP,act=S.run||lastE>dl,vc=act?Math.max(rate*(q.xr-q.xl)/NC,S.run?5:25):0;   /* Driftgeschwindigkeit (px/s) passt zur Reaktionsrate */
+/* Elektronen fließen gleichmäßig; am Ende der Leitung gehen sie in den Elektronenvorrat der Kathode */
+tok.forEach(t=>t.p=Math.min(1,t.p+dt*150/t.L));tok=tok.filter(t=>{if(t.p>=1){ec++;return false}return true});
+/* Ionen: Drift + leichte, gedämpfte Diffusion; angelagerte Kationen gleiten zu ihrem Platz an der Kathode */
+ion.forEach(p=>{if(p.glide){const T=kaPos(p.site,w),dx=T[0]-p.x,dy=T[1]-p.y,d=Math.hypot(dx,dy),m=140*dt;if(d<=m){p.dead=1;done[p.site]=true;dl++}else{p.x+=dx/d*m;p.y+=dy/d*m}return}
+if(act){p.vx=p.vx*.96+(Math.random()-.5)*.3;p.vy=p.vy*.96+(Math.random()-.5)*.3;p.x+=p.vx*fr+(p.t==0?vc:-.6*vc)*dt;p.y+=p.vy*fr}
+if(p.f&&p.x>=q.xl)p.f=0;if(!p.f&&p.x<q.xl){p.x=q.xl;p.vx=Math.abs(p.vx)}if(p.x>q.xr){p.x=q.xr;p.vx=-Math.abs(p.vx)}
+if(p.y<YT){p.y=YT;p.vy=Math.abs(p.vy)}if(p.y>YB){p.y=YB;p.vy=-Math.abs(p.vy)}});
+/* Reduktion: Kation an der Kathode + z Elektronen im Vorrat -> Atom */
+if(dq<NCAP&&ec>=mat.z)for(const p of ion){if(p.t==0&&!p.glide&&p.x>q.xr-12&&Math.random()<.08*fr){ec-=mat.z;p.glide=1;p.site=dq++;break}}
+ion=ion.filter(p=>!p.dead);
+if(!S.run&&S.t==0&&(lastE||dl||tok.length||dq))resetAnim();
+if(!$('#pc').hidden)pdraw()}
+upd();requestAnimationFrame(loop);
+</script></body></html>

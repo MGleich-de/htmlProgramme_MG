@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Le Chatelier – Prinzip des kleinsten Zwangs</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #f0f4f8;
+      --card:    #ffffff;
+      --border:  #d1dae6;
+      --accent:  #2d6fbd;
+      --text:    #1e293b;
+      --muted:   #64748b;
+      --radius:  12px;
+      --shadow:  0 2px 12px rgba(0,0,0,.08);
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    h1 { font-size: 1.55rem; font-weight: 700; }
+    h2 { font-size: 1.1rem;  font-weight: 600; margin-bottom: .6rem; }
+    p  { line-height: 1.6; }
+
+    .page-wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: .6rem;
+    }
+    .page-wrap > * { flex: 1 1 100%; min-width: 0; }
+    .page-wrap > .header-card { order: -2; }
+    .all-collapsed .pair { display: contents; }
+    .pair { display: flex; flex-wrap: wrap; gap: .6rem; align-items: stretch; }
+    .pair > .card, .pair > .mwg-card { flex: 1 1 calc(50% - .3rem); min-width: 0; }
+    .pair > .card.collapsed, .pair > .mwg-card.collapsed {
+      flex: 0 0 auto; align-self: flex-start; padding: .35rem .6rem;
+    }
+    @media (max-width: 900px) {
+      .pair > .card:not(.collapsed), .pair > .mwg-card:not(.collapsed) { flex-basis: 100%; }
+    }
+    .collapsed .box-head { gap: .5rem; }
+    .collapsed .ttl { display: none; }
+    .collapsed .ico { font-size: 1.1rem; }
+    .collapsed h2, .collapsed .qkc-section h2 { font-size: .85rem !important; margin: 0 !important; }
+    .collapsed .box-toggle { padding: .15rem .5rem !important; font-size: .78rem !important; }
+    .collapsed .qkc-section { margin: 0; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    /* ── Header ──────────────────────────────────────────────── */
+    .header-card {
+      background: linear-gradient(135deg, #1a4a8a 0%, #2d6fbd 100%);
+      color: #fff;
+      border: none;
+    }
+    .header-card h1        { color: #fff; margin-bottom: .35rem; }
+    .header-card .subtitle { opacity: .85; font-size: .95rem; }
+    .header-card .author   { opacity: .70; font-size: .82rem; margin-top: .3rem; }
+
+    /* ── Reaktionsauswahl ────────────────────────────────────── */
+    .reaction-switcher {
+      display: flex;
+      gap: .55rem;
+      flex-wrap: wrap;
+      margin-top: .9rem;
+    }
+    .rxn-btn {
+      padding: .4rem .85rem;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,.45);
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+      line-height: 1.3;
+    }
+    .rxn-btn:hover  { background: rgba(255,255,255,.25); }
+    .rxn-btn.active { background: rgba(255,255,255,.30); border-color: #fff; }
+
+    .reaction-box {
+      margin-top: .75rem;
+      background: rgba(255,255,255,.15);
+      border-radius: 8px;
+      padding: .65rem 1rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: .02em;
+      word-break: break-word;
+    }
+    .reaction-box .dh {
+      font-size: .86rem; font-weight: 400;
+      margin-left: .4rem; opacity: .9;
+    }
+
+    /* ── Erklärung ───────────────────────────────────────────── */
+    .explain-toggle {
+      background: none; border: 1.5px solid var(--accent); color: var(--accent);
+      border-radius: 6px; padding: .35rem .85rem; cursor: pointer; font-size: .9rem;
+      transition: background .2s, color .2s;
+    }
+    .explain-toggle:hover { background: var(--accent); color: #fff; }
+
+    .explain-box {
+      background: #eff6ff; border-left: 4px solid var(--accent);
+      border-radius: 0 8px 8px 0; padding: .9rem 1.1rem;
+      font-size: .92rem; color: #1e3a5f; margin-top: .8rem;
+    }
+    .explain-box.hidden { display: none; }
+
+    /* ── MWG + Q/Kc – gemeinsame Karte ──────────────────────── */
+    .mwg-card {
+      background: #f8faff;
+      border: 1.5px solid #c7d7f5;
+      border-radius: var(--radius);
+      padding: 1.1rem 1.4rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+    }
+    .mwg-card h2 { font-size: 1rem; color: var(--accent); margin-bottom: 0; }
+
+    /* MWG-Formel */
+    .mwg-formula {
+      font-size: 1.08rem;
+      font-family: 'Georgia', serif;
+      text-align: center;
+      letter-spacing: .01em;
+    }
+    .mwg-formula .fraction {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 .15rem;
+    }
+    .mwg-formula .numerator {
+      border-bottom: 1.5px solid var(--text);
+      padding: 0 .3rem .1rem;
+      font-size: .97rem;
+    }
+    .mwg-formula .denominator {
+      padding: .1rem .3rem 0;
+      font-size: .97rem;
+    }
+    .mwg-note {
+      font-size: .82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .mwg-note strong { color: var(--text); }
+
+    /* Trennlinie */
+    .mwg-divider {
+      border: none;
+      border-top: 1px solid #c7d7f5;
+    }
+
+    /* ── Q/Kc-Beziehung ──────────────────────────────────────── */
+    .qkc-section h2 { font-size: 1rem; color: var(--accent); margin-bottom: .5rem; }
+
+    /* Erklärungstext Q/Kc */
+    .qkc-explain {
+      font-size: .85rem;
+      color: var(--text);
+      line-height: 1.6;
+      background: #eef4ff;
+      border-radius: 8px;
+      padding: .7rem .95rem;
+    }
+    .qkc-explain .qkc-rule {
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+      margin-top: .45rem;
+      font-size: .83rem;
+    }
+    .qkc-rule-badge {
+      flex-shrink: 0;
+      border-radius: 5px;
+      padding: .15rem .5rem;
+      font-weight: 700;
+      font-size: .82rem;
+      white-space: nowrap;
+    }
+    .badge-lt  { background: #dcfce7; color: #166534; }
+    .badge-eq  { background: #f1f5f9; color: var(--muted); }
+    .badge-gt  { background: #fee2e2; color: #991b1b; }
+
+    /* Live Q/Kc-Anzeige */
+    .qkc-live {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.1rem;
+      flex-wrap: wrap;
+      background: #fff;
+      border: 1px solid #c7d7f5;
+      border-radius: 10px;
+      padding: .75rem 1rem;
+    }
+    .qkc-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .15rem;
+      min-width: 80px;
+    }
+    .qkc-label { font-size: .74rem; color: var(--muted); text-align: center; }
+    .qkc-value { font-size: 1.15rem; font-weight: 700; color: var(--text); }
+
+    .qkc-compare {
+      font-size: 1.6rem;
+      font-weight: 700;
+      min-width: 1.8rem;
+      text-align: center;
+      transition: color .35s;
+    }
+    .qkc-compare.lt  { color: #16a34a; }
+    .qkc-compare.gt  { color: #dc2626; }
+    .qkc-compare.eq  { color: var(--muted); }
+
+    /* Status-Pill unter der Live-Anzeige */
+    .qkc-status {
+      text-align: center;
+      font-size: .84rem;
+      font-weight: 600;
+      padding: .35rem .9rem;
+      border-radius: 20px;
+      transition: background .35s, color .35s;
+      align-self: center;
+    }
+    .qkc-status.lt  { background: #dcfce7; color: #166534; }
+    .qkc-status.gt  { background: #fee2e2; color: #991b1b; }
+    .qkc-status.eq  { background: #f1f5f9; color: var(--muted); }
+
+    /* ── Hauptgitter ─────────────────────────────────────────── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    @media (max-width: 700px) { .main-grid { grid-template-columns: 1fr; } }
+
+    /* ── Balkendiagramm ──────────────────────────────────────── */
+    .chart-title {
+      font-size: .85rem; color: var(--muted);
+      margin-bottom: .75rem; text-align: center;
+    }
+
+    /*
+     * Balkenzone und Beschriftung strikt getrennt:
+     * .chart-area   → feste Höhe, nur Balken
+     * .chart-labels → immer darunter, nie verdeckt
+     */
+    .chart-area {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: .75rem;
+      height: 320px;
+      border-bottom: 2px solid var(--border);
+      padding: 0 .25rem;
+    }
+    .bar {
+      border-radius: 6px 6px 0 0;
+      transition: height .6s cubic-bezier(.4,0,.2,1);
+      min-height: 4px;
+      flex-shrink: 0;
+      width: 40px;
+    }
+    .chart-labels {
+      display: flex;
+      justify-content: center;
+      gap: .75rem;
+      padding: .5rem .25rem 0;
+    }
+    .chart-label-item {
+      width: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .15rem;
+    }
+    .bar-label { font-size: .72rem; font-weight: 700; text-align: center; line-height: 1.2; }
+    .bar-value { font-size: .68rem; color: var(--muted); white-space: nowrap; }
+
+    .legend {
+      display: flex; justify-content: center; gap: .75rem;
+      margin-top: .8rem; flex-wrap: wrap;
+    }
+    .legend-item { display: flex; align-items: center; gap: .3rem; font-size: .8rem; }
+    .legend-dot  { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+
+    /* ── Kc / T ──────────────────────────────────────────────── */
+    .kc-display {
+      text-align: center; margin-top: .75rem;
+      font-size: .88rem; color: var(--muted);
+    }
+    .kc-display span { font-weight: 700; color: var(--text); font-size: .95rem; }
+
+    /* ── Richtungspfeil ──────────────────────────────────────── */
+    .arrow-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: .5rem; margin: .5rem 0; font-size: .8rem; color: var(--muted);
+      flex-wrap: wrap;
+    }
+    .arrow-indicator {
+      font-size: 1.5rem; font-weight: 700;
+      transition: color .4s; min-width: 2rem; text-align: center;
+    }
+    .arrow-none { color: var(--border); }
+    .arrow-label { min-width: 55px; text-align: center; font-size: .76rem; line-height: 1.3; }
+
+    /* ── Steuerelemente ──────────────────────────────────────── */
+    .controls-wrap { display: flex; flex-direction: column; gap: 1rem; }
+
+    .ctrl-section {
+      border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1rem;
+    }
+    .ctrl-section h2 { font-size: .95rem; margin-bottom: .55rem; }
+
+    .slider-row {
+      display: flex; align-items: center; gap: .55rem;
+      margin-bottom: .5rem; flex-wrap: wrap;
+    }
+    .slider-row label {
+      font-size: .8rem; min-width: 100px; font-weight: 600; line-height: 1.2;
+    }
+    .slider-row input[type=range] {
+      flex: 1; min-width: 70px; accent-color: var(--accent);
+    }
+    .slider-row .val {
+      font-size: .8rem; color: var(--muted);
+      min-width: 52px; text-align: right;
+    }
+
+    .temp-display { font-size: .88rem; margin-top: .3rem; color: var(--muted); }
+    .temp-display span { font-weight: 700; color: var(--text); }
+
+    /* ── Info-Kasten ─────────────────────────────────────────── */
+    .info-box {
+      border-radius: 10px; padding: .8rem 1rem;
+      font-size: .88rem; line-height: 1.55; border-left: 5px solid;
+      transition: background .4s, border-color .4s;
+    }
+    .info-box.right { background: #fff7ed; border-color: #f97316; color: #7c2d12; }
+    .info-box.left  { background: #eff6ff; border-color: #3b82f6; color: #1e3a5f; }
+    .info-box.none  { background: #f8fafc; border-color: var(--border); color: var(--muted); }
+    .info-box .info-title { font-weight: 700; margin-bottom: .3rem; }
+
+    /* ── Reset ───────────────────────────────────────────────── */
+    .reset-bar { display: flex; justify-content: flex-end; }
+    .btn-big-reset {
+      padding: .5rem 1.3rem; background: #e0e7ff; color: #3730a3;
+      border: none; border-radius: 8px; font-size: .92rem; font-weight: 700;
+      cursor: pointer; transition: filter .18s;
+    }
+    .btn-big-reset:hover { filter: brightness(.9); }
+
+    .pressure-note {
+      font-size: .78rem; color: var(--muted); margin-top: .4rem; font-style: italic;
+    }
+
+    input[type=range]:disabled { opacity: .38; cursor: not-allowed; }
+
+    canvas { width:100%; height:auto; display:block; border-radius:10px; border:1px solid var(--border);
+             background:linear-gradient(#fbfdff,#eef4fa); margin-top:.3rem; }
+    .viz-head { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.6rem; }
+    .viz-head h2 { margin:0; }
+    .btn-start { padding:.5rem 1.2rem; background:#16a34a; color:#fff; border:none; border-radius:8px;
+                 font-weight:700; cursor:pointer; font-size:.92rem; }
+    .btn-start:disabled { background:#94a3b8; cursor:default; }
+    .btn-start:not(:disabled):hover { filter:brightness(.92); }
+    .bar { transition:none !important; }
+    .btn-adj { padding:.3rem .7rem; border:none; border-radius:6px; font-weight:700; cursor:pointer; font-size:.82rem; }
+    .btn-adj.plus  { background:#dcfce7; color:#166534; }
+    .btn-adj.minus { background:#fee2e2; color:#991b1b; }
+    .btn-adj:hover { filter:brightness(.92); }
+    .ctrl-locked { opacity:.45; pointer-events:none; }
+    .lock-hint { font-size:.8rem; color:var(--muted); font-style:italic; }
+    .info-box { margin-top:.7rem; }
+
+    .box-head { display:flex; justify-content:space-between; align-items:center; gap:.6rem; }
+    .box-head h2 { margin:0; }
+    .box-toggle { flex-shrink:0; white-space:nowrap; }
+    .box-body { margin-top:.7rem; }
+    .box-body.hidden { display:none; }
+    .reaction-box .mwg-formula { margin-top:.6rem; text-align:center; font-weight:400; }
+    .reaction-box .mwg-formula .numerator { border-bottom-color:#fff; }
+    .reaction-box .mwg-note { color:rgba(255,255,255,.9); font-weight:400; font-size:.82rem; margin-top:.4rem; text-align:center; }
+    .reaction-box .mwg-note strong { color:#fff; }
+    .rbox-btns { display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; margin-top:.8rem; }
+    .reaction-box .btn-big-reset { background:rgba(255,255,255,.2); color:#fff; border:1.5px solid #fff;
+        border-radius:8px; padding:.5rem 1.1rem; font-weight:700; cursor:pointer; font-size:.92rem; }
+    .reaction-box .btn-big-reset:hover { background:rgba(255,255,255,.35); }
+    .bar { min-height:0 !important; }
+    .bar-value { text-align:center; line-height:1.15; }
+    .card { padding: 1rem 1.2rem; }
+    .main-grid, .controls-wrap { gap: .6rem !important; }
+    .main-grid { align-items: stretch; }
+    .main-grid > .card { align-self: stretch; }
+    .chart-area { height: auto !important; flex: 1 1 auto; min-height: 260px; }
+    .box-body { margin-top: .5rem; }
+
+    .start-box { margin-top:.7rem; padding:.45rem .7rem .5rem; background:rgba(255,255,255,.13); border-radius:8px; }
+    .start-title { font-size:.78rem; font-weight:700; text-align:center; margin-bottom:.3rem; }
+    .start-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:.15rem 1rem; }
+    .start-row { display:flex; align-items:center; gap:.4rem; font-size:.78rem; font-weight:400; }
+    .start-row .lab { min-width:3.6rem; font-weight:700; white-space:nowrap; }
+    .start-row .dot { display:inline-block; width:.6rem; height:.6rem; border-radius:50%; margin-right:.25rem; border:1px solid #fff; }
+    .start-row input[type=range] { flex:1; min-width:70px; accent-color:#fff; height:1.1rem; }
+    .start-row .sv { min-width:5.2rem; text-align:right; white-space:nowrap; }
+    .start-row input:disabled { opacity:.45; }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- ═══════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════ -->
+  <div class="card header-card">
+    <h1>⚖️ Prinzip von Le Chatelier</h1>
+    <p class="subtitle">Interaktive Simulation mit Teilchenanimation – Prinzip des kleinsten Zwangs</p>
+    <p class="author">✍️ Autor: Matthias Gleich</p>
+
+    <div class="reaction-switcher">
+      <button class="rxn-btn active" id="btnRxn0" onclick="switchReaction(0)">
+        ① Haber-Bosch<br><small>N₂ / H₂ / NH₃</small>
+      </button>
+      <button class="rxn-btn" id="btnRxn1" onclick="switchReaction(1)">
+        ② NO₂ ⇌ N₂O₄
+      </button>
+      <button class="rxn-btn" id="btnRxn2" onclick="switchReaction(2)">
+        ③ Estergleich-<br><small>gewicht</small>
+      </button>
+      <button class="rxn-btn" id="btnRxn3" onclick="switchReaction(3)">
+        ④ Boudouard-<br><small>Gleichgewicht</small>
+      </button>
+    </div>
+
+    <div class="reaction-box">
+      <div id="reactionDisplay">
+        N₂(g) + 3 H₂(g) &nbsp;⇌&nbsp; 2 NH₃(g)
+        <span class="dh">ΔH = –92 kJ/mol &nbsp;(exotherm)</span>
+      </div>
+      <div class="mwg-formula" id="mwgFormula"></div>
+      <p class="mwg-note" id="mwgNote"></p>
+      <div class="start-box">
+        <div class="start-title">Ausgangskonzentrationen c₀ vor Reaktionsbeginn (Standard: stöchiometrisch, Produkte 0 mol/L)</div>
+        <div class="start-grid" id="startGrid"></div>
+      </div>
+      <div class="rbox-btns">
+        <button class="btn-start" id="btnStart" onclick="startReaction()">▶ Reaktion starten</button>
+        <button class="btn-big-reset" onclick="resetAll()">↺ Zurücksetzen</button>
+        <button class="btn-big-reset" onclick="resetStartValues()">⟲ Standardwerte</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pair">
+  <!-- ═══════════════════════════════════════════
+       ERKLÄRUNGSTEXT
+  ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem;">
+      <h2 style="margin:0;" title="Was ist das Prinzip von Le Chatelier?"><span class="ico">💡</span> <span class="ttl">Was ist das Prinzip von Le Chatelier?</span></h2>
+      <button class="explain-toggle box-toggle" onclick="toggleBox(this)">Ausblenden</button>
+    </div>
+    <div class="explain-box box-body" id="explainBox">
+      <p>
+        Das <strong>Prinzip von Le Chatelier</strong> (auch: <em>Prinzip des kleinsten Zwangs</em>)
+        besagt: Wird ein chemisches Gleichgewicht durch eine äußere Einwirkung gestört, verschiebt
+        sich das System so, dass es der Störung entgegenwirkt und ein neues Gleichgewicht erreicht.
+      </p>
+      <p style="margin-top:.5rem;" id="explainReactionText">
+        Im <strong>Haber-Bosch-Prozess</strong> wird Ammoniak (NH₃) aus N₂ und H₂ synthetisiert.
+        Die Reaktion ist <strong>exotherm</strong> und verläuft unter
+        <strong>Verringerung der Gasmolanzahl</strong> (4 mol → 2 mol).
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       MWG + Q/Kc-KASTEN
+  ═══════════════════════════════════════════ -->
+  <div class="mwg-card">
+
+
+
+    <!-- Q/Kc-Abschnitt -->
+    <div class="qkc-section">
+      <div class="box-head"><h2 title="Reaktionsquotient Q und Gleichgewichtskonstante Kc"><span class="ico">🔍</span> <span class="ttl">Reaktionsquotient Q und Gleichgewichtskonstante K<sub>c</sub></span></h2>
+        <button class="explain-toggle box-toggle" onclick="toggleBox(this)">Ausblenden</button></div>
+      <div class="box-body">
+
+      <!-- Erklärungstext (statisch, immer sichtbar) -->
+      <div class="qkc-explain">
+        <p>
+          Der <strong>Reaktionsquotient Q</strong> hat dieselbe Formel wie K<sub>c</sub>,
+          wird aber mit den <em>aktuellen</em> (nicht den Gleichgewichts-)Konzentrationen berechnet.
+          Der Vergleich Q mit K<sub>c</sub> zeigt, in welche Richtung das System reagieren muss:
+        </p>
+        <div class="qkc-rule">
+          <span class="qkc-rule-badge badge-lt">Q &lt; K<sub>c</sub></span>
+          <span>Der <strong>Zähler</strong> des MWG ist zu klein – die Reaktion läuft
+                <strong>vorwärts</strong> (→ Produktseite), bis Q = K<sub>c</sub>.</span>
+        </div>
+        <div class="qkc-rule">
+          <span class="qkc-rule-badge badge-eq">Q = K<sub>c</sub></span>
+          <span>Das System befindet sich im <strong>Gleichgewicht</strong> –
+                keine Nettoreaktion.</span>
+        </div>
+        <div class="qkc-rule">
+          <span class="qkc-rule-badge badge-gt">Q &gt; K<sub>c</sub></span>
+          <span>Der <strong>Zähler</strong> des MWG ist zu groß – die Reaktion läuft
+                <strong>rückwärts</strong> (→ Eduktseite), bis Q = K<sub>c</sub>.</span>
+        </div>
+      </div>
+
+      <!-- Live-Anzeige Q / Vergleichszeichen / Kc -->
+      <div class="qkc-live">
+        <div class="qkc-item">
+          <span class="qkc-label">Reaktionsquotient Q<br>(aktuelle Konzentrationen)</span>
+          <span class="qkc-value" id="qVal">–</span>
+        </div>
+        <span class="qkc-compare eq" id="qkcCompare">⇌</span>
+        <div class="qkc-item">
+          <span class="qkc-label">Gleichgewichtskonstante K<sub>c</sub><br>(bei aktueller Temperatur)</span>
+          <span class="qkc-value" id="kcVal2">–</span>
+        </div>
+        <span class="qkc-status eq" id="qkcStatus">Gleichgewicht</span>
+      </div>
+      </div><!-- /box-body -->
+    </div>
+  </div>
+
+  </div><!-- /pair 1 -->
+
+  <div class="pair">
+  <!-- ═══════════════════════════════════════════
+       HAUPTGITTER
+  ═══════════════════════════════════════════ -->
+  <div class="card">
+    <div class="box-head">
+      <h2 title="Teilchenebene: Reaktionsgefäß"><span class="ico">🔬</span> <span class="ttl">Teilchenebene: Reaktionsgefäß</span></h2>
+      <button class="explain-toggle box-toggle" onclick="toggleBox(this)">Ausblenden</button>
+    </div>
+    <div class="box-body">
+    <canvas id="cvLab"></canvas>
+    <div class="legend" id="legend"></div>
+    <div class="info-box none" id="infoBox">
+      <div class="info-title" id="infoTitle">Ausgangszustand</div>
+      <div id="infoText"></div>
+    </div>
+    </div><!-- /box-body -->
+  </div>
+
+  <div class="card">
+    <div class="box-head">
+      <h2 title="Konzentration in Abhängigkeit von der Zeit"><span class="ico">📈</span> <span class="ttl">Konzentration in Abhängigkeit von der Zeit</span></h2>
+      <button class="explain-toggle box-toggle" onclick="toggleBox(this)">Ausblenden</button>
+    </div>
+    <div class="box-body"><canvas id="cvPlot"></canvas></div>
+  </div>
+
+  </div><!-- /pair 2 -->
+
+  <div class="main-grid">
+    <div class="card" style="display:flex;flex-direction:column;gap:.4rem;">
+      <h2>Aktuelle Konzentrationen</h2>
+      <p class="chart-title">Konzentration in mol/L</p>
+      <div class="chart-area" id="chartArea"></div>
+      <div class="chart-labels" id="chartLabels"></div>
+      <div class="kc-display">K<sub>c</sub> (aktuell): <span id="kcVal">–</span> &nbsp;|&nbsp; T: <span id="tVal">–</span></div>
+      <div class="arrow-row">
+        <span class="arrow-label" id="arrowLabelLeft">Edukte</span>
+        <div class="arrow-indicator arrow-none" id="shiftArrow">⇌</div>
+        <span class="arrow-label" id="arrowLabelRight">Produkte</span>
+      </div>
+    </div>
+
+    <div class="controls-wrap" id="ctrlWrap">
+      <div class="card ctrl-section">
+        <h2>① Stoffmenge ändern</h2>
+        <p class="pressure-note" style="margin:0 0 .5rem;">Zugabe bzw. Entnahme von je 0,5 mol/L (bei konstantem Volumen).</p>
+        <div id="concSliders"></div>
+      </div>
+      <div class="card ctrl-section">
+        <h2>② Temperatur ändern</h2>
+        <div class="slider-row">
+          <label>T</label>
+          <input type="range" id="slTemp" min="250" max="900" step="10" value="500" oninput="onTemperatureChange(this.value)">
+          <span class="val" id="slTempVal">500 K</span>
+        </div>
+        <div class="temp-display">Aktuelle Temperatur: <span id="tempDisplay">500 K</span> &nbsp;|&nbsp; K<sub>c</sub>(T): <span id="kcTDisplay">–</span></div>
+        <p class="pressure-note" id="tempNote" style="margin-top:.5rem;"></p>
+      </div>
+      <div class="card ctrl-section">
+        <h2>③ Druck ändern (Kolben)</h2>
+        <div class="slider-row">
+          <label>p</label>
+          <input type="range" id="slPressure" min="0.25" max="4" step="0.05" value="1.0" oninput="onPressureChange(this.value)">
+          <span class="val" id="slPressureVal">1.00×p₀</span>
+        </div>
+        <p class="pressure-note" id="pressureNote"></p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end page-wrap -->
+
+<script>
+/* ================================================================
+   HILFSFUNKTIONEN
+================================================================ */
+
+/**
+ * Bisektionsverfahren – findet Nullstelle von f in [lo, hi].
+ */
+function bisect(f, lo, hi, iter = 300) {
+  const flo = f(lo), fhi = f(hi);
+  if (isNaN(flo) || isNaN(fhi)) return 0;
+  if (Math.sign(flo) === Math.sign(fhi))
+    return Math.abs(flo) < Math.abs(fhi) ? lo : hi;
+  let xi = 0;
+  for (let i = 0; i < iter; i++) {
+    const mid = (lo + hi) / 2;
+    const fm  = f(mid);
+    if (Math.abs(fm) < 1e-12) { xi = mid; break; }
+    Math.sign(fm) === Math.sign(f(lo)) ? (lo = mid) : (hi = mid);
+    xi = (lo + hi) / 2;
+  }
+  return xi;
+}
+
+/**
+ * Van-'t-Hoff: K_c(T)
+ * ln(K2/K1) = –ΔH/R · (1/T2 – 1/T1)
+ */
+const R_GAS = 8.314e-3; // kJ/(mol·K)
+function calcKcVantHoff(rxn, T) {
+  return rxn.Kc_ref * Math.exp((-rxn.dH / R_GAS) * (1 / T - 1 / rxn.T_ref));
+}
+
+/**
+ * Zahl formatieren – wechselt automatisch zu Exponentialschreibweise
+ * bei sehr kleinen (< 0.001) oder sehr großen (> 9999) Werten.
+ */
+function fmtNum(v, dec = 4) {
+  if (v === Infinity || isNaN(v)) return '∞';
+  if (v === 0) return '0';
+  if (v < 0.001 || v > 9999) return v.toExponential(3);
+  return v.toFixed(dec);
+}
+
+/* ================================================================
+   REAKTIONSDEFINITIONEN
+   ================================================================
+   Stöchiometrie-Konvention:
+     stoich < 0  →  Edukt
+     stoich > 0  →  Produkt
+
+   deltaN: Differenz der Gasmole (Produkte − Edukte)
+     deltaN < 0  →  Druckerhöhung begünstigt Produkte
+     deltaN > 0  →  Druckerhöhung begünstigt Edukte
+     deltaN = 0  →  Druck ohne Effekt
+================================================================ */
+const REACTIONS = [
+
+  /* ──────────────────────────────────────────────────────────────
+     REAKTION 0 – Haber-Bosch-Prozess
+     N₂(g) + 3 H₂(g) ⇌ 2 NH₃(g)      ΔH = –92 kJ/mol
+     Kc = [NH₃]² / ([N₂]·[H₂]³)
+     deltaN = 2 − 4 = −2
+  ────────────────────────────────────────────────────────────── */
+  {
+    id: 0,
+    name: 'Haber-Bosch',
+    equation: 'N₂(g) + 3 H₂(g) &nbsp;⇌&nbsp; 2 NH₃(g)',
+    dH: -92,
+    dHLabel: 'ΔH = –92 kJ/mol (exotherm)',
+    Kc_ref: 0.60,      // mol⁻²·L² bei T_ref = 500 K
+    T_ref:  500,
+    T_init: 500,
+    T_min:  300,
+    T_max:  900,
+    deltaN: -2,
+    maxConc: 5.0,
+
+    mwgHTML: `
+      K<sub>c</sub> =
+      <span class="fraction">
+        <span class="numerator">[NH₃]²</span>
+        <span class="denominator">[N₂] · [H₂]³</span>
+      </span>`,
+    mwgNote: `<strong>Einheit:</strong> mol⁻²·L² &nbsp;|&nbsp;
+      Die Stöchiometriekoeffizienten (1, 3, 2) erscheinen als Exponenten im MWG.
+      Ein großes K<sub>c</sub> bedeutet: Im Gleichgewicht überwiegen die <strong>Produkte</strong>;
+      ein kleines K<sub>c</sub>: Die <strong>Edukte</strong> überwiegen.`,
+
+    species: [
+      { key: 'N2',  label: 'N₂',  color: '#3b82f6', init: 1.0, min: 0.1, max: 5, stoich: -1 },
+      { key: 'H2',  label: 'H₂',  color: '#22c55e', init: 3.0, min: 0.1, max: 5, stoich: -3 },
+      { key: 'NH3', label: 'NH₃', color: '#f97316', init: 0.0, min: 0.0, max: 5, stoich: +2 }
+    ],
+
+    calcQ(c) {
+      if (c.N2 < 1e-12 || c.H2 < 1e-12) return Infinity;
+      return c.NH3 ** 2 / (c.N2 * c.H2 ** 3);
+    },
+
+    // N₂ − ξ,  H₂ − 3ξ,  NH₃ + 2ξ
+    calcEquilibrium(c, Kc, P) {
+      const n2  = Math.max(c.N2  * P, 0.001);
+      const h2  = Math.max(c.H2  * P, 0.001);
+      const nh3 = Math.max(c.NH3 * P, 0.000);
+      const f = xi => {
+        const a = n2 - xi, b = h2 - 3 * xi, d = nh3 + 2 * xi;
+        if (a <= 0 || b <= 0 || d < 0) return NaN;
+        return d ** 2 / (a * b ** 3) - Kc;
+      };
+      const xi = bisect(f, -nh3 / 2 + 1e-9, Math.min(n2, h2 / 3) - 1e-9);
+      return {
+        N2:  Math.max(n2  - xi,      0.0001),
+        H2:  Math.max(h2  - 3 * xi,  0.0001),
+        NH3: Math.max(nh3 + 2 * xi,  0.0001)
+      };
+    },
+
+    pressureNote: 'Druckerhöhung → Volumen sinkt → alle Konzentrationen steigen, aber ' +
+                  '[NH₃]² im Zähler wächst langsamer als [N₂]·[H₂]³ im Nenner → ' +
+                  'Q &lt; K<sub>c</sub> → Gleichgewicht zur NH₃-Seite (4 mol → 2 mol).',
+    tempNote: 'Exotherm (ΔH &lt; 0): Temperaturerhöhung → K<sub>c</sub> sinkt → ' +
+              'Q &gt; K<sub>c</sub> → Reaktion läuft rückwärts (weniger NH₃).',
+    explainText: `Im <strong>Haber-Bosch-Prozess</strong> wird Ammoniak (NH₃) aus Stickstoff (N₂)
+      und Wasserstoff (H₂) synthetisiert. Die Reaktion ist <strong>exotherm</strong>
+      (ΔH = –92 kJ/mol) und verläuft unter <strong>Verringerung der Gasmolanzahl</strong>
+      (4 mol → 2 mol). Druckerhöhung und Temperatursenkung begünstigen die NH₃-Bildung.`,
+
+    reasons: {
+      N2up:  'Zugabe von N₂ → [N₂] im <strong>Nenner</strong> ↑ → Q &lt; K<sub>c</sub> → Reaktion läuft vorwärts → mehr NH₃.',
+      N2dn:  'Entnahme von N₂ → [N₂] im <strong>Nenner</strong> ↓ → Q &gt; K<sub>c</sub> → NH₃ zerfällt, N₂ und H₂ werden nachgeliefert.',
+      H2up:  'Zugabe von H₂ → [H₂]³ im <strong>Nenner</strong> ↑ → Q &lt; K<sub>c</sub> → mehr NH₃ wird gebildet.',
+      H2dn:  'Entnahme von H₂ → [H₂]³ im <strong>Nenner</strong> ↓ → Q &gt; K<sub>c</sub> → NH₃ zerfällt, H₂ wird nachgeliefert.',
+      NH3up: 'Zugabe von NH₃ → [NH₃]² im <strong>Zähler</strong> ↑ → Q &gt; K<sub>c</sub> → Reaktion läuft rückwärts zu Edukten.',
+      NH3dn: 'Entnahme von NH₃ → [NH₃]² im <strong>Zähler</strong> ↓ → Q &lt; K<sub>c</sub> → mehr NH₃ wird gebildet.'
+    }
+  },
+
+  /* ──────────────────────────────────────────────────────────────
+     REAKTION 1 – NO₂ / N₂O₄-Gleichgewicht
+     2 NO₂(g) ⇌ N₂O₄(g)      ΔH = –57 kJ/mol
+     Kc = [N₂O₄] / [NO₂]²
+     deltaN = 1 − 2 = −1
+  ────────────────────────────────────────────────────────────── */
+  {
+    id: 1,
+    name: 'NO₂ ⇌ N₂O₄',
+    equation: '2 NO₂(g) &nbsp;⇌&nbsp; N₂O₄(g)',
+    dH: -57,
+    dHLabel: 'ΔH = –57 kJ/mol (exotherm)',
+    Kc_ref: 8.8,       // L/mol bei 298 K
+    T_ref:  298,
+    T_init: 298,
+    T_min:  250,
+    T_max:  600,
+    deltaN: -1,
+    maxConc: 3.0,
+
+    mwgHTML: `
+      K<sub>c</sub> =
+      <span class="fraction">
+        <span class="numerator">[N₂O₄]</span>
+        <span class="denominator">[NO₂]²</span>
+      </span>`,
+    mwgNote: `<strong>Einheit:</strong> L/mol &nbsp;|&nbsp;
+      Der Koeffizient 2 vor NO₂ wird zum Exponenten im Nenner.
+      K<sub>c</sub>(298 K) ≈ 8,8 L/mol: Im Gleichgewicht überwiegt bei Raumtemperatur
+      das <strong>farblose N₂O₄</strong>. Bei hohen Temperaturen sinkt K<sub>c</sub> →
+      mehr <strong>braunes NO₂</strong>.`,
+
+    species: [
+      { key: 'NO2',  label: 'NO₂',  color: '#b45309', init: 1.0, min: 0.05, max: 3, stoich: -2 },
+      { key: 'N2O4', label: 'N₂O₄', color: '#6366f1', init: 0.0, min: 0.00, max: 3, stoich: +1 }
+    ],
+
+    calcQ(c) {
+      if (c.NO2 < 1e-12) return Infinity;
+      return c.N2O4 / (c.NO2 ** 2);
+    },
+
+    // NO₂ − 2ξ,  N₂O₄ + ξ
+    calcEquilibrium(c, Kc, P) {
+      const no2  = Math.max(c.NO2  * P, 0.001);
+      const n2o4 = Math.max(c.N2O4 * P, 0.000);
+      const f = xi => {
+        const a = no2  - 2 * xi;
+        const b = n2o4 + xi;
+        if (a <= 0 || b < 0) return NaN;
+        return b / (a ** 2) - Kc;
+      };
+      const xi = bisect(f, -n2o4 + 1e-9, no2 / 2 - 1e-9);
+      return {
+        NO2:  Math.max(no2  - 2 * xi, 0.0001),
+        N2O4: Math.max(n2o4 + xi,     0.0001)
+      };
+    },
+
+    pressureNote: 'Druckerhöhung → alle Konzentrationen steigen. [NO₂]² im Nenner ' +
+                  'wächst quadratisch schneller als [N₂O₄] im Zähler → ' +
+                  'Q &lt; K<sub>c</sub> → Gleichgewicht zur N₂O₄-Seite (2 mol → 1 mol).',
+    tempNote: 'Exotherm (ΔH &lt; 0): Temperaturerhöhung → K<sub>c</sub> sinkt → ' +
+              'Q &gt; K<sub>c</sub> → mehr braunes NO₂. Mischung färbt sich sichtbar dunkler!',
+    explainText: `Das <strong>NO₂/N₂O₄-Gleichgewicht</strong> ist ein klassisches
+      Demonstrationsbeispiel: Braunes Stickstoffdioxid (NO₂) reagiert zu farblosem
+      Distickstofftetraoxid (N₂O₄). Das MWG lautet K<sub>c</sub> = [N₂O₄]/[NO₂]².
+      Kühlung → mehr N₂O₄ (farblos); Erwärmung → mehr NO₂ (braun).
+      Druckerhöhung → [NO₂]² wächst quadratisch → Q &lt; K<sub>c</sub> → mehr N₂O₄.`,
+
+    reasons: {
+      NO2up:  'Zugabe von NO₂ → [NO₂]² im <strong>Nenner</strong> ↑ → Q &lt; K<sub>c</sub> → mehr N₂O₄ wird gebildet.',
+      NO2dn:  'Entnahme von NO₂ → [NO₂]² im <strong>Nenner</strong> ↓ → Q &gt; K<sub>c</sub> → N₂O₄ zerfällt zu NO₂.',
+      N2O4up: 'Zugabe von N₂O₄ → [N₂O₄] im <strong>Zähler</strong> ↑ → Q &gt; K<sub>c</sub> → N₂O₄ zerfällt.',
+      N2O4dn: 'Entnahme von N₂O₄ → [N₂O₄] im <strong>Zähler</strong> ↓ → Q &lt; K<sub>c</sub> → mehr N₂O₄ entsteht.'
+    }
+  },
+
+  /* ──────────────────────────────────────────────────────────────
+     REAKTION 2 – Estergleichgewicht
+     CH₃COOH(l) + C₂H₅OH(l) ⇌ CH₃COOC₂H₅(l) + H₂O(l)
+     ΔH ≈ –9 kJ/mol  |  Kc ≈ 4 (dimensionslos)
+     deltaN_gas = 0 → kein Druckeffekt
+  ────────────────────────────────────────────────────────────── */
+  {
+    id: 2,
+    name: 'Estergleichgewicht',
+    equation: 'CH₃COOH(l) + C₂H₅OH(l) &nbsp;⇌&nbsp; CH₃COOC₂H₅(l) + H₂O(l)',
+    dH: -9,
+    dHLabel: 'ΔH ≈ –9 kJ/mol (leicht exotherm)',
+    Kc_ref: 4.0,
+    T_ref:  298,
+    T_init: 298,
+    T_min:  250,
+    T_max:  500,
+    deltaN: 0,
+    maxConc: 4.0,
+
+    mwgHTML: `
+      K<sub>c</sub> =
+      <span class="fraction">
+        <span class="numerator">[CH₃COOC₂H₅] · [H₂O]</span>
+        <span class="denominator">[CH₃COOH] · [C₂H₅OH]</span>
+      </span>`,
+    mwgNote: `<strong>Einheit:</strong> dimensionslos (alle Stöchiometriekoeffizienten = 1) &nbsp;|&nbsp;
+      K<sub>c</sub> ≈ 4: Gleichgewicht liegt leicht auf der <strong>Produktseite</strong>.
+      Da alle Spezies <strong>flüssig</strong> sind, taucht der Druck nicht im MWG auf.
+      Praxistipp: Wasser abdestillieren senkt den Zähler → Q &lt; K<sub>c</sub> → mehr Ester.`,
+
+    species: [
+      { key: 'AcOH',  label: 'CH₃COOH',    color: '#ef4444', init: 1.0, min: 0.0, max: 4, stoich: -1 },
+      { key: 'EtOH',  label: 'C₂H₅OH',     color: '#8b5cf6', init: 1.0, min: 0.0, max: 4, stoich: -1 },
+      { key: 'Ester', label: 'CH₃COOC₂H₅', color: '#10b981', init: 0.0, min: 0.0, max: 4, stoich: +1 },
+      { key: 'H2O',   label: 'H₂O',         color: '#06b6d4', init: 0.0, min: 0.0, max: 4, stoich: +1 }
+    ],
+
+    calcQ(c) {
+      const denom = c.AcOH * c.EtOH;
+      if (denom < 1e-12) return Infinity;
+      return (c.Ester * c.H2O) / denom;
+    },
+
+    // AcOH − ξ,  EtOH − ξ,  Ester + ξ,  H₂O + ξ
+    calcEquilibrium(c, Kc, _P) {
+      const ac = Math.max(c.AcOH,  0.0001);
+      const et = Math.max(c.EtOH,  0.0001);
+      const es = Math.max(c.Ester,  0);
+      const wa = Math.max(c.H2O,    0);
+      const f = xi => {
+        const a = ac - xi, b = et - xi, d = es + xi, e = wa + xi;
+        if (a <= 0 || b <= 0 || d < 0 || e < 0) return NaN;
+        return (d * e) / (a * b) - Kc;
+      };
+      const xi = bisect(f, -Math.min(es, wa) + 1e-9, Math.min(ac, et) - 1e-9);
+      return {
+        AcOH:  Math.max(ac - xi, 0.0001),
+        EtOH:  Math.max(et - xi, 0.0001),
+        Ester: Math.max(es + xi, 0.0001),
+        H2O:   Math.max(wa + xi, 0.0001)
+      };
+    },
+
+    pressureNote: 'Alle Spezies sind flüssig (Δn_gas = 0) – der Druck erscheint nicht im MWG ' +
+                  'und hat daher keinen Einfluss auf die Gleichgewichtslage.',
+    tempNote: 'Leicht exotherm (ΔH ≈ –9 kJ/mol): Temperaturerhöhung → K<sub>c</sub> sinkt ' +
+              '→ Q &gt; K<sub>c</sub> → Gleichgewicht zur Eduktseite (weniger Ester).',
+    explainText: `Die <strong>Veresterung</strong> ist eine Gleichgewichtsreaktion: Ethansäure
+      reagiert mit Ethanol zu Ethansäureethylester und Wasser. Das MWG lautet
+      K<sub>c</sub> = [Ester]·[H₂O] / ([CH₃COOH]·[C₂H₅OH]). Da alle Koeffizienten gleich 1 sind,
+      ist K<sub>c</sub> dimensionslos. K<sub>c</sub> ≈ 4 bedeutet: mehr Produkte im Gleichgewicht.
+      Praxistipp: Wasserentzug oder Ethanolüberschuss senken Q unter K<sub>c</sub> → mehr Ester!`,
+
+    reasons: {
+      AcOHup:  'Zugabe von Ethansäure → [CH₃COOH] im <strong>Nenner</strong> ↑ → Q &lt; K<sub>c</sub> → mehr Ester und Wasser.',
+      AcOHdn:  'Entnahme von Ethansäure → <strong>Nenner</strong> ↓ → Q &gt; K<sub>c</sub> → Ester hydrolysiert.',
+      EtOHup:  'Zugabe von Ethanol → [C₂H₅OH] im <strong>Nenner</strong> ↑ → Q &lt; K<sub>c</sub> → mehr Ester. (Ethanolüberschuss steigert Ausbeute!)',
+      EtOHdn:  'Entnahme von Ethanol → <strong>Nenner</strong> ↓ → Q &gt; K<sub>c</sub> → Ester hydrolysiert.',
+      Esterup: 'Zugabe von Ester → [Ester] im <strong>Zähler</strong> ↑ → Q &gt; K<sub>c</sub> → Hydrolyse wird begünstigt.',
+      Esterdn: 'Entnahme von Ester → <strong>Zähler</strong> ↓ → Q &lt; K<sub>c</sub> → mehr Ester entsteht. (Destillation erhöht Ausbeute!)',
+      H2Oup:   'Zugabe von Wasser → [H₂O] im <strong>Zähler</strong> ↑ → Q &gt; K<sub>c</sub> → Hydrolyse wird begünstigt.',
+      H2Odn:   'Entnahme von Wasser → <strong>Zähler</strong> ↓ → Q &lt; K<sub>c</sub> → mehr Ester. (Wasserentzug erhöht Ausbeute!)'
+    }
+  },
+
+  /* ──────────────────────────────────────────────────────────────
+     REAKTION 3 – Boudouard-Gleichgewicht
+     CO₂(g) + C(s) ⇌ 2 CO(g)      ΔH = +172 kJ/mol (endotherm)
+     Kc = [CO]² / [CO₂]   (C = Feststoff, Aktivität = 1)
+     deltaN_gas = 2 − 1 = +1 → Druckerhöhung → mehr CO₂
+  ────────────────────────────────────────────────────────────── */
+  {
+    id: 3,
+    name: 'Boudouard',
+    equation: 'CO₂(g) + C(s) &nbsp;⇌&nbsp; 2 CO(g)',
+    dH: +172,
+    dHLabel: 'ΔH = +172 kJ/mol (endotherm)',
+    Kc_ref: 10.0,      // mol/L bei T_ref = 1000 K
+    T_ref:  1000,
+    T_init: 1000,
+    T_min:  600,
+    T_max:  1400,
+    deltaN: +1,
+    maxConc: 6.0,
+
+    mwgHTML: `
+      K<sub>c</sub> =
+      <span class="fraction">
+        <span class="numerator">[CO]²</span>
+        <span class="denominator">[CO₂]</span>
+      </span>`,
+    mwgNote: `<strong>Einheit:</strong> mol/L &nbsp;|&nbsp;
+      <strong>C(s) ist ein Feststoff</strong> – seine Konzentration ist konstant und wird
+      in K<sub>c</sub> nicht aufgeführt (Aktivität = 1). Da die Reaktion
+      <strong>endotherm</strong> ist (ΔH &gt; 0), steigt K<sub>c</sub> mit der Temperatur:
+      Hohe Temperaturen begünstigen CO im Zähler.`,
+
+    species: [
+      { key: 'CO2', label: 'CO₂', color: '#64748b', init: 1.0, min: 0.05, max: 5, stoich: -1 },
+      { key: 'CO',  label: 'CO',  color: '#f59e0b', init: 0.0, min: 0.00, max: 6, stoich: +2 }
+    ],
+
+    calcQ(c) {
+      if (c.CO2 < 1e-12) return Infinity;
+      return (c.CO ** 2) / c.CO2;
+    },
+
+    // CO₂ − ξ,  CO + 2ξ
+    calcEquilibrium(c, Kc, P) {
+      const co2 = Math.max(c.CO2 * P, 0.001);
+      const co  = Math.max(c.CO  * P, 0.000);
+      const f = xi => {
+        const a = co2 - xi;
+        const b = co  + 2 * xi;
+        if (a <= 0 || b < 0) return NaN;
+        return (b ** 2) / a - Kc;
+      };
+      const xi = bisect(f, -co / 2 + 1e-9, co2 - 1e-9);
+      return {
+        CO2: Math.max(co2 - xi,     0.0001),
+        CO:  Math.max(co  + 2 * xi, 0.0001)
+      };
+    },
+
+    pressureNote: 'Druckerhöhung → alle Gaskonzentrationen steigen. [CO]² im Zähler ' +
+                  'wächst quadratisch, [CO₂] im Nenner nur linear → Q &gt; K<sub>c</sub> → ' +
+                  'Gleichgewicht zurück zur CO₂-Seite (Δn_gas = +1).',
+    tempNote: 'Endotherm (ΔH &gt; 0): Temperaturerhöhung → K<sub>c</sub> steigt → ' +
+              'Q &lt; K<sub>c</sub> → Gleichgewicht nach rechts (mehr CO). ' +
+              'Hohe Temperaturen sind im Hochofen für die CO-Bildung entscheidend!',
+    explainText: `Das <strong>Boudouard-Gleichgewicht</strong> beschreibt die Reaktion zwischen
+      CO₂ und Kohlenstoff (Feststoff) zu CO. Da C(s) ein Feststoff ist, taucht es
+      <strong>nicht im MWG auf</strong>: K<sub>c</sub> = [CO]²/[CO₂].
+      Die Reaktion ist <strong>endotherm</strong> (ΔH = +172 kJ/mol): Wärmezufuhr erhöht K<sub>c</sub>
+      → mehr CO. Technisch wichtig im <strong>Hochofen</strong> und bei der Kohlevergasung.
+      Druckerhöhung verschiebt das Gleichgewicht zur CO₂-Seite (Δn_gas = +1).`,
+
+    reasons: {
+      CO2up: 'Zugabe von CO₂ → [CO₂] im <strong>Nenner</strong> ↑ → Q &lt; K<sub>c</sub> → mehr CO wird gebildet.',
+      CO2dn: 'Entnahme von CO₂ → <strong>Nenner</strong> ↓ → Q &gt; K<sub>c</sub> → CO reagiert zu CO₂ zurück.',
+      COup:  'Zugabe von CO → [CO]² im <strong>Zähler</strong> ↑ (quadratisch!) → Q &gt; K<sub>c</sub> → Gleichgewicht zur Eduktseite.',
+      COdn:  'Entnahme von CO → [CO]² im <strong>Zähler</strong> ↓ → Q &lt; K<sub>c</sub> → mehr CO wird nachgebildet.'
+    }
+  }
+
+]; // Ende REACTIONS
+
+/* ================================================================
+   ZUSTAND DER SIMULATION
+   S.n = Stoffmengen (in mol bei V0 = 1 L); Konzentration c = n / V.
+   Die Reaktion läuft als Relaxation (1. Ordnung) auf das neue
+   Gleichgewicht zu; Störungen (Zugabe/Entnahme, T, p) starten sie neu.
+================================================================ */
+REACTIONS[2].liquid = true;   // Ester: Flüssigkeit im Becherglas
+REACTIONS[3].solid  = true;   // Boudouard: C(s) am Boden
+REACTIONS.forEach(r => {      // Standard- und einstellbare Startwerte
+  r.start = {}; r.def = {};
+  r.species.forEach(sp => { r.start[sp.key] = sp.init; r.def[sp.key] = sp.init; });
+});
+
+const N0 = 16, TAU = 0.9, STEP = 0.5, LW = 700, LH = 372, PW = 700, PH = 276;
+const GL = 108, GR = 508, GB = 336;   // Gefäß: links, rechts, Boden
+const dpr = Math.min(2, window.devicePixelRatio || 1);
+const cvLab = document.getElementById('cvLab'), cvPlot = document.getElementById('cvPlot');
+cvLab.width = LW * dpr;  cvLab.height = LH * dpr;
+cvPlot.width = PW * dpr; cvPlot.height = PH * dpr;
+const cx = cvLab.getContext('2d'), px = cvPlot.getContext('2d');
+
+let rxnIdx = 0, rxn = REACTIONS[0], S = {}, clk = 0;
+
+// Molekülmodelle: [dx, dy, Radius, Farbe (leer = Stofffarbe)]
+const SHAPES = {
+  N2:  [[-5,0,5.5],[5,0,5.5]],
+  H2:  [[-3.5,0,3.5],[3.5,0,3.5]],
+  NH3: [[0,0,6],[-7,5,3.2,'#fde68a'],[7,5,3.2,'#fde68a'],[0,-8,3.2,'#fde68a']],
+  NO2: [[0,0,5.5],[-7,6,4,'#ef4444'],[7,6,4,'#ef4444']],
+  N2O4:[[-4.5,0,5],[4.5,0,5],[-10,-6,3.6,'#fca5a5'],[-10,6,3.6,'#fca5a5'],[10,-6,3.6,'#fca5a5'],[10,6,3.6,'#fca5a5']],
+  AcOH:[[-9,0,4.5],[0,0,5],[9,-3,4,'#fecaca'],[9,5,3.5,'#ffffff']],
+  EtOH:[[-8,0,4.5],[1,0,5],[9,0,3.5,'#ffffff']],
+  Ester:[[-12,0,4.5],[-3,0,5],[6,0,4.5],[14,-3,4,'#a7f3d0']],
+  H2O: [[0,0,5.5],[-6,5,3,'#ffffff'],[6,5,3,'#ffffff']],
+  CO2: [[0,0,4.5,'#1e293b'],[-10,0,5],[10,0,5]],
+  CO:  [[-4.5,0,4.5,'#1e293b'],[5,0,5]]
+};
+
+const rnd = (a, b) => a + Math.random() * (b - a);
+
+function initSim() {
+  S = { started:false, simT:0, n:{}, V:1, Vt:1, T:rxn.T_init, P:1, rel:null, settled:true,
+        parts:[], pend:[], rings:[], events:[], hist:[], histAcc:0, angle:0,
+        addQ:{}, remQ:{}, prevT:rxn.T_init, prevP:1, timer:null };
+  rxn.species.forEach(sp => { S.n[sp.key] = rxn.start[sp.key]; S.addQ[sp.key] = 0; S.remQ[sp.key] = 0; });
+  syncParticles(true);
+}
+
+function concs() {
+  const c = {};
+  rxn.species.forEach(sp => { c[sp.key] = S.n[sp.key] / S.V; });
+  return c;
+}
+
+function geom() {
+  let top;
+  if (rxn.liquid) top = GB - 190;
+  else top = GB - Math.min(250, 110 * Math.pow(S.V, 0.6));
+  return { L: GL, R: GR, B: GB, top, floor: GB - (rxn.solid ? 22 : 0) };
+}
+
+/* ── Teilchen verwalten ─────────────────────────────────────── */
+function newPart(k, x, y, extra) {
+  const s = rnd(45, 85), a = rnd(0, 6.283);
+  S.parts.push(Object.assign({ k, x, y, s, vx: Math.cos(a) * s, vy: Math.sin(a) * s,
+                               a: rnd(0, 6.283), w: rnd(-2, 2) }, extra || {}));
+}
+
+function syncParticles(init) {
+  const g = geom();
+  const diff = {};
+  rxn.species.forEach(sp => {
+    const alive = S.parts.filter(p => p.k === sp.key && !p.dying);
+    diff[sp.key] = Math.min(150, Math.round(S.n[sp.key] * N0)) - alive.length;
+  });
+  // 1. Durchgang: Teilchen verschwinden (Reaktion oder Entnahme)
+  rxn.species.forEach(sp => {
+    let d = diff[sp.key];
+    while (d < 0) {
+      const alive = S.parts.filter(p => p.k === sp.key && !p.dying);
+      if (!alive.length) break;
+      const p = alive[Math.floor(Math.random() * alive.length)];
+      if (S.remQ[sp.key] > 0) { S.remQ[sp.key]--; p.dying = true; }
+      else {
+        S.pend.push({ x: p.x, y: p.y, t: clk });
+        S.rings.push({ x: p.x, y: p.y, t: clk, col: '#facc15' });
+        p.rm = true;
+      }
+      d++;
+    }
+    S.parts = S.parts.filter(p => !p.rm);
+  });
+  // 2. Durchgang: Teilchen entstehen (Reaktion oder Zugabe)
+  rxn.species.forEach(sp => {
+    let d = diff[sp.key];
+    while (d > 0) {
+      if (init) newPart(sp.key, rnd(g.L + 16, g.R - 16), rnd(g.top + 16, g.floor - 16));
+      else if (S.addQ[sp.key] > 0) {
+        S.addQ[sp.key]--;
+        const x = rnd(g.L + 30, g.R - 30);
+        newPart(sp.key, x, g.top + 10, { vy: 90, birth: clk });
+        S.rings.push({ x, y: g.top + 10, t: clk, col: '#22c55e' });
+      } else {
+        const fl = S.pend.filter(f => clk - f.t < 0.8 && !f.used);
+        let x, y;
+        if (fl.length) { const f = fl[Math.floor(Math.random() * fl.length)]; f.used = true; x = f.x; y = f.y; }
+        else { x = rnd(g.L + 16, g.R - 16); y = rnd(g.top + 16, g.floor - 16); }
+        newPart(sp.key, x, y, { birth: clk });
+        S.rings.push({ x, y, t: clk, col: '#facc15' });
+      }
+      d--;
+    }
+  });
+  S.pend = S.pend.filter(f => clk - f.t < 1);
+}
+
+function moveParticles(dt) {
+  const g = geom(), sp = Math.sqrt(S.T / rxn.T_init), r = 11;
+  S.parts.forEach(p => {
+    if (p.dying) { p.y -= 230 * dt; if (p.y < g.top - 24) p.rm = true; return; }
+    p.vx += (Math.random() - .5) * 60 * dt;  p.vy += (Math.random() - .5) * 60 * dt;
+    const m = Math.hypot(p.vx, p.vy) || 1;
+    p.vx *= p.s / m; p.vy *= p.s / m;
+    p.x += p.vx * sp * dt;  p.y += p.vy * sp * dt;  p.a += p.w * dt * sp;
+    if (p.x < g.L + r) { p.x = g.L + r; p.vx = Math.abs(p.vx); }
+    if (p.x > g.R - r) { p.x = g.R - r; p.vx = -Math.abs(p.vx); }
+    if (p.y < g.top + r) { p.y = g.top + r; p.vy = Math.abs(p.vy); }
+    if (p.y > g.floor - r) { p.y = g.floor - r; p.vy = -Math.abs(p.vy); }
+  });
+  S.parts = S.parts.filter(p => !p.rm);
+  S.rings = S.rings.filter(q => clk - q.t < 0.55);
+}
+
+/* ── Zeichnen: Reaktionsgefäß ───────────────────────────────── */
+function drawMol(p, col) {
+  const sh = SHAPES[p.k] || [[0,0,6]];
+  cx.save(); cx.translate(p.x, p.y); cx.rotate(p.a);
+  sh.forEach(([dx, dy, r, c]) => {
+    cx.beginPath(); cx.arc(dx, dy, r, 0, 6.283);
+    cx.fillStyle = c || col; cx.fill();
+    cx.lineWidth = 1; cx.strokeStyle = 'rgba(15,23,42,.35)'; cx.stroke();
+    cx.beginPath(); cx.arc(dx - r * .3, dy - r * .3, r * .32, 0, 6.283);
+    cx.fillStyle = 'rgba(255,255,255,.55)'; cx.fill();
+  });
+  cx.restore();
+}
+
+function drawLab(c, Kc, Q) {
+  const g = geom(), L = g.L, R = g.R, B = g.B, top = g.top;
+  const tn = Math.min(1, Math.max(0, (S.T - rxn.T_min) / (rxn.T_max - rxn.T_min)));
+  const hue = 215 - 210 * tn;
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  cx.clearRect(0, 0, LW, LH);
+  cx.font = '12px "Segoe UI", sans-serif';
+
+  /* Thermometer */
+  const tx = 62, lv = 0.08 + 0.92 * tn;
+  cx.fillStyle = '#e2e8f0'; cx.fillRect(tx - 7, 70, 14, 252);
+  cx.beginPath(); cx.arc(tx, 332, 16, 0, 6.283); cx.fill();
+  cx.fillStyle = `hsl(${hue},85%,50%)`;
+  cx.fillRect(tx - 4, 322 - lv * 245, 8, lv * 245 + 10);
+  cx.beginPath(); cx.arc(tx, 332, 12, 0, 6.283); cx.fill();
+  cx.fillStyle = '#1e293b'; cx.textAlign = 'center'; cx.font = 'bold 13px "Segoe UI", sans-serif';
+  cx.fillText('T = ' + Math.round(S.T) + ' K', tx, 56);
+  cx.font = '12px "Segoe UI", sans-serif';
+  if (Math.abs(S.T - rxn.T_init) > 5) {
+    cx.fillStyle = S.T > rxn.T_init ? '#dc2626' : '#2563eb';
+    cx.fillText(S.T > rxn.T_init ? '🔥 Heizen' : '❄ Kühlen', tx, 366);
+  }
+
+  /* Gefäßinhalt */
+  const wallTop = rxn.liquid ? GB - 215 : 56;
+  if (rxn.liquid) {
+    cx.fillStyle = 'rgba(125,211,252,.35)';
+    cx.beginPath(); cx.moveTo(L, top);
+    for (let x = L; x <= R; x += 8) cx.lineTo(x, top + Math.sin(x * .05 + clk * 2) * 2);
+    cx.lineTo(R, B); cx.lineTo(L, B); cx.closePath(); cx.fill();
+    cx.fillStyle = `hsla(${hue},85%,55%,.12)`; cx.fillRect(L, top, R - L, B - top);
+  } else {
+    cx.fillStyle = `hsla(${hue},85%,55%,.14)`; cx.fillRect(L, top, R - L, B - top);
+    if (rxn.id === 1) {   // braunes NO₂ färbt das Gas
+      cx.fillStyle = `rgba(146,64,14,${Math.min(.7, c.NO2 * .5)})`;
+      cx.fillRect(L, top, R - L, B - top);
+    }
+  }
+  if (rxn.solid) {   // Kohlenstoff-Stücke
+    cx.fillStyle = '#1e293b';
+    for (let x = L + 4; x < R - 10; x += 22) {
+      cx.beginPath(); cx.moveTo(x, B); cx.lineTo(x + 4, B - 16 - (x % 7)); cx.lineTo(x + 14, B - 20); cx.lineTo(x + 22, B); cx.fill();
+    }
+    cx.fillStyle = '#e2e8f0'; cx.textAlign = 'center'; cx.fillText('C(s) im Überschuss', (L + R) / 2, B - 5);
+  }
+
+  /* Reaktionsringe + Teilchen */
+  S.rings.forEach(q => {
+    const a = clk - q.t;
+    cx.beginPath(); cx.arc(q.x, q.y, 6 + a * 40, 0, 6.283);
+    cx.strokeStyle = q.col; cx.globalAlpha = Math.max(0, 1 - a / .55); cx.lineWidth = 2.5; cx.stroke();
+    cx.globalAlpha = 1;
+  });
+  const colOf = {}; rxn.species.forEach(sp => { colOf[sp.key] = sp.color; });
+  S.parts.forEach(p => {
+    cx.globalAlpha = p.dying ? Math.max(.2, (p.y - (top - 24)) / 60) : 1;
+    drawMol(p, colOf[p.k]);
+  });
+  cx.globalAlpha = 1;
+
+  /* Wärmetönung: leuchtender Rand */
+  let heatTxt = '', heatCol = '#475569';
+  if (S.rel && S.started) {
+    const pk = rxn.species.find(s => s.stoich > 0).key;
+    const fwd = S.rel.nEq[pk] > S.n[pk] + 1e-4, bwd = S.rel.nEq[pk] < S.n[pk] - 1e-4;
+    if (fwd || bwd) {
+      const releases = (fwd && rxn.dH < 0) || (bwd && rxn.dH > 0);
+      heatCol = releases ? '#ef4444' : '#3b82f6';
+      heatTxt = releases ? '🔥 Reaktion setzt Wärme frei – Gefäß erwärmt sich'
+                         : '❄ Reaktion nimmt Wärme auf – Gefäß kühlt ab';
+      cx.save(); cx.shadowColor = heatCol; cx.shadowBlur = 14 + 8 * Math.sin(clk * 6);
+      cx.strokeStyle = heatCol; cx.lineWidth = 3;
+      cx.strokeRect(L - 3, wallTop, R - L + 6, B - wallTop + 3); cx.restore();
+      for (let i = 0; i < 5; i++) {     // aufsteigende (bzw. absinkende) Wärmepfeile
+        const ph = (clk * .8 + i / 5) % 1, x = L + 40 + i * 80;
+        const y = releases ? B + 16 - ph * 40 : B - 24 + ph * 40;
+        cx.globalAlpha = Math.sin(ph * 3.14); cx.fillStyle = heatCol;
+        cx.fillText(releases ? '▲' : '▼', x, y + (releases ? 0 : 36)); cx.globalAlpha = 1;
+      }
+    }
+  }
+
+  /* Wände */
+  cx.strokeStyle = '#475569'; cx.lineWidth = 5; cx.lineJoin = 'round';
+  cx.beginPath(); cx.moveTo(L, wallTop); cx.lineTo(L, B); cx.lineTo(R, B); cx.lineTo(R, wallTop); cx.stroke();
+
+  /* Kolben (nur Gase) */
+  if (!rxn.liquid) {
+    const gr = cx.createLinearGradient(0, top - 12, 0, top);
+    gr.addColorStop(0, '#cbd5e1'); gr.addColorStop(1, '#64748b');
+    cx.fillStyle = gr; cx.fillRect(L - 6, top - 12, R - L + 12, 12);
+    cx.fillStyle = '#64748b'; cx.fillRect((L + R) / 2 - 4, 22, 8, top - 34);
+    cx.fillRect((L + R) / 2 - 34, 16, 68, 8);
+    const len = 8 + 9 * S.P;
+    cx.fillStyle = '#7c3aed';
+    [L + 60, L + 330].forEach(x => {
+      cx.fillRect(x - 2, top - 14 - len, 4, len - 6);
+      cx.beginPath(); cx.moveTo(x - 7, top - 20); cx.lineTo(x + 7, top - 20); cx.lineTo(x, top - 13); cx.fill();
+    });
+    cx.textAlign = 'left'; cx.fillStyle = '#7c3aed'; cx.font = 'bold 12px "Segoe UI", sans-serif';
+    cx.fillText('p = ' + S.P.toFixed(2) + '·p₀', (L + R) / 2 + 44, 24);
+    cx.font = '12px "Segoe UI", sans-serif';
+  } else {
+    cx.textAlign = 'center'; cx.fillStyle = '#0369a1';
+    cx.fillText('Flüssigkeit – Druck ohne Einfluss', (L + R) / 2, wallTop - 8);
+  }
+  if (heatTxt) { cx.textAlign = 'center'; cx.fillStyle = heatCol; cx.font = 'bold 12px "Segoe UI", sans-serif';
+                 cx.fillText(heatTxt, (L + R) / 2, LH - 6); cx.font = '12px "Segoe UI", sans-serif'; }
+
+  drawBalance(Kc, Q);
+}
+
+/* ── Waage: Hin- gegen Rückreaktion (r→ / r← = Kc / Q) ───────── */
+function drawBalance(Kc, Q) {
+  const pxx = 610, py = 142, Lh = 40;
+  const ratio = Q > 0 ? Kc / Q : Infinity;
+  const tgt = S.started ? Math.max(-24, Math.min(24, (isFinite(ratio) ? Math.log10(ratio) : 3) * 18)) : 0;
+  S.angle += (tgt - S.angle) * 0.12;
+  const a = S.angle * Math.PI / 180, dx = Math.cos(a) * Lh, dy = Math.sin(a) * Lh;
+  cx.textAlign = 'center'; cx.fillStyle = '#334155'; cx.font = 'bold 12px "Segoe UI", sans-serif';
+  cx.fillText('Reaktionsraten', pxx, 30);
+  cx.fillStyle = '#94a3b8';
+  cx.beginPath(); cx.moveTo(pxx - 18, 214); cx.lineTo(pxx + 18, 214); cx.lineTo(pxx, py); cx.fill();
+  cx.strokeStyle = '#334155'; cx.lineWidth = 4; cx.lineCap = 'round';
+  cx.beginPath(); cx.moveTo(pxx - dx, py - dy); cx.lineTo(pxx + dx, py + dy); cx.stroke();
+  [[-1, '#3b82f6', 'r←'], [1, '#f97316', 'r→']].forEach(([s, col, lab]) => {
+    const ex = pxx + s * dx, ey = py + s * dy;
+    cx.strokeStyle = '#64748b'; cx.lineWidth = 1.3;
+    cx.beginPath(); cx.moveTo(ex, ey); cx.lineTo(ex - 13, ey + 24); cx.moveTo(ex, ey); cx.lineTo(ex + 13, ey + 24); cx.stroke();
+    cx.fillStyle = col; cx.fillRect(ex - 16, ey + 24, 32, 6);
+    cx.font = 'bold 12px "Segoe UI", sans-serif'; cx.fillText(lab, ex, ey + 46);
+  });
+  cx.beginPath(); cx.arc(pxx, py, 4, 0, 6.283); cx.fillStyle = '#1e293b'; cx.fill();
+  cx.font = '11px "Segoe UI", sans-serif'; cx.fillStyle = '#334155';
+  cx.fillText('r→ / r← = Kc / Q', pxx, 252);
+  cx.font = 'bold 13px "Segoe UI", sans-serif';
+  cx.fillText(S.started ? (isFinite(ratio) ? ratio.toFixed(2) : '∞') : '–', pxx, 270);
+  cx.font = '11px "Segoe UI", sans-serif'; cx.fillStyle = '#64748b';
+  const rr = Math.abs(Math.log10(ratio || 1)) < 0.01 && S.started;
+  cx.fillText(!S.started ? '' : rr ? '= 1: dynamisches GG' : ratio > 1 ? 'Hinrate größer' : 'Rückrate größer', pxx, 288);
+}
+
+/* ── Zeichnen: Konzentrations-Zeit-Diagramm ─────────────────── */
+function drawPlot() {
+  const ml = 58, mr = 14, mt = 16, mb = 58, pw = PW - ml - mr, ph = PH - mt - mb;
+  px.setTransform(dpr, 0, 0, dpr, 0, 0); px.clearRect(0, 0, PW, PH);
+  px.font = '11px "Segoe UI", sans-serif';
+  if (!S.started || !S.hist.length) {
+    px.strokeStyle = '#94a3b8'; px.lineWidth = 1.5;
+    px.beginPath(); px.moveTo(ml, mt); px.lineTo(ml, mt + ph); px.lineTo(ml + pw, mt + ph); px.stroke();
+    px.fillStyle = '#64748b'; px.textAlign = 'center'; px.font = '14px "Segoe UI", sans-serif';
+    px.fillText('Starte die Reaktion – hier erscheint der Konzentrationsverlauf.', PW / 2, PH / 2);
+    return;
+  }
+  const win = 30, t1 = Math.max(win, S.simT), t0 = t1 - win;
+  let mx = 0;
+  S.hist.forEach(h => { if (h.t >= t0 - 1) rxn.species.forEach(sp => { mx = Math.max(mx, h.c[sp.key]); }); });
+  const ymax = Math.max(1, Math.ceil(mx * 1.15 * 2) / 2);
+  const X = t => ml + (t - t0) / win * pw, Y = v => mt + ph - v / ymax * ph;
+  px.textAlign = 'right'; px.fillStyle = '#64748b'; px.strokeStyle = '#e2e8f0'; px.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = mt + ph * i / 4;
+    px.beginPath(); px.moveTo(ml, y); px.lineTo(ml + pw, y); px.stroke();
+    px.fillText((ymax * (4 - i) / 4).toFixed(1), ml - 6, y + 4);
+  }
+  px.textAlign = 'center';
+  for (let t = Math.ceil(t0 / 5) * 5; t <= t1; t += 5) {
+    const x = X(t); px.beginPath(); px.moveTo(x, mt + ph); px.lineTo(x, mt + ph + 4); px.stroke();
+    px.fillText(t, x, mt + ph + 16);
+  }
+  // Gleichgewichtsphasen grün hinterlegen
+  px.fillStyle = 'rgba(34,197,94,.11)';
+  let s0 = null;
+  S.hist.forEach((h, i) => {
+    if (h.eq && s0 === null) s0 = h.t;
+    if ((!h.eq || i === S.hist.length - 1) && s0 !== null) {
+      const x0 = X(Math.max(s0, t0)), x1 = X(h.t);
+      if (x1 > x0) px.fillRect(x0, mt, x1 - x0, ph);
+      s0 = null;
+    }
+  });
+  px.save(); px.beginPath(); px.rect(ml, mt - 2, pw, ph + 4); px.clip();
+  rxn.species.forEach(sp => {
+    px.beginPath(); px.strokeStyle = sp.color; px.lineWidth = 2.8; px.lineJoin = 'round';
+    S.hist.forEach((h, i) => { const x = X(h.t), y = Y(h.c[sp.key]); i ? px.lineTo(x, y) : px.moveTo(x, y); });
+    px.stroke();
+  });
+  px.setLineDash([4, 3]); px.lineWidth = 1.3;
+  S.events.forEach((e, i) => {
+    const x = X(e.t); if (x < ml || x > ml + pw) return;
+    px.strokeStyle = '#7c3aed'; px.beginPath(); px.moveTo(x, mt); px.lineTo(x, mt + ph); px.stroke();
+    px.setLineDash([]); px.fillStyle = '#7c3aed'; px.textAlign = 'left';
+    px.fillText(e.label, x + 3, mt + 11 + (i % 3) * 12); px.setLineDash([4, 3]);
+  });
+  px.setLineDash([]); px.restore();
+  px.strokeStyle = '#94a3b8'; px.lineWidth = 1.5;
+  px.beginPath(); px.moveTo(ml, mt); px.lineTo(ml, mt + ph); px.lineTo(ml + pw, mt + ph); px.stroke();
+  px.fillStyle = '#334155'; px.textAlign = 'center'; px.fillText('t in s', ml + pw / 2, mt + ph + 32);
+  px.save(); px.translate(13, mt + ph / 2); px.rotate(-Math.PI / 2); px.textAlign = 'center';
+  px.fillText('c in mol/L', 0, 0); px.restore();
+  px.textAlign = 'left'; let lx = ml + 8;
+  rxn.species.forEach(sp => {
+    px.fillStyle = sp.color; px.fillRect(lx, PH - 14, 14, 4); px.fillStyle = '#334155';
+    px.fillText(sp.label, lx + 18, PH - 9); lx += 28 + sp.label.length * 7;
+  });
+  px.fillStyle = 'rgba(34,197,94,.5)'; px.fillRect(lx + 6, PH - 17, 12, 10);
+  px.fillStyle = '#334155'; px.fillText('Gleichgewicht', lx + 22, PH - 9);
+}
+
+/* ================================================================
+   REAKTION WECHSELN / UI AUFBAUEN
+================================================================ */
+function switchReaction(idx) {
+  rxnIdx = idx; rxn = REACTIONS[idx];
+  REACTIONS.forEach((_, i) => document.getElementById('btnRxn' + i).classList.toggle('active', i === idx));
+  document.getElementById('reactionDisplay').innerHTML = rxn.equation + ` <span class="dh">${rxn.dHLabel}</span>`;
+  document.getElementById('explainReactionText').innerHTML = rxn.explainText;
+  const slTemp = document.getElementById('slTemp');
+  slTemp.min = rxn.T_min; slTemp.max = rxn.T_max; slTemp.value = rxn.T_init;
+  document.getElementById('slTempVal').textContent = rxn.T_init + ' K';
+  document.getElementById('pressureNote').innerHTML = rxn.pressureNote;
+  document.getElementById('tempNote').innerHTML = rxn.tempNote;
+  document.getElementById('mwgFormula').innerHTML = rxn.mwgHTML;
+  document.getElementById('mwgNote').innerHTML = rxn.mwgNote;
+  const slP = document.getElementById('slPressure');
+  slP.value = 1.0; slP.disabled = (rxn.deltaN === 0);
+  document.getElementById('slPressureVal').textContent = '1.00×p₀';
+  clearTimeout(S.timer);
+  initSim();
+  buildDynamicUI();
+  buildStartUI();
+  setStartedUI(false);
+  showStartInfo();
+}
+
+function showStartInfo() {
+  const ed = rxn.species.filter(s => s.stoich < 0), pr = rxn.species.filter(s => s.stoich > 0);
+  const st = rxn.start, f = k => st[k].toFixed(2);
+  const base = st[ed[0].key] / -ed[0].stoich;
+  const stoich = ed.every(s => Math.abs(st[s.key] / -s.stoich - base) < 1e-6) && pr.every(s => st[s.key] === 0);
+  const vals = rxn.species.map(s => `c(${s.label}) = ${f(s.key)} mol/L`).join(', ');
+  const edZero = ed.every(s => st[s.key] === 0), prSum = pr.reduce((a, s) => a + st[s.key], 0);
+  if (startTotal() <= 0) {
+    updateInfoBox('none', 'Ausgangszustand vor Reaktionsbeginn',
+      `Alle Konzentrationen sind 0 mol/L. Stelle mindestens bei einem Stoff c₀ &gt; 0 mol/L ein, um die Reaktion zu starten.`);
+  } else if (edZero && prSum > 0) {
+    updateInfoBox('none', 'Ausgangszustand vor Reaktionsbeginn (Start von der Produktseite)',
+      `Es liegen nur Produkte vor: ${vals}.<br>
+       Nach dem Start überwiegt die <strong>Rückreaktion</strong>, bis Q = K<sub>c</sub> gilt. Mit <strong>„Standardwerte“</strong> kehrst du zum stöchiometrischen Ausgangszustand zurück.`);
+  } else if (stoich) {
+    const ratio = ed.length > 1
+      ? `${ed.map(s => s.label).join(' : ')} = ${ed.map(s => -s.stoich).join(' : ')}`
+      : `nur ${ed[0].label}`;
+    updateInfoBox('none', 'Ausgangszustand vor Reaktionsbeginn (Standard)',
+      `Edukte im stöchiometrischen Verhältnis (${ratio}), Produkte 0 mol/L: ${vals}${rxn.solid ? '; C(s) liegt im Überschuss vor' : ''}.<br>
+       Die Ausgangskonzentrationen lassen sich im blauen Kasten ändern. Drücke <strong>„Reaktion starten“</strong> – danach kannst du das Gleichgewicht stören.`);
+  } else {
+    updateInfoBox('none', 'Ausgangszustand vor Reaktionsbeginn (eingestellt)',
+      `Eigene Ausgangskonzentrationen: ${vals}.<br>
+       Mit <strong>„Standardwerte“</strong> stellst du den stöchiometrischen Ausgangszustand wieder her. Drücke <strong>„Reaktion starten“</strong>, um das Gleichgewicht einzustellen.`);
+  }
+  document.getElementById('shiftArrow').textContent = '⇌';
+  document.getElementById('shiftArrow').style.color = 'var(--border)';
+}
+
+function startTotal() { return rxn.species.reduce((a, sp) => a + rxn.start[sp.key], 0); }
+function updateStartBtn(on) {
+  const running = (on === undefined) ? S.started : on;
+  document.getElementById('btnStart').disabled = running || startTotal() <= 0;
+}
+
+function buildStartUI() {
+  const g = document.getElementById('startGrid'); g.innerHTML = '';
+  rxn.species.forEach(sp => {
+    const mn = 0;
+    const row = document.createElement('div'); row.className = 'start-row';
+    row.innerHTML = `<span class="lab"><span class="dot" style="background:${sp.color}"></span>${sp.label}</span>
+      <input type="range" id="st_${sp.key}" min="${mn}" max="${sp.max}" step="0.1" value="${rxn.start[sp.key]}"
+             oninput="onStartSlider('${sp.key}', this.value)">
+      <span class="sv" id="stv_${sp.key}">${rxn.start[sp.key].toFixed(1)} mol/L</span>`;
+    g.appendChild(row);
+  });
+}
+
+function onStartSlider(key, v) {
+  if (S.started) return;
+  v = parseFloat(v);
+  rxn.start[key] = v; S.n[key] = v;
+  document.getElementById('stv_' + key).textContent = v.toFixed(1) + ' mol/L';
+  S.parts = []; S.pend = []; S.rings = [];
+  syncParticles(true);
+  updateStartBtn();
+  showStartInfo();
+}
+
+function resetStartValues() {
+  rxn.species.forEach(sp => { rxn.start[sp.key] = rxn.def[sp.key]; });
+  switchReaction(rxnIdx);
+}
+
+function setStartedUI(on) {
+  updateStartBtn(on);
+  document.getElementById('btnStart').textContent = on ? '✓ Reaktion läuft' : '▶ Reaktion starten';
+  document.getElementById('ctrlWrap').classList.toggle('ctrl-locked', !on);
+  document.querySelectorAll('#startGrid input').forEach(i => { i.disabled = on; });
+}
+
+function buildDynamicUI() {
+  const chartArea = document.getElementById('chartArea'); chartArea.innerHTML = '';
+  const chartLabels = document.getElementById('chartLabels'); chartLabels.innerHTML = '';
+  const legend = document.getElementById('legend'); legend.innerHTML = '';
+  const concDiv = document.getElementById('concSliders'); concDiv.innerHTML = '';
+  rxn.species.forEach(sp => {
+    const bar = document.createElement('div');
+    bar.className = 'bar'; bar.id = 'bar_' + sp.key; bar.style.background = sp.color; bar.style.height = '0%';
+    chartArea.appendChild(bar);
+    const item = document.createElement('div'); item.className = 'chart-label-item';
+    item.innerHTML = `<span class="bar-label" style="color:${sp.color}">${sp.label}</span>
+                      <span class="bar-value" id="val_${sp.key}">–</span>`;
+    chartLabels.appendChild(item);
+    const lg = document.createElement('div'); lg.className = 'legend-item';
+    lg.innerHTML = `<div class="legend-dot" style="background:${sp.color}"></div>${sp.label}`;
+    legend.appendChild(lg);
+    const row = document.createElement('div'); row.className = 'slider-row';
+    row.innerHTML = `
+      <label style="color:${sp.color};min-width:80px;">${sp.label}</label>
+      <button class="btn-adj minus" onclick="adjust('${sp.key}',-1)">− ${STEP} mol/L</button>
+      <button class="btn-adj plus"  onclick="adjust('${sp.key}',1)">+ ${STEP} mol/L</button>
+      <span class="val" id="slVal_${sp.key}" style="min-width:92px;">0.00 mol/L</span>`;
+    concDiv.appendChild(row);
+  });
+  document.getElementById('arrowLabelLeft').textContent  = rxn.species.filter(s => s.stoich < 0).map(s => s.label).join(' + ');
+  document.getElementById('arrowLabelRight').textContent = rxn.species.filter(s => s.stoich > 0).map(s => s.label).join(' + ');
+}
+
+function updateBars(c) {
+  const mx = Math.max(rxn.maxConc, ...rxn.species.map(s => c[s.key] * 1.05));
+  rxn.species.forEach(sp => {
+    const bar = document.getElementById('bar_' + sp.key), on = c[sp.key] > 1e-6;
+    bar.style.height = on ? Math.min(100, c[sp.key] / mx * 100).toFixed(1) + '%' : '0%';
+    bar.style.minHeight = on ? '3px' : '0';
+    bar.style.visibility = on ? 'visible' : 'hidden';
+    document.getElementById('val_' + sp.key).innerHTML = (on ? c[sp.key] : 0).toFixed(3) + '<br>mol/L';
+  });
+}
+
+function updateKcDisplay(Kc, T) {
+  const s = fmtNum(Kc, 4);
+  document.getElementById('kcVal').textContent = s;
+  document.getElementById('tVal').textContent = Math.round(T) + ' K';
+  document.getElementById('kcTDisplay').textContent = s;
+  document.getElementById('tempDisplay').textContent = Math.round(T) + ' K';
+}
+
+/* ================================================================
+   Q / Kc – LIVE-ANZEIGE AKTUALISIEREN
+================================================================ */
+function updateQKc(Q, Kc) {
+  const qStr  = fmtNum(Q,  4);
+  const kcStr = fmtNum(Kc, 4);
+
+  document.getElementById('qVal').textContent   = qStr;
+  document.getElementById('kcVal2').textContent = kcStr;
+
+  const cmpEl    = document.getElementById('qkcCompare');
+  const statusEl = document.getElementById('qkcStatus');
+  const rel      = Math.abs(Q - Kc) / (Kc + 1e-12);
+
+  if (rel < 0.02) {
+    // Gleichgewicht
+    cmpEl.textContent  = '=';
+    cmpEl.className    = 'qkc-compare eq';
+    statusEl.textContent = '⇌ Gleichgewicht';
+    statusEl.className   = 'qkc-status eq';
+  } else if (Q < Kc) {
+    // Vorwärtsreaktion
+    cmpEl.textContent  = '<';
+    cmpEl.className    = 'qkc-compare lt';
+    statusEl.textContent = '→ Reaktion vorwärts';
+    statusEl.className   = 'qkc-status lt';
+  } else {
+    // Rückwärtsreaktion
+    cmpEl.textContent  = '>';
+    cmpEl.className    = 'qkc-compare gt';
+    statusEl.textContent = '← Reaktion rückwärts';
+    statusEl.className   = 'qkc-status gt';
+  }
+}
+
+/* ================================================================
+   RICHTUNGSPFEIL
+================================================================ */
+function updateArrow(shift, prodColor, edukColor) {
+  const el = document.getElementById('shiftArrow');
+  el.className = 'arrow-indicator';
+  if      (shift === 'right') { el.style.color = prodColor; el.textContent = '→'; }
+  else if (shift === 'left')  { el.style.color = edukColor; el.textContent = '←'; }
+  else                        { el.style.color = 'var(--border)'; el.textContent = '⇌'; }
+}
+
+/* ================================================================
+   INFO-KASTEN
+================================================================ */
+function updateInfoBox(shift, dir, why) {
+  const box = document.getElementById('infoBox');
+  box.className = 'info-box ' + (shift === 'none' ? 'none' : shift);
+  document.getElementById('infoTitle').innerHTML = dir;
+  document.getElementById('infoText').innerHTML  = why;
+}
+
+/* ================================================================
+   VERSCHIEBUNGSRICHTUNG
+================================================================ */
+function calcShift(Q, Kc) {
+  const rel = Math.abs(Q - Kc) / (Kc + 1e-12);
+  if (rel < 0.02) return 'none';
+  return Q < Kc ? 'right' : 'left';
+}
+
+/* ================================================================
+   BEGRÜNDUNGSTEXT
+================================================================ */
+function buildReason(trigger, shift, T, P) {
+  const prodLabel = rxn.species.filter(s => s.stoich > 0).map(s => s.label).join(' + ');
+  const edukLabel = rxn.species.filter(s => s.stoich < 0).map(s => s.label).join(' + ');
+  const prodColor = rxn.species.find(s => s.stoich > 0)?.color || '#f97316';
+  const edukColor = rxn.species.find(s => s.stoich < 0)?.color || '#3b82f6';
+
+  const dir = shift === 'right'
+    ? `➡ Verschiebung zur <strong>Produktseite</strong> (mehr ${prodLabel})`
+    : shift === 'left'
+    ? `⬅ Verschiebung zur <strong>Eduktseite</strong> (mehr ${edukLabel})`
+    : `⇌ <strong>Kein Netto-Effekt</strong> – Gleichgewicht nahezu unverändert`;
+
+  let why = rxn.reasons[trigger] || '';
+
+  // Temperatur – Vorzeichen von dH bestimmt die Richtung
+  if (trigger === 'Tup') {
+    why = rxn.dH < 0
+      ? `Temperaturerhöhung auf ${T} K (exotherm, ΔH &lt; 0): K<sub>c</sub> sinkt →
+         Q &gt; K<sub>c</sub> → <strong>Nenner</strong> des MWG relativ zu groß →
+         Reaktion läuft rückwärts zur Eduktseite.`
+      : `Temperaturerhöhung auf ${T} K (endotherm, ΔH &gt; 0): K<sub>c</sub> steigt →
+         Q &lt; K<sub>c</sub> → <strong>Zähler</strong> des MWG relativ zu klein →
+         Reaktion läuft vorwärts zur Produktseite.`;
+  } else if (trigger === 'Tdn') {
+    why = rxn.dH < 0
+      ? `Temperatursenkung auf ${T} K (exotherm): K<sub>c</sub> steigt →
+         Q &lt; K<sub>c</sub> → <strong>Zähler</strong> des MWG relativ zu klein →
+         Reaktion läuft vorwärts (mehr Produkte).`
+      : `Temperatursenkung auf ${T} K (endotherm): K<sub>c</sub> sinkt →
+         Q &gt; K<sub>c</sub> → Reaktion läuft rückwärts zur Eduktseite.`;
+  }
+
+  // Druck
+  if (trigger === 'Pup' || trigger === 'Pdn') {
+    if (rxn.deltaN === 0) {
+      why = `Druckänderung: Δn_gas = 0 – alle Konzentrationen ändern sich proportional,
+             Zähler und Nenner des MWG ändern sich gleich stark → Q bleibt gleich →
+             <strong>kein Einfluss</strong> auf die Gleichgewichtslage.`;
+    } else if (trigger === 'Pup') {
+      const ziel = rxn.deltaN < 0
+        ? `Produktseite (${prodLabel})`
+        : `Eduktseite (${edukLabel})`;
+      why = `Druckerhöhung auf ${P.toFixed(2)}×p₀: Konzentrationen steigen.
+             Durch Δn = ${rxn.deltaN} ändern sich Zähler und Nenner des MWG ungleich →
+             Q verschiebt sich → Gleichgewicht zur ${ziel} (weniger Gasmole).`;
+    } else {
+      const ziel = rxn.deltaN < 0
+        ? `Eduktseite (${edukLabel})`
+        : `Produktseite (${prodLabel})`;
+      why = `Drucksenkung auf ${P.toFixed(2)}×p₀: Konzentrationen sinken.
+             Durch Δn = ${rxn.deltaN} verschiebt sich Q → Gleichgewicht zur ${ziel}
+             (mehr Gasmole).`;
+    }
+  }
+
+  if (trigger === 'start') {
+    why = 'Reaktionsstart: Es liegen nur Edukte vor (Produkte 0 mol/L), also ist Q = 0 &lt; K<sub>c</sub>. ' +
+          'Die Hinreaktion überwiegt, bis Q = K<sub>c</sub> gilt – das Gleichgewicht ist erreicht. ' +
+          'Danach kannst du es stören und das Prinzip von Le Chatelier beobachten.';
+  }
+  if (trigger === 'reset') {
+    why = 'Ausgangszustand wiederhergestellt. Verändere einen Parameter – ' +
+          'beobachte, wie sich Q von K<sub>c</sub> unterscheidet und das System reagiert.';
+  }
+
+  return { dir, why, prodColor, edukColor };
+}
+
+/* ================================================================
+   STÖRUNG ANWENDEN: neues Gleichgewicht berechnen, Relaxation starten
+================================================================ */
+function disturb(trigger, label) {
+  const Kc = calcKcVantHoff(rxn, S.T), c = {};
+  rxn.species.forEach(sp => { c[sp.key] = S.n[sp.key] / S.Vt; });
+  const Q = rxn.calcQ(c), eqc = rxn.calcEquilibrium(c, Kc, 1), nEq = {};
+  rxn.species.forEach(sp => { nEq[sp.key] = eqc[sp.key] * S.Vt; });
+  S.rel = { n0: Object.assign({}, S.n), nEq, t0: S.simT };
+  S.settled = false;
+  if (label) S.events.push({ t: S.simT, label });
+  const shift = calcShift(Q, Kc);
+  const r = buildReason(trigger, shift, S.T, S.P);
+  updateArrow(shift, r.prodColor, r.edukColor);
+  updateInfoBox(shift, r.dir, r.why);
+}
+
+function startReaction() {
+  if (S.started) return;
+  S.started = true;
+  S.hist.push({ t: 0, c: concs(), eq: false });
+  setStartedUI(true);
+  disturb('start', 'Start');
+}
+
+function adjust(key, dir) {
+  if (!S.started) return;
+  const sp = rxn.species.find(s => s.key === key), amt = STEP * S.Vt;
+  if (dir > 0) { S.n[key] += amt; S.addQ[key] += Math.round(amt * N0); }
+  else {
+    const a = Math.min(amt, S.n[key]); if (a < 1e-6) return;
+    S.n[key] -= a; S.remQ[key] += Math.round(a * N0);
+  }
+  disturb(key + (dir > 0 ? 'up' : 'dn'), (dir > 0 ? '+ ' : '− ') + sp.label);
+}
+
+function onTemperatureChange(v) {
+  S.T = parseInt(v);
+  document.getElementById('slTempVal').textContent = S.T + ' K';
+  if (!S.started) { S.prevT = S.T; return; }
+  clearTimeout(S.timer);
+  S.timer = setTimeout(() => {
+    if (S.T === S.prevT) return;
+    const up = S.T > S.prevT; S.prevT = S.T;
+    disturb(up ? 'Tup' : 'Tdn', 'T ' + (up ? '↑ ' : '↓ ') + S.T + ' K');
+  }, 350);
+}
+
+function onPressureChange(v) {
+  S.P = parseFloat(v); S.Vt = 1 / S.P;
+  document.getElementById('slPressureVal').textContent = S.P.toFixed(2) + '×p₀';
+  if (!S.started) { S.prevP = S.P; S.V = S.Vt; return; }
+  clearTimeout(S.timer);
+  S.timer = setTimeout(() => {
+    if (S.P === S.prevP) return;
+    const up = S.P > S.prevP; S.prevP = S.P;
+    disturb(up ? 'Pup' : 'Pdn', 'p ' + (up ? '↑ ' : '↓ ') + S.P.toFixed(2) + '·p₀');
+  }, 350);
+}
+
+function resetAll() { switchReaction(rxnIdx); }
+
+function toggleBox(btn) {
+  const body = btn.closest('.card, .mwg-card').querySelector('.box-body');
+  body.classList.toggle('hidden');
+  btn.closest('.card, .mwg-card').classList.toggle('collapsed', body.classList.contains('hidden'));
+  btn.textContent = body.classList.contains('hidden') ? 'Einblenden' : 'Ausblenden';
+  const all = document.querySelectorAll('.box-body');
+  document.body.classList.toggle('all-collapsed', document.querySelectorAll('.box-body.hidden').length === all.length);
+}
+
+/* ================================================================
+   HAUPTSCHLEIFE
+================================================================ */
+let lastTs = 0;
+function frame(ts) {
+  const dt = Math.min(0.05, (ts - (lastTs || ts)) / 1000); lastTs = ts;
+  clk += dt;
+  if (S.started) S.simT += dt;
+
+  S.V += (S.Vt - S.V) * Math.min(1, dt * 5);
+  if (Math.abs(S.Vt - S.V) < 1e-3) S.V = S.Vt;
+
+  if (S.rel) {
+    const f = Math.exp(-(S.simT - S.rel.t0) / TAU);
+    rxn.species.forEach(sp => {
+      S.n[sp.key] = S.rel.nEq[sp.key] + (S.rel.n0[sp.key] - S.rel.nEq[sp.key]) * f;
+    });
+    if (f < 0.004 && S.V === S.Vt) {
+      rxn.species.forEach(sp => { S.n[sp.key] = S.rel.nEq[sp.key]; });
+      S.rel = null; S.settled = true;
+    }
+  }
+
+  syncParticles(false);
+  moveParticles(dt);
+
+  const c = concs(), Kc = calcKcVantHoff(rxn, S.T), Q = rxn.calcQ(c);
+  if (S.started) {
+    S.histAcc += dt;
+    if (S.histAcc >= 0.05) {
+      S.histAcc = 0;
+      S.hist.push({ t: S.simT, c, eq: S.settled });
+      while (S.hist.length && S.hist[0].t < S.simT - 40) S.hist.shift();
+    }
+  }
+  updateBars(c);
+  updateKcDisplay(Kc, S.T);
+  updateQKc(Q, Kc);
+  rxn.species.forEach(sp => {
+    document.getElementById('slVal_' + sp.key).textContent = c[sp.key].toFixed(2) + ' mol/L';
+  });
+  drawLab(c, Kc, Q);
+  drawPlot();
+  requestAnimationFrame(frame);
+}
+
+/* ================================================================
+   INITIALISIERUNG
+================================================================ */
+(function init() {
+  switchReaction(0);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

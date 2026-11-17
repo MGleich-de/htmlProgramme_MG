@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Redox-Titrationslabor</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--tx:#18212f;--mu:#5b6a80;--ac:#2f5fd0;--ln:#dbe2ee;--ok:#1b9a55;--bad:#d44;--gl:#e8f0fa;--st:#9aa7ba;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1520;--card:#18212f;--tx:#e8edf5;--mu:#97a5bb;--ac:#6f9bff;--ln:#2a3649;--gl:#1f2b3d;--st:#55637a}}
+:root[data-theme="dark"]{--bg:#0f1520;--card:#18212f;--tx:#e8edf5;--mu:#97a5bb;--ac:#6f9bff;--ln:#2a3649;--gl:#1f2b3d;--st:#55637a}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:1050px;margin:0 auto;padding:14px}
+h1{margin:0;font-size:1.6rem}.au{color:var(--mu);margin:0 0 12px;font-size:.9rem}
+.g{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:14px}@media(max-width:760px){.g{grid-template-columns:1fr}}
+.c{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:12px;margin-bottom:14px}
+.c h2{margin:0 0 8px;font-size:1.02rem}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+button,select,input{font:inherit;color:var(--tx)}
+button{background:var(--card);border:1px solid var(--ln);border-radius:10px;padding:8px 12px;cursor:pointer}
+button.on,button.p{background:var(--ac);color:#fff;border-color:var(--ac)}button:disabled{opacity:.4;cursor:not-allowed}
+select,input{background:var(--card);border:1px solid var(--ln);border-radius:8px;padding:6px 8px}
+.st{display:flex;flex-direction:column;gap:6px}
+.s{display:flex;gap:8px;align-items:flex-start;text-align:left;width:100%}
+.s i{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--st);display:grid;place-items:center;font-style:normal;font-size:.75rem}
+.s.d i{background:var(--ok);border-color:var(--ok);color:#fff}.s.n{border-color:var(--ac)}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.ro{font:700 1.8rem ui-monospace,Menlo,monospace;background:var(--gl);border-radius:10px;padding:6px 12px;display:inline-block}
+.msg{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--gl);font-size:.9rem}
+svg text{fill:var(--tx);font-size:10px}
+#liq{transition:fill .9s,fill-opacity .9s}#fl{transition:opacity 1.4s;opacity:0}
+.drop{opacity:0}.drop.go{animation:fall .22s ease-in}
+@keyframes fall{0%{opacity:1;transform:translateY(0)}90%{opacity:1}100%{opacity:0;transform:translateY(var(--fy,80px))}}
+#hd{transform-origin:147px 256px;transition:transform .2s}#stage.open #hd{transform:rotate(60deg)}#bore{opacity:0}#stage.open #bore{opacity:1}#bl{transition:y .5s linear,height .5s linear}
+#bar{animation:sp .5s linear infinite;transform-origin:155px 376px}@keyframes sp{to{transform:scaleX(-1)}}
+canvas{width:100%;border-radius:10px;background:var(--gl)}
+.lg{display:flex;flex-wrap:wrap;gap:8px;font-size:.8rem;margin-top:6px}.lg b{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:3px}
+table{border-collapse:collapse;width:100%;font-size:.85rem}td,th{border-bottom:1px solid var(--ln);padding:4px 6px;text-align:left}
+.eq{font-size:1rem;padding:4px 0}.ok{color:var(--ok);font-weight:700}.bad{color:var(--bad);font-weight:700}
+details{margin:6px 0}summary{cursor:pointer;font-weight:600}
+.bk{display:flex;gap:10px;flex-wrap:wrap}.bk svg{width:130px}
+label{font-size:.88rem}
+</style></head><body><div class="w">
+<h1>🧪 Redox-Titrationslabor</h1><p class="au">Autor: Matthias Gleich · Iodometrie &amp; Manganometrie · Elektrochemie, Kursstufe</p>
+<div class="tabs"><button id="ma" class="on">1a · Direkte Titration</button><button id="mb">1b · Rücktitration</button><button id="mm">2 · Manganometrie</button></div>
+<div class="g"><div>
+<div class="c"><svg id="stage" viewBox="0 0 320 440" width="100%">
+<defs><clipPath id="fc"><path d="M140 262V292L106 368Q103 382 120 382H190Q207 382 204 368L170 292V262Z"/></clipPath>
+<linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".3" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".25"/></linearGradient></defs>
+<rect x="20" y="10" width="8" height="410" rx="3" fill="var(--st)"/><rect x="20" y="418" width="240" height="10" rx="4" fill="var(--st)"/>
+<rect x="28" y="26" width="114" height="6" rx="3" fill="var(--st)"/><rect x="142" y="23" width="26" height="12" rx="3" fill="var(--st)"/>
+<rect x="62" y="384" width="190" height="34" rx="7" fill="#7b8798"/><rect x="62" y="384" width="190" height="8" rx="4" fill="#9aa7ba"/><circle cx="226" cy="405" r="8" fill="#4b5668" stroke="#cfd7e3"/><line x1="226" y1="399" x2="226" y2="403" stroke="#fff" stroke-width="2"/><circle cx="76" cy="405" r="3" fill="#4ade80"/><text x="88" y="409" style="fill:#fff;font-size:9px">Magnetrührer</text>
+<path d="M146 22V236L152 246V282H158V246L164 236V22Z" fill="var(--gl)" fill-opacity=".6"/>
+<rect id="bl" x="147" y="236" width="16" height="0" fill="#c47a2a" fill-opacity=".85"/><path id="bl2" d="M147 236H163L158 246H152Z" fill="#c47a2a" fill-opacity=".85" opacity="0"/><g id="tk"></g>
+<path d="M146 22V236L152 246V282M164 22V236L158 246V282" fill="none" stroke="var(--st)" stroke-width="2"/>
+<rect x="147" y="250" width="16" height="12" rx="2" fill="#aab6c8" stroke="var(--st)"/><rect id="bore" x="153" y="250" width="4" height="12" fill="var(--gl)"/><g id="hd"><rect x="123" y="253" width="24" height="6" rx="3" fill="#d33"/></g>
+<rect id="strm" x="154" y="282" width="2" height="0" fill="#c47a2a"/><circle id="d" class="drop" cx="155" cy="286" r="3.5" fill="#c47a2a"/>
+<path d="M140 262V292L106 368Q103 382 120 382H190Q207 382 204 368L170 292V262Z" fill="var(--gl)" fill-opacity=".45"/>
+<g clip-path="url(#fc)"><rect id="liq" x="80" y="390" width="150" height="0" fill="#dcecf7" fill-opacity=".5"/><rect id="fl" x="80" y="262" width="150" height="130" fill="#b9701a"/><rect id="bar" x="140" y="373" width="30" height="7" rx="3" fill="#fff" fill-opacity=".9"/></g>
+<path d="M140 262V292L106 368Q103 382 120 382H190Q207 382 204 368L170 292V262Z" fill="url(#gl)"/><path d="M140 262V292L106 368Q103 382 120 382H190Q207 382 204 368L170 292V262" fill="none" stroke="var(--st)" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="182" y="270">Erlenmeyerkolben</text></svg>
+<div style="text-align:center">Ablesung: <span class="ro" id="ro">0,00 mL</span></div>
+<div class="row" id="ctl" style="justify-content:center"><button id="b1">Tropfen</button><button id="b2">Fein +0,1 mL</button><button id="b3">Schnell +1 mL</button></div>
+<div class="msg" id="msg"></div></div></div>
+<div>
+<div class="c"><h2>Arbeitsschritte</h2><div class="st" id="steps"></div>
+<div class="row"><label id="sl" hidden>Probe: <select id="smp"><option value="w">Weißburgunder trocken</option><option value="s">5 mL Natriumsulfitlösung</option></select></label>
+<label id="al" hidden>Analyse: <select id="ana"><option value="fe">Eisen(II) (Mohrsches Salz)</option><option value="ox">Oxalsäure / Oxalat</option><option value="h2o2">Wasserstoffperoxid</option><option value="ca">Calcium (als CaC₂O₄)</option><option value="csb">CSB / Permanganat-Index</option></select></label><label id="cl">c(I₂) <input id="cI" type="number" min="0.05" max="0.1" step="0.005" value="0.05" style="width:70px"> mol/L</label>
+<button id="nw">🎲 Neue Probe</button><button id="rs">↺ Zurücksetzen</button></div></div>
+<div class="c" id="fv" hidden><h2>Folgeversuche A &amp; B</h2><div class="row" style="margin:0 0 8px"><button id="fa">A: Ba(OH)₂ zugeben</button><button id="fb">B: AgNO₃ zugeben</button></div>
+<div class="bk"><div><svg viewBox="0 0 130 120" id="bA"></svg><div id="oA" style="font-size:.85rem"></div></div><div><svg viewBox="0 0 130 120" id="bB"></svg><div id="oB" style="font-size:.85rem"></div></div></div>
+<details><summary>M1 Hilfekarte (A)</summary>Bariumhydroxidlösung enthält Ba²⁺-Ionen. Mit Sulfat-Ionen (SO₄²⁻) bilden sie schwerlösliches Bariumsulfat.</details>
+<details><summary>M2 Hilfekarte (B)</summary>Silbernitratlösung weist Halogenid-Ionen nach. Silberiodid fällt als gelblicher Niederschlag aus.</details></div>
+<div class="c"><h2>Teilchenansicht</h2><label style="display:block;margin-bottom:6px"><input type="checkbox" id="all"> Alle Stoffteilchen in Lösung anzeigen (außer Wasser)</label><p id="pn" style="margin:0 0 8px;font-size:.82rem;color:var(--mu)">Vereinfachung zur Übersichtlichkeit: Gezeigt werden nur die Teilchen der Reaktionsgleichung, im stöchiometrischen Verhältnis der Gleichung. Wasser, Zuschauerionen (z. B. Na⁺, K⁺, Cl⁻) und die Stärke sind weggelassen; die Teilchenzahlen sind nur Verhältniszahlen, nicht die realen Stoffmengen.</p><canvas id="pc" width="480" height="230"></canvas><div class="lg" id="lg"></div></div>
+<div class="c"><h2>Auswertung</h2><div class="row" style="margin:0 0 8px"><button id="ev" class="p" disabled>Auswertung anzeigen</button></div>
+<div id="evo" style="font-size:.92rem"></div></div>
+<div class="c"><h2>Reaktionsgleichungen</h2><details><summary>Gleichungen einblenden</summary><div id="eqs"></div></details>
+<details><summary>Fehlerdiskussion</summary><div id="fd"></div></details></div>
+<div class="c"><h2>Protokoll</h2><table><thead><tr><th>#</th><th>Schritt</th><th>Beobachtung</th></tr></thead><tbody id="lg2"></tbody></table></div>
+</div></div></div>
+<script>
+const $=s=>document.querySelector(s),F=(x,d=2)=>x.toFixed(d).replace('.',',');
+const ox=(t,c)=>`<span style="color:${c};font-weight:700">${t}</span>`;
+let S,mode='a';
+const R=(a,b,s)=>+(a+Math.round(Math.random()*(b-a)/s)*s).toFixed(3);
+function init(nw){const o=S||{};S={cI:+$('#cI').value||.05,ct:.1,V:0,step:0,bf:0,log:[],
+ cS:nw||!o.cS?R(.05,.10,.001):o.cS,so2:nw||!o.so2?R(60,220,1):o.so2,wine:mode=='b'&&$('#smp').value=='w'};
+ if(mode=='b'&&!S.wine&&S.cS>.09)S.cS=.09;$('#fv').hidden=true;['A','B'].forEach(k=>{$('#b'+k).innerHTML='';$('#o'+k).textContent=''});$('#evo').innerHTML='';
+ if(mode=='m'){const kk=$('#ana').value;S.m=(!nw&&o.m&&o.m.key==kk)?o.m:MM(kk)}
+ leg();$('#eqs').innerHTML=mode=='m'?S.m.eq:mode=='a'?EQA:EQB;$('#fd').innerHTML=FD[mode=='m'?S.m.key:mode];steps();draw();}
+const Vp=()=>mode=='a'||!S.wine?5:50;
+const nS=()=>mode=='a'||!S.wine?S.cS*.005:S.so2*.05/64000;
+const rest=()=>10-nS()*1000/S.cI;               // mL I2-Lsg. im Ueberschuss (1b)
+const Veq=()=>mode=='m'?S.m.veq:mode=='a'?S.cS*5/S.cI:rest()*S.cI*2/S.ct;
+const left=()=>mode=='a'?0:rest()-S.V*S.ct/2/S.cI;
+const reached=()=>mode!='b'?S.V>Veq()+1e-6:left()<=1e-6;
+const ST={a:['5 mL Natriumsulfitlösung mit Vollpipette in den Kolben geben','1–2 mL verdünnte Salzsäure zugeben','1–2 mL Stärkelösung zugeben','Bürette bis zur Nullmarke mit Iodlösung füllen (0,05 mol/L)','Titrieren, bis die Blaufärbung bleibt'],
+b:['Probe in den Erlenmeyerkolben geben','ca. 5 mL Stärkelösung zugeben','10 mL Iodlösung mit Vollpipette zugeben','Bürette bis zur Nullmarke mit Thiosulfatlösung füllen (0,1 mol/L)','Titrieren bis blau → farblos']};
+const LG={a:['Sulfitlösung (5 mL) im Kolben: farblos','Salzsäure: keine Gasentwicklung','Stärkelösung: unverändert farblos','Bürette gefüllt, V = 0,00 mL','Titration'],b:['Probe im Kolben','Stärke zugegeben','Iodlösung zugegeben: Blaufärbung (Iod im Überschuss)','Bürette gefüllt, V = 0,00 mL','Titration']};
+function steps(){const t=(mode=='m'?S.m.st:ST[mode]).slice();if(mode=='b')t[0]=S.wine?'50 mL Weißwein in den Erlenmeyerkolben geben':'5 mL Natriumsulfitlösung in den Erlenmeyerkolben geben';
+ $('#steps').innerHTML=t.map((x,i)=>`<button class="s ${i<S.step?'d':i==S.step?'n':''}" data-i="${i}" ${i!=S.step||i==4?'disabled':''}><i>${i<S.step?'✓':i+1}</i><span>${x}</span></button>`).join('');
+ document.querySelectorAll('.s').forEach(b=>b.onclick=()=>doStep(+b.dataset.i));}
+function log(a,b){S.log.push([a,b]);$('#lg2').innerHTML=S.log.map((r,i)=>`<tr><td>${i+1}</td><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');}
+function doStep(i){if(i!=S.step)return;S.step++;log((mode=='m'?S.m.st:ST[mode])[i].replace(/ \(.*\)/,''),(mode=='m'?S.m.lg:LG[mode])[i]);
+ if(i==3){const t0=performance.now();(function f(t){S.bf=Math.min(1,(t-t0)/1200);draw();if(S.bf<1)requestAnimationFrame(f)})(t0)}
+ steps();draw();}
+let busy=false;const bc=()=>mode=='a'?'#c47a2a':mode=='m'?'#8a1f7a':'#bfe0f5';
+function titr(a){if(S.step<4||reached()||busy)return;S.V=Math.round((S.V+a)*100)/100;busy=true;draw();
+ const lv=+$('#liq').getAttribute('y'),dur=450+a*600,st=$('#stage'),d=$('#d'),sm=$('#strm');st.classList.add('open');
+ sm.style.fill=bc();
+ if(a>=.1){sm.setAttribute('width',a>=1?3:2);sm.setAttribute('x',a>=1?153.5:154);sm.setAttribute('height',Math.max(0,lv-282))}
+ else{d.style.setProperty('--fy',(lv-290)+'px');d.style.animationIterationCount=Math.ceil(dur/220);d.classList.remove('go');void d.getBoundingClientRect();d.classList.add('go')}
+ if(mode!='b'&&!reached()){const f=$('#fl'),m=mode=='m',dq=Veq()-S.V,nr=!m&&dq<.6;f.style.fill=m?'#a0237f':nr?'#1b2a7a':'#b9701a';f.style.transition='none';f.style.opacity=m?.6:nr?Math.min(.75,.2+(.6-dq)):.55;const ft=m?(S.m.slow&&S.V<.8?6:1.8):nr?2.8:1.4;setTimeout(()=>{f.style.transition='opacity '+ft+'s';f.style.opacity=0},40)}
+ setTimeout(()=>{busy=false;st.classList.remove('open');sm.setAttribute('height',0);d.classList.remove('go');draw();
+  if(reached()){log('Endpunkt bei V = '+F(S.V)+' mL',mode=='a'?'Dauerhafte Blaufärbung (Iod-Stärke-Komplex)':mode=='m'?'Bleibende schwache Rosafärbung (MnO₄⁻ im Überschuss)':'Umschlag blau → farblos');$('#ev').disabled=false;if(mode=='a')$('#fv').hidden=false}},dur)}
+function draw(){const tot=(mode=='m'?(S.step>0?S.m.vols[Math.min(S.step,3)-1]:0):mode=='a'?(S.step>0?5:0)+(S.step>1?1.5:0)+(S.step>2?1.5:0):(S.step>0?Vp():0)+(S.step>1?5:0)+(S.step>2?10:0))+S.V;
+ const lv=S.step>0?Math.max(298,376-tot*(mode=='a'?.95:.4)):390;const L=$('#liq');L.setAttribute('y',lv);L.setAttribute('height',390-lv);$('#fl').setAttribute('y',lv);$('#fl').setAttribute('height',390-lv);
+ let col=S.wine&&mode=='b'?'#efe08a':'#dcecf7',al=S.wine&&mode=='b'?.8:.5;
+ if(mode=='a'&&S.V>Veq()){col='#1b2a7a';al=Math.min(1,.35+(S.V-Veq())*3)}
+ if(mode=='b'&&S.step>2){const l=left();col='#1b2a7a';al=l>1e-6?Math.min(1,.3+l*.12):.12;if(l<=1e-6){col='#dcecf7';al=.5}}
+ if(mode=='m'){const q=S.m.col();col=q[0];al=q[1]}L.style.fill=col;L.style.fillOpacity=al;
+ const top=236-(236-(40+S.V*7.2))*S.bf;$('#bl').setAttribute('y',top);$('#bl').setAttribute('height',Math.max(0,236-top));$('#bl2').setAttribute('opacity',S.bf>0?1:0);$('#bar').style.display=S.step>0?'':'none';
+ $('#bl').style.fill=$('#bl2').style.fill=$('#d').style.fill=bc();
+ $('#ro').textContent=F(S.V)+' mL';
+ const dis=S.step<4||reached()||busy;['b1','b2','b3'].forEach(x=>$('#'+x).disabled=dis);
+ let m=S.step<4?'Führe zuerst die Arbeitsschritte 1–4 aus.':!reached()?'Titriere vorsichtig – nahe am Endpunkt besser mit Einzeltropfen.':'';
+ if(mode=='b'&&S.step>2&&rest()<=.05)m='Iod reicht nicht aus: Iodlösung höher konzentrieren oder neue Probe wählen.';
+ if(reached()){const o=mode=='a'?S.V-Veq():S.V-Veq();m=Math.abs(o)>.16?`Endpunkt um ${F(Math.abs(o))} mL überschritten – Messwert zu groß, bitte wiederholen (↺).`:'Endpunkt erreicht – Verbrauch ablesen und auswerten.'}
+ $('#msg').textContent=m;sync();}
+const SP={I2:['#a35e14','I₂'],Im:['#1f9b8e','I⁻'],SO3:['#8a63c4','SO₃²⁻'],SO4:['#d9822b','SO₄²⁻'],CX:['#1b2a7a','Stärke–I₂'],S4:['#c2467a','S₄O₆²⁻']};
+$('#lg').innerHTML=Object.values(SP).map(v=>`<span><b style="background:${v[0]}"></b>${v[1]}</span>`).join('');
+const cv=$('#pc'),cx=cv.getContext('2d');let P=[];
+function core(){const t={};if(S.step<1)return t;const st=S.step;
+ if(mode=='m'){const m=S.m,k=m.key,v=m.veq,u=m.u,g=st>=4?Math.min(S.V/v,1):0,e=S.V>v?Math.min(5,Math.round(1+(S.V-v)*8)):0,j=Math.round(u.E*g);
+  t.I2=e;
+  if(k=='ca'&&st<3){t.CaOx=u.R*u.E;return t}
+  if(k=='csb'&&st<3){if(st==2)t.I2=4;return t}
+  if(k=='ca')t.Ca=u.R*u.E;
+  const ac=(k=='fe'||k=='ox'||k=='h2o2')?st>=2:st>=3;
+  t.SO3=u.R*(u.E-j);t.SO4=u.P*j;t.Im=u.M*j;if(ac)t.H3O=u.H*(u.E-j);
+  return t}
+ if(mode=='a'){const N=8,Ve=Veq(),f=Math.min(S.V/Ve,1),j=Math.round(N*f),e=S.V>Ve?Math.min(8,Math.round(1+(S.V-Ve)*10)):0;
+  t.SO3=N-j;t.SO4=j;t.Im=2*j;t.H3O=2*j;t.I2=e;return t}
+ const Ni=10,sf=Math.min(1,nS()*1000/(10*S.cI)),ns=Math.round(Ni*sf);
+ if(st<3){t.SO3=ns;return t}
+ const r=Math.max(0,left()),fr=Math.round(Ni*r/10),th=Math.max(0,Ni-ns-fr);
+ t.SO4=ns;t.H3O=2*ns;t.Im=2*ns+2*th;t.I2=fr;t.S4=th;return t}
+const ALL=()=>$('#all').checked;const PN0=document.querySelector('#pn').textContent;
+function tgt(){const t=core();if(S.step<1||!ALL())return t;const st=S.step;
+ if(mode=='m'){const m=S.m,k=m.key,u=m.u,v=m.veq,g=st>=4?Math.min(S.V/v,1):0,e=S.V>v?Math.min(5,Math.round(1+(S.V-v)*8)):0,j=Math.round(u.E*g);
+  if(k=='fe'){t.NH4=2*u.R*u.E;t.SU=2*u.R*u.E}
+  if(k=='ox')t.Na=2*u.R*u.E;
+  if(k=='ca'&&st==1){t.NH4=2*u.R*u.E;t.Cl=2*u.R*u.E}
+  if(k=='csb'){if(st==1)t.ORG=6;if(st==2){t.ORG=1;t.Im=1;t.K=5}t.HS=24;if(st>=3)t.K=5+u.M*j+e}
+  else{if((k=='fe'||k=='ox'||k=='h2o2')?st>=2:st>=3)t.HS=u.H*u.E;if(st>=4)t.K=u.M*j+e}
+  return t}
+ if(mode=='a'){const N=8,Ve=Veq(),e=S.V>Ve?Math.min(8,Math.round(1+(S.V-Ve)*10)):0;t.Na=2*N;if(st>=2){t.Cl=4;t.H3O=(t.H3O||0)+4}if(st>=3)t.ST=e?0:2;if(e){t.CX=Math.min(e,5);t.I2=Math.max(0,e-5)}t.K=Math.min(12,Math.round(N*Math.min(S.V,Ve*1.2)/Ve));return t}
+ const Ni=10,sf=Math.min(1,nS()*1000/(10*S.cI)),ns=Math.round(Ni*sf);if(!S.wine)t.Na=2*ns;if(st>=2)t.ST=2;
+ if(st>=3){const r=Math.max(0,left()),fr=Math.round(Ni*r/10),c=r>1e-6?Math.min(5,fr):0,th=Math.max(0,Ni-ns-fr);t.K=Ni;t.CX=c;t.I2=Math.max(0,fr-c);t.Na=(S.wine?0:2*ns)+4*th;if(c>0)t.ST=0}
+ return t}
+let lastLg='';function sync(){const t=tgt();{const lh=Object.keys(sp()).filter(k=>t[k]>0&&sp()[k][1]).map(k=>`<span><b style="background:${sp()[k][0]}"></b>${sp()[k][1]}</span>`).join('');if(lh!=lastLg){lastLg=lh;$('#lg').innerHTML=lh}}for(const k in SP){const a=P.filter(p=>p.k==k),n=Math.min(t[k]||0,60);while(a.length>n)P.splice(P.indexOf(a.pop()),1);
+ while(a.length<n){const p={k,x:Math.random()*480,y:Math.random()*230,vx:Math.random()*2-1,vy:Math.random()*2-1};P.push(p);a.push(p)}}}
+(function loop(){cx.clearRect(0,0,480,230);cx.textAlign='center';cx.textBaseline='middle';
+ for(const p of P){p.vx+=(Math.random()-.5)*.3;p.vy+=(Math.random()-.5)*.3;const h=hot();p.vx=Math.max(-1.3*h,Math.min(1.3*h,p.vx));p.vy=Math.max(-1.3*h,Math.min(1.3*h,p.vy));p.x+=p.vx;p.y+=p.vy;
+  if(p.x<22||p.x>458)p.vx*=-1;if(p.y<22||p.y>208)p.vy*=-1;const r=Math.max(12,Math.min(21,5+sp()[p.k][1].length*2.6));
+  cx.beginPath();cx.arc(p.x,p.y,r,0,7);cx.fillStyle=sp()[p.k][0];cx.fill();cx.strokeStyle='rgba(0,0,0,.3)';cx.stroke();cx.fillStyle=p.k=='CaOx'?'#223':'#fff';cx.font=(p.k=='CX'?'9':'9')+'px sans-serif';cx.fillText(sp()[p.k][1],p.x,p.y)}
+ requestAnimationFrame(loop)})();
+// Beobachtungen Folgeversuche
+function beaker(id,col,ppt,txt,oid,obs){const s=$('#'+id);let h=`<path d="M25 10V105Q25 112 32 112H98Q105 112 105 105V10" fill="none" stroke="var(--st)" stroke-width="2"/><rect x="27" y="45" width="76" height="66" fill="${col}" fill-opacity=".45"/>`;
+ for(let i=0;i<34;i++)h+=`<circle cx="${32+Math.random()*66}" cy="${48+Math.random()*10}" r="2.6" fill="${ppt}" style="opacity:0;transition:all ${1+Math.random()*1.6}s ease-in ${Math.random()*.6}s" class="pp"/>`;
+ s.innerHTML=h+`<text x="65" y="128" text-anchor="middle">${txt}</text>`;void s.getBoundingClientRect();
+ s.querySelectorAll('.pp').forEach(c=>{c.style.opacity=.95;c.setAttribute('cy',95+Math.random()*14)});setTimeout(()=>{s.querySelectorAll('.pp').forEach(c=>c.style.cy=''),$('#'+oid).textContent=obs},100);}
+$('#fa').onclick=()=>beaker('bA','#dbeaf5','#fff','Becherglas I','oA','Weißer Niederschlag von BaSO₄ → Sulfat entstanden.');
+$('#fb').onclick=()=>beaker('bB','#f3ecd0','#e6d34a','Becherglas II','oB','Gelblicher Niederschlag von AgI → Iodid entstanden.');
+// Auswertung
+$('#ev').onclick=()=>{let h='',ans,u,truth;
+ if(mode=='m'){const r=S.m.ev();h=r.h;ans=r.ans;u=r.u;truth=r.truth}else if(mode=='a'){const c=S.cI*S.V/5,g=c*126.1;ans=c;u='mol/L';truth=S.cS;
+  h=`<div class="eq">c(Na₂SO₃) = c(I₂)·V(I₂) / V(Probe) = ${F(S.cI,3)} mol/L · ${F(S.V)} mL / 5 mL = <b>${F(c,3)} mol/L</b></div><div class="eq">β = c·M = ${F(c,3)} mol/L · 126,1 g/mol = <b>${F(g,1)} g/L</b></div>`}
+ else{const vv=10-S.V*S.ct/2/S.cI,n=S.cI*vv/1000,Vp_=Vp()/1000,c=n/Vp_,b=n*64000/Vp_;
+  h=`<div class="eq">V(Iod, verbraucht) = 10 mL − ${F(S.V*S.ct/2/S.cI)} mL = <b>${F(vv)} mL</b></div><div class="eq">n(I₂) = n(SO₃²⁻) = n(SO₂) = ${F(S.cI,3)} mol/L · ${F(vv/1000,5)} L = <b>${(n*1e5).toFixed(2).replace('.',',')}·10⁻⁵ mol</b></div><div class="eq">c(SO₃²⁻) = n / V(Probe) = <b>${F(c,4)} mol/L</b></div>`;
+  if(S.wine){ans=b;u='mg/L';truth=S.so2;const bad=b>200;h+=`<div class="eq">β(SO₂) = n·M / V = <b>${F(b,0)} mg/L</b></div><div class="eq">${bad?'<span class="bad">🔴 Grenzwert 200 mg/L überschritten</span>':'<span class="ok">🟢 im Rahmen (Grenzwert trockene Weine: 200 mg/L)</span>'}${b>=10?' · Deklarationspflicht ab 10 mg/L: „enthält Sulfite“':''}</div>`}
+  else{ans=c;u='mol/L';truth=S.cS}}
+ h+=`<div class="msg">Tatsächlicher Wert: <b>${mode=='m'?S.m.fmt(truth):u=='mg/L'?F(truth,0)+' mg/L SO₂':F(truth,3)+' mol/L'}</b> · Abweichung der Messung: <b>${F(Math.abs(ans-truth)/truth*100,1)} %</b></div>`;
+ $('#evo').innerHTML=h};
+const EQ0=`<div class="eq">Reduktion: I₂ + 2 e⁻ → 2 I⁻</div><div class="eq">Oxidation: SO₃²⁻ + 3 H₂O → SO₄²⁻ + 2 H₃O⁺ + 2 e⁻</div><div class="eq"><b>Reaktion I:</b> I₂ + SO₃²⁻ + 3 H₂O → 2 I⁻ + SO₄²⁻ + 2 H₃O⁺</div><div class="eq"><b>Reaktion II:</b> I₂ + 2 S₂O₃²⁻ → 2 I⁻ + S₄O₆²⁻</div><div class="eq">Oxidationszahlen: I₂: ${ox('0','#a35e14')} · I⁻: ${ox('−I','#1f9b8e')} · S in SO₃²⁻: ${ox('+IV','#8a63c4')} · S in SO₄²⁻: ${ox('+VI','#d9822b')}</div>`;
+// Buerette Skala
+$('#tk').innerHTML=Array.from({length:26},(_,i)=>`<line x1="164" x2="${i%5?168:172}" y1="${40+i*7.2}" y2="${40+i*7.2}" stroke="var(--tx)" stroke-width=".7"/>${i%5?'':`<text x="175" y="${43+i*7.2}">${i}</text>`}`).join('');
+$('#b1').onclick=()=>titr(.05);$('#b2').onclick=()=>titr(.1);$('#b3').onclick=()=>titr(1);
+function setMode(m){mode=m;$('#ma').classList.toggle('on',m=='a');$('#mb').classList.toggle('on',m=='b');$('#sl').hidden=m!='b';$('#mm').classList.toggle('on',m=='m');$('#al').hidden=m!='m';$('#cl').hidden=m=='m';$('#ev').disabled=true;
+ $('#b1').textContent='Tropfen';S=null;init(true)}
+$('#ma').onclick=()=>setMode('a');$('#mb').onclick=()=>setMode('b');$('#mm').onclick=()=>setMode('m');$('#all').onchange=()=>{$('#pn').textContent=ALL()?'Alle gelösten Stoffteilchen außer Wasser sind eingeblendet, auch Zuschauerionen und Stärke. Zur Übersichtlichkeit sind die Teilchenzahlen skaliert: Nur die Teilchen der Reaktionsgleichung stehen im stöchiometrischen Verhältnis, die übrigen Teilchen sind nur näherungsweise gezeigt.':PN0;draw()};$('#ana').onchange=()=>{$('#ev').disabled=true;init(true)};
+$('#nw').onclick=()=>{$('#ev').disabled=true;init(true)};$('#rs').onclick=()=>{$('#ev').disabled=true;init(false)};
+$('#smp').onchange=$('#cI').onchange=()=>{$('#ev').disabled=true;init(false)};
+
+const sp=()=>mode=='m'?SPm():SP;
+const SX={Na:['#7f8fa6','Na⁺'],K:['#8f7fb0','K⁺'],H3O:['#d1495b','H₃O⁺'],Cl:['#4a9a5b','Cl⁻'],HS:['#b8923a','HSO₄⁻'],SU:['#a98c4a','SO₄²⁻'],ST:['#3b6fb6','Stärke'],Ca:['#5b8c5a','Ca²⁺'],NH4:['#8c7a5b','NH₄⁺'],CaOx:['#e8e8e8','CaC₂O₄'],ORG:['#6b705c','Org. Stoffe'],OXL:['#8a6d3b','C₂O₄²⁻']};
+Object.assign(SP,SX);
+const hot=()=>mode=='m'&&S.m&&((S.m.key=='ox'||S.m.key=='ca')&&S.step>=3||S.m.key=='csb'&&S.step>=2)?1.9:1;
+const SPm=()=>Object.assign({I2:['#8a1f7a','MnO₄⁻'],Im:['#d9a3c9','Mn²⁺'],SO3:['#2f7f6f',S.m.r],SO4:['#d9822b',S.m.o]},SX);
+function leg(){lastLg=''}
+const EM=`<div class="eq">Reduktion: MnO₄⁻ + 8 H₃O⁺ + 5 e⁻ → Mn²⁺ + 12 H₂O &nbsp;(Mn: ${ox('+VII','#8a1f7a')} → ${ox('+II','#c06aa8')})</div>`;
+const KM={
+fe:{vp:20,k:5,kt:'5',cr:[.04,.10,.001],r:'Fe²⁺',o:'Fe³⁺',r0:'Fe²⁺',vols:[20,30,100],
+ st:['20 mL Eisen(II)-Lösung (Mohrsches Salz) in den Kolben pipettieren','10 mL verdünnte Schwefelsäure zugeben','Mit Wasser auf ca. 100 mL verdünnen','Bürette bis zur Nullmarke mit KMnO₄-Lösung füllen (0,02 mol/L)','Titrieren bis zur bleibenden Rosafärbung'],
+ lg:['Blassgrüne Lösung','Angesäuert, klar','Verdünnt, blassgrün','Bürette gefüllt, V = 0,00 mL','Titration'],
+ ex:c=>`<div class="eq">β(Mohrsches Salz, (NH₄)₂Fe(SO₄)₂·6 H₂O) = c·M = ${F(c,3)} mol/L · 392,1 g/mol = <b>${F(c*392.14,1)} g/L</b></div>`,
+ eq:EM+`<div class="eq">Oxidation (×5): Fe²⁺ → Fe³⁺ + e⁻ &nbsp;(Fe: ${ox('+II','#2f7f6f')} → ${ox('+III','#d9822b')})</div><div class="eq"><b>Gesamt:</b> MnO₄⁻ + 5 Fe²⁺ + 8 H₃O⁺ → Mn²⁺ + 5 Fe³⁺ + 12 H₂O</div><div class="eq">n(Fe²⁺) = 5 · n(MnO₄⁻)</div>`},
+ox:{vp:20,k:2.5,kt:'5/2',cr:[.02,.05,.001],r:'C₂O₄²⁻',o:'CO₂',r0:'C₂O₄²⁻',vols:[20,30,70],slow:1,
+ st:['20 mL Oxalsäure-/Oxalatlösung in den Kolben pipettieren','10 mL verdünnte Schwefelsäure zugeben','Auf ca. 70 °C erwärmen','Bürette bis zur Nullmarke mit KMnO₄-Lösung füllen (0,02 mol/L)','Titrieren bis zur bleibenden Rosafärbung'],
+ lg:['Farblose Lösung','Angesäuert, klar','Erwärmt auf ca. 70 °C','Bürette gefüllt, V = 0,00 mL','Titration (erste Tropfen entfärben langsam: Mn²⁺ wirkt autokatalytisch)'],
+ ex:c=>`<div class="eq">β(H₂C₂O₄·2 H₂O) = c·M = ${F(c,3)} mol/L · 126,07 g/mol = <b>${F(c*126.07,2)} g/L</b></div>`,
+ eq:EM+`<div class="eq">Oxidation (×5): C₂O₄²⁻ → 2 CO₂ + 2 e⁻ &nbsp;(C: ${ox('+III','#2f7f6f')} → ${ox('+IV','#d9822b')})</div><div class="eq"><b>Gesamt:</b> 2 MnO₄⁻ + 5 C₂O₄²⁻ + 16 H₃O⁺ → 2 Mn²⁺ + 10 CO₂ + 24 H₂O</div><div class="eq">n(C₂O₄²⁻) = 5/2 · n(MnO₄⁻)</div>`},
+h2o2:{vp:10,k:2.5,kt:'5/2',cr:[.03,.08,.001],r:'H₂O₂',o:'O₂',r0:'H₂O₂',vols:[10,20,100],
+ st:['10 mL verdünnte Wasserstoffperoxid-Lösung in den Kolben pipettieren','10 mL verdünnte Schwefelsäure zugeben','Mit Wasser auf ca. 100 mL verdünnen','Bürette bis zur Nullmarke mit KMnO₄-Lösung füllen (0,02 mol/L)','Titrieren (kalt) bis zur bleibenden Rosafärbung'],
+ lg:['Farblose Lösung','Angesäuert, klar','Verdünnt','Bürette gefüllt, V = 0,00 mL','Titration; Gasbläschen von O₂'],
+ ex:c=>`<div class="eq">β(H₂O₂) = c·M = ${F(c,3)} mol/L · 34,01 g/mol = <b>${F(c*34.01,2)} g/L</b></div>`,
+ eq:EM+`<div class="eq">Oxidation (×5): H₂O₂ + 2 H₂O → O₂ + 2 H₃O⁺ + 2 e⁻ &nbsp;(O: ${ox('−I','#2f7f6f')} → ${ox('0','#d9822b')})</div><div class="eq"><b>Gesamt:</b> 2 MnO₄⁻ + 5 H₂O₂ + 6 H₃O⁺ → 2 Mn²⁺ + 5 O₂ + 14 H₂O</div><div class="eq">n(H₂O₂) = 5/2 · n(MnO₄⁻)</div>`},
+ca:{vp:25,k:2.5,kt:'5/2',cr:[.02,.04,.001],r:'H₂C₂O₄',o:'CO₂',r0:'C₂O₄²⁻) = n(Ca²⁺',vols:[35,35,60],
+ st:['25 mL Calcium-Lösung mit 10 mL Ammoniumoxalat-Lösung versetzen: Fällung','Niederschlag abfiltrieren und waschen','CaC₂O₄ in verd. Schwefelsäure lösen, auf ca. 70 °C erwärmen','Bürette bis zur Nullmarke mit KMnO₄-Lösung füllen (0,02 mol/L)','Titrieren bis zur bleibenden Rosafärbung'],
+ lg:['Weißer Niederschlag von CaC₂O₄','Niederschlag gewaschen','Niederschlag gelöst, klare Lösung','Bürette gefüllt, V = 0,00 mL','Titration'],
+ ex:c=>`<div class="eq">β(Ca²⁺) = ${F(c*40078,0)} mg/L · Härte ≈ ${F(c*1000*5.6,1)} °dH</div>`,
+ eq:`<div class="eq">Fällung: Ca²⁺ + C₂O₄²⁻ → CaC₂O₄↓ (weiß)</div><div class="eq">Lösen: CaC₂O₄ + 2 H₃O⁺ → Ca²⁺ + H₂C₂O₄ + 2 H₂O</div>`+EM+`<div class="eq"><b>Titration:</b> 2 MnO₄⁻ + 5 H₂C₂O₄ + 6 H₃O⁺ → 2 Mn²⁺ + 10 CO₂ + 14 H₂O</div><div class="eq">n(Ca²⁺) = n(C₂O₄²⁻) = 5/2 · n(MnO₄⁻)</div>`},
+csb:{vp:100,vols:[110,130,150],r:'C₂O₄²⁻',o:'CO₂',
+ st:['100 mL Wasserprobe mit 10 mL verdünnter Schwefelsäure versetzen','20 mL KMnO₄-Lösung (0,002 mol/L) zugeben, 10 min kochen','20 mL Oxalsäure-Lösung (0,005 mol/L) zugeben: Entfärbung','Bürette bis zur Nullmarke mit KMnO₄-Lösung füllen (0,002 mol/L)','Heiß titrieren bis zur bleibenden Rosafärbung'],
+ lg:['Klare Probe, angesäuert','Violett: MnO₄⁻ im Überschuss','Entfärbung durch Oxalat (Überschuss)','Bürette gefüllt, V = 0,00 mL','Rücktitration des Oxalat-Rests'],
+ eq:EM+`<div class="eq">Organische Stoffe + MnO₄⁻ → Oxidationsprodukte + Mn²⁺</div><div class="eq">Rücktitration: 2 MnO₄⁻ + 5 C₂O₄²⁻ + 16 H₃O⁺ → 2 Mn²⁺ + 10 CO₂ + 24 H₂O</div><div class="eq">1 mmol MnO₄⁻ (5 e⁻) ≙ 1,25 mmol O₂ ≙ 40 mg O₂</div>`}};
+const UM={fe:{R:5,H:8,P:5,M:1,E:4},ox:{R:5,H:16,P:10,M:2,E:3},h2o2:{R:5,H:6,P:5,M:2,E:4},ca:{R:5,H:6,P:10,M:2,E:3},csb:{R:5,H:16,P:10,M:2,E:3}};
+function MM(k){const d=KM[k],cM=k=='csb'?.002:.02;let c,veq;
+ if(k=='csb'){c=R(4,12,.1);veq=c/.8}else{c=R(d.cr[0],d.cr[1],d.cr[2]);veq=c*d.vp/d.k/cM}
+ const m=Object.assign({key:k,cM,c,veq},d);m.u=UM[k];
+ m.fmt=v=>k=='csb'?F(v,1)+' mg/L O₂':F(v,3)+' mol/L';
+ m.col=()=>{const V=S.V,e=V-veq;if(V>veq)return['#c2379b',Math.min(.8,.2+e*.6)];
+  if(k=='fe')return[V/veq>.5?'#e8d46a':'#bfe3b8',.45];
+  if(k=='ca')return S.step<3?['#ffffff',.85]:['#dcecf7',.5];
+  if(k=='csb'&&S.step==2)return['#7a1b6e',.75];return['#dcecf7',.5]};
+ m.ev=()=>{const V=S.V,nn=cM*V;let h,ans,u;
+  if(k=='csb'){ans=nn*400;u='mg/L';h=`<div class="eq">Der Oxalat-Zusatz (0,1 mmol) verbraucht rechnerisch 0,04 mmol MnO₄⁻ – genau die 20 mL Vorlage. Der Probe-Anteil ist daher: n(MnO₄⁻) = c·V = ${F(cM,3)} mol/L · ${F(V)} mL = <b>${F(nn,4)} mmol</b></div><div class="eq">m(O₂) = n · 40 mg/mmol = ${F(nn*40,3)} mg</div><div class="eq">CSB = m / V(Probe) = ${F(nn*40,3)} mg / 0,1 L = <b>${F(ans,1)} mg/L O₂</b></div><div class="eq" style="color:var(--mu)">Hinweis: Dieses Verfahren liefert den Permanganat-Index; der vollständige CSB wird meist mit Dichromat bestimmt.</div>`}
+  else{ans=nn*d.k/d.vp;u='mol/L';h=`<div class="eq">n(MnO₄⁻) = c·V = ${F(cM,3)} mol/L · ${F(V)} mL = <b>${F(nn,3)} mmol</b></div><div class="eq">n(${d.r0}) = ${d.kt} · n(MnO₄⁻) = <b>${F(nn*d.k,3)} mmol</b></div><div class="eq">c = n / V(Probe) = ${F(nn*d.k,3)} mmol / ${d.vp} mL = <b>${F(ans,3)} mol/L</b></div>`+d.ex(ans)}
+  return{h,ans,u,truth:c}};
+ return m}
+
+const EQA=`<div class="eq">Reduktion: I₂ + 2 e⁻ → 2 I⁻</div><div class="eq">Oxidation: SO₃²⁻ + 3 H₂O → SO₄²⁻ + 2 H₃O⁺ + 2 e⁻</div><div class="eq"><b>Gesamt:</b> I₂ + SO₃²⁻ + 3 H₂O → 2 I⁻ + SO₄²⁻ + 2 H₃O⁺</div><div class="eq">Oxidationszahlen: I₂: ${ox('0','#a35e14')} · I⁻: ${ox('−I','#1f9b8e')} · S in SO₃²⁻: ${ox('+IV','#8a63c4')} · S in SO₄²⁻: ${ox('+VI','#d9822b')}</div><div class="eq"><b>Folgeversuch A:</b> Ba²⁺ + SO₄²⁻ → BaSO₄↓ (weiß)</div><div class="eq"><b>Folgeversuch B:</b> Ag⁺ + I⁻ → AgI↓ (gelblich)</div>`;
+const EQB=`<div class="eq"><b>Reaktion I:</b> I₂ (Überschuss) + SO₃²⁻ + 3 H₂O → 2 I⁻ + SO₄²⁻ + 2 H₃O⁺</div><div class="eq"><b>Reaktion II:</b> I₂ (Rest) + 2 S₂O₃²⁻ → 2 I⁻ + S₄O₆²⁻</div><div class="eq">Teilgleichung (II): 2 S₂O₃²⁻ → S₄O₆²⁻ + 2 e⁻ &nbsp;·&nbsp; I₂ + 2 e⁻ → 2 I⁻</div><div class="eq">Oxidationszahlen: I₂: ${ox('0','#a35e14')} → I⁻: ${ox('−I','#1f9b8e')} · S in SO₃²⁻: ${ox('+IV','#8a63c4')} → SO₄²⁻: ${ox('+VI','#d9822b')} · S in S₂O₃²⁻: ${ox('+II','#8a63c4')} → S₄O₆²⁻: ${ox('+2,5','#d9822b')} (Mittelwert)</div><div class="eq">n(I₂, Rest) = ½ · n(S₂O₃²⁻) &nbsp;·&nbsp; n(I₂, verbraucht) = n(SO₃²⁻)</div>`;
+const FD={
+a:'<ul><li>Schweflige Säure ist flüchtig: SO₂ kann beim Ansäuern entweichen → Verbrauch und Ergebnis zu klein.</li><li>Sulfit wird durch Luftsauerstoff langsam zu Sulfat oxidiert → ebenfalls zu kleiner Wert; Lösung deshalb frisch ansetzen.</li><li>Endpunkt überschritten (zu viele Tropfen) → Verbrauch zu groß; zum Schluss einzeln tropfen.</li><li>Die Iodlösung ist nur „ca. 0,05 mol/L“: Ihr genauer Titer sollte mit Thiosulfat bestimmt werden.</li><li>Genauer ist die Rücktitration (Variante 1b).</li></ul>',
+b:'<ul><li>Weitere Reduktionsmittel im Wein (z. B. Ascorbinsäure, Polyphenole, Ethanal) verbrauchen ebenfalls Iod → SO₂-Gehalt zu hoch.</li><li>Iod ist flüchtig, die Iodlösung steht blau im Kolben: Bei langem Stehen entweicht Iod → weniger Thiosulfat-Verbrauch → SO₂ scheinbar zu hoch; zügig zurücktitrieren.</li><li>Thiosulfatlösung ist nicht lange haltbar (Zersetzung, Luft) → Titer prüfen.</li><li>Vorteil gegenüber der direkten Titration: Das Sulfit wird sofort durch überschüssiges Iod oxidiert, SO₂ kann nicht entweichen oder an der Luft oxidieren.</li><li>Gefärbte Weine erschweren die Erkennung von „blau → farblos“.</li></ul>',
+fe:'<ul><li>Fe²⁺ wird an der Luft zu Fe³⁺ oxidiert → Wert zu klein; Lösung frisch ansetzen.</li><li>In Salzsäure würde auch Cl⁻ von MnO₄⁻ oxidiert (Mehrverbrauch) → deshalb in Schwefelsäure titrieren.</li><li>Rosafärbung erst gelten lassen, wenn sie ca. 30 s bleibt; Übertitration → Wert zu groß.</li><li>Genauer Titer der KMnO₄-Lösung nötig (Zersetzung unter Licht, Urtitersubstanz z. B. Oxalat).</li></ul>',
+ox:'<ul><li>Zu kalt (&lt; 60 °C): Reaktion sehr langsam, man titriert zu schnell über den Endpunkt hinaus → Wert zu groß.</li><li>Zu heiß (&gt; 80 °C): Oxalsäure zerfällt teilweise thermisch → Verbrauch und Ergebnis zu klein.</li><li>Die ersten Tropfen entfärben langsam, danach wirkt Mn²⁺ als Katalysator (Autokatalyse) → anfangs sehr langsam titrieren.</li><li>Zu wenig Schwefelsäure: Es bildet sich braunes MnO₂ und der Endpunkt wird verfälscht.</li></ul>',
+h2o2:'<ul><li>H₂O₂ zersetzt sich bei Licht und Wärme zu H₂O und O₂ → Wert zu klein; Probe kühl und zügig verarbeiten.</li><li>Handelsübliche Lösungen enthalten Stabilisatoren, die ebenfalls MnO₄⁻ verbrauchen können → Wert zu groß.</li><li>Die ersten Tropfen entfärben langsam (Autokatalyse durch Mn²⁺).</li><li>Zu wenig Säure: Braunstein MnO₂ fällt aus.</li><li>Genaues Verdünnen und Pipettieren ist wichtig, da die Probe stark verdünnt wird.</li></ul>',
+ca:'<ul><li>Unvollständige Fällung oder Verluste beim Filtrieren/Waschen → Calcium-Gehalt zu klein.</li><li>Nicht ausreichend gewaschener Niederschlag enthält noch überschüssiges Oxalat → Mehrverbrauch an KMnO₄, Wert zu groß.</li><li>Mitgefälltes Magnesium (MgC₂O₄) und andere Kationen verfälschen das Ergebnis (zu groß).</li><li>Beim Lösen in Schwefelsäure vollständig lösen und auf ca. 70 °C erwärmen; sonst langsame Reaktion.</li><li>Indirekte Methode: Fehler der Fällung gehen direkt in das Ergebnis ein.</li></ul>',
+csb:'<ul><li>Chlorid-Ionen werden von Permanganat oxidiert → Mehrverbrauch, CSB scheinbar zu hoch (bei Salzwasser stark).</li><li>Anorganische Reduktionsmittel (Fe²⁺, Nitrit, Sulfid) werden miterfasst.</li><li>Nicht alle organischen Stoffe werden von Permanganat vollständig oxidiert (z. B. Aromaten, Essigsäure) → Permanganat-Index meist kleiner als der Dichromat-CSB.</li><li>Kochzeit (10 min) und Temperatur einhalten, sonst nicht reproduzierbar; Titration heiß (ca. 60–80 °C) durchführen.</li><li>Kleine Verbräuche: Ablesefehler der Bürette wirken sich relativ stark aus.</li></ul>'};
+init(true);
+</script></body></html>

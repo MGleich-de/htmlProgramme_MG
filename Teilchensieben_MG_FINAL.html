@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teilchensieben</title>
+<style>
+:root{--bg:#eef3fa;--card:#fff;--ink:#14213d;--mut:#5a6a85;--acc:#5b3df5;--line:#d8e0ee;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+
+:root[data-theme="dark"]{--bg:#0d1424;--card:#16203a;--ink:#e8eefc;--mut:#9fb0d0;--line:#27345a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.w{max-width:1200px;margin:0 auto;padding:6px 12px 8px;box-sizing:border-box;height:100vh;height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:flex;flex-direction:column}
+h1{margin:0;font-size:clamp(22px,4.5vw,32px);letter-spacing:-.5px;background:linear-gradient(90deg,#7b2ff7,#2f6df6 60%,#12b5cb);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px}.sub{font-weight:600;color:var(--mut)}.au{color:var(--mut);font-size:13px}#pdf{margin-left:auto}#stage{flex:1 1 0;min-height:150px;min-width:0;display:flex;align-items:center;justify-content:center;overflow:hidden}.cmp .w{height:auto;min-height:0}.cmp #stage{flex:none;min-height:0;overflow:visible}.w>*:not(#stage){align-self:center;width:100%;max-width:var(--cw,100%);box-sizing:border-box}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0;align-items:center}
+button{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 11px;cursor:pointer;transition:.2s}
+button:hover{transform:translateY(-1px);box-shadow:0 4px 14px #5b3df533}
+button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0;overflow:hidden;flex:none;box-shadow:0 10px 30px #1a2a5a1a}
+canvas{display:block;width:100%;height:auto;aspect-ratio:900/560;border-radius:12px;touch-action:manipulation}
+#stat{font-weight:700;font-variant-numeric:tabular-nums;font-size:13.5px;margin-left:auto}
+.info{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:12px;padding:5px 10px;margin-top:4px;font-size:13px;line-height:1.35}
+.info b{color:var(--acc)}
+.leg{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:4px;font-size:12px}.leg span{display:flex;align-items:center;gap:7px}
+input[type=range]{accent-color:var(--acc)}
+.fb{position:absolute;top:52.3%;width:16%;height:12%;transform:translate(-50%,-50%);border:0;border-radius:12px;background:transparent;padding:0;cursor:zoom-in}
+.fb:hover{transform:translate(-50%,-50%);box-shadow:none;background:#5b3df522}
+</style></head><body><div class="w">
+<div class="hd"><h1>Teilchensieben</h1><span class="sub">Farbstoff ist nicht gleich Farbstoff</span><span class="au">· Autor: Matthias Gleich</span><button id="pdf">📄 Arbeitsblatt PDF</button><button id="th">🌙 Dunkel</button></div>
+<div class="row"><button id="tM" class="on">Stoffebene</button><button id="tF">Folie vergrößert</button><button id="tP">Stoffteilchenebene</button>
+<span style="flex:1"></span><button id="g1" class="on">Glas 1 · KMnO₄</button><button id="g2">Glas 2 · Iod-Stärke</button></div>
+<div id="stage"><div class="card"><div id="cw" style="position:relative;margin:0 auto"><canvas id="c" width="900" height="560"></canvas><button class="fb" id="f1" style="left:36.67%" aria-label="Folie von Glas 1 anklicken"></button><button class="fb" id="f2" style="left:63.33%" aria-label="Folie von Glas 2 anklicken"></button></div></div></div>
+<div id="hint" style="color:var(--mut);margin:4px 2px;font-weight:600;font-size:13.5px">🔍 Folie anklicken: Klicke auf die Folie eines Glases: Vor dem Versuch siehst du die vergrößerte Folie, während des Versuchs die Teilchenebene dieses Glases.</div>
+<div class="row"><button id="pl" class="on">▶ Versuch starten</button><button id="rs">↻ Neustart</button>
+<label style="display:flex;gap:8px;align-items:center;color:var(--mut)">Tempo <input id="sp" type="range" min=".4" max="3" step=".1" value="1"></label><span id="stat"></span></div>
+
+<div class="info" id="inf"></div>
+<div class="leg">
+<span><svg width="22" height="20" viewBox="0 0 22 20"><polygon points="11,2 20,18 2,18" fill="#2f8cf0" stroke="#fff"/></svg>Wasser-Stoffteilchen</span>
+<span><svg width="20" height="20"><circle cx="10" cy="10" r="9" fill="#8a2fb0"/></svg>Kaliumpermanganat-Stoffteilchen</span>
+<span><svg width="28" height="20"><rect x="1" y="3" width="26" height="14" rx="3" fill="#2a56d6"/></svg>Iod-Stärke-Stoffteilchen</span>
+<span><svg width="22" height="22" viewBox="-11 -11 22 22"><polygon points="0,-10 8.7,-5 8.7,5 0,10 -8.7,5 -8.7,-5" fill="#111" stroke="#666"/></svg>Folien-Stoffteilchen</span></div>
+</div>
+<script>
+const $=s=>document.querySelector(s),W=900,H=560,FY=280,cv=$('#c'),ctx=cv.getContext('2d');
+const dpr=Math.min(window.devicePixelRatio||1,2);cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+const GX={1:330,2:570},HR=27,TAU=Math.PI*2;
+let glass=1,zp=0,zt=0,run=false,started=false,showP=false,locking=false,A=0,speed=1,T=0,last=performance.now(),P=[],FX=[],wcross=0,hov=false,st=0;
+const rnd=(a,b)=>a+Math.random()*(b-a),sm=(a,b,x)=>{x=Math.max(0,Math.min(1,(x-a)/(b-a)));return x*x*(3-2*x)},ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const HEX=[27,81,173,227,281,373,427,519,573,665,719,773,827,919];
+const PORES=[127,327,473,619,873];
+const TEND=Array.from({length:20},(_,i)=>({ox:(i/19-.5)*84+rnd(-4,4),ph:rnd(0,6.3),amp:rnd(6,16),max:rnd(110,205),k:rnd(.05,.1)}));
+function initMicro(){P=[];FX=[];wcross=0;
+ const add=(k,n,y0,y1)=>{for(let i=0;i<n;i++){let x,y,ok,t=0;do{x=rnd(45,855);y=rnd(y0,y1);ok=k!='i'||P.every(q=>q.k!='i'||Math.hypot(q.x-x,q.y-y)>95);t++}while(!ok&&t<60);
+ P.push({k,x,y,a:rnd(0,TAU),r:k=='i'?36:12,s:k=='w'?140:k=='d'?120:60,rot:rnd(0,TAU),vr:rnd(-1,1),cool:0,side:y>FY?1:0,ph:rnd(0,6)})}};
+ add('w',40,30,235);add('w',44,330,530);glass==1?add('d',44,30,235):add('i',9,45,230)}
+function stepMicro(dt){
+ for(const p of P){p.a+=(Math.random()-.5)*7*dt;p.cool-=dt;
+  p.x+=Math.cos(p.a)*p.s*dt;p.y+=Math.sin(p.a)*p.s*dt;p.rot+=p.vr*dt;
+  if(p.x<p.r){p.x=p.r;p.a=Math.PI-p.a}if(p.x>W-p.r){p.x=W-p.r;p.a=Math.PI-p.a}
+  if(p.y<p.r){p.y=p.r;p.a=-p.a}if(p.y>H-p.r){p.y=H-p.r;p.a=-p.a}
+  if(Math.abs(p.y-FY)<p.r+HR+2)for(const hx of HEX){const dx=p.x-hx,dy=p.y-FY,d=Math.hypot(dx,dy),m=p.r+HR;
+   if(d<m&&d>.01){const nx=dx/d,ny=dy/d;p.x=hx+nx*m;p.y=FY+ny*m;let vx=Math.cos(p.a),vy=Math.sin(p.a);const dot=vx*nx+vy*ny;
+    if(dot<0){vx-=2*dot*nx;vy-=2*dot*ny;p.a=Math.atan2(vy,vx)+rnd(-.3,.3)}
+    }}
+  const ns=p.y>FY?1:0;if(ns!==p.side){p.side=ns;if(p.k=='w')wcross++}}
+ FX.forEach(f=>f.t+=dt);FX=FX.filter(f=>f.t<.9)}
+function hexPath(x,y,R){ctx.beginPath();for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/2;ctx.lineTo(x+Math.cos(a)*R,y+Math.sin(a)*R)}ctx.closePath()}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,r):ctx.rect(x,y,w,h)}
+function txt(s,x,y,sz,col,al,wt){ctx.font=(wt||600)+' '+sz+'px system-ui,sans-serif';ctx.fillStyle=col;ctx.textAlign=al||'center';ctx.fillText(s,x,y)}
+/* ---------- Stoffebene ---------- */
+function wpath(cx){ctx.beginPath();ctx.moveTo(cx-114,280);ctx.lineTo(cx-114,490);ctx.quadraticCurveTo(cx-114,507,cx-97,507);ctx.lineTo(cx+97,507);ctx.quadraticCurveTo(cx+114,507,cx+114,490);ctx.lineTo(cx+114,280);ctx.closePath()}
+function tendril(cx,td){const L=td.max*(1-Math.exp(-Math.max(0,T-2)*td.k));if(L<3)return;ctx.lineCap='round';
+ for(let pass=0;pass<2;pass++){let px=cx+td.ox*.3,py=292;
+  for(let s=6;s<=L;s+=6){const f=s/td.max,x=cx+td.ox*(.3+f*1.4)+Math.sin(s*.04+td.ph+T*.25)*td.amp*Math.min(1,s/50),y=292+s;
+   ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(x,y);ctx.lineWidth=pass?2.4*(1-f*.5):10*(1-f*.5);
+   ctx.strokeStyle=`rgba(125,25,155,${(pass?.55:.1)*(1-f*.7)})`;ctx.stroke();px=x;py=y}
+  if(pass&&L>20){const g=ctx.createRadialGradient(px,py,1,px,py,20);g.addColorStop(0,'rgba(130,30,160,.3)');g.addColorStop(1,'rgba(130,30,160,0)');ctx.fillStyle=g;ctx.fillRect(px-20,py-20,40,40)}}}
+function setup(n){const cx=GX[n];
+ ctx.save();wpath(cx);let g=ctx.createLinearGradient(0,280,0,507);g.addColorStop(0,'#cdeafd');g.addColorStop(1,'#9fd0f2');ctx.fillStyle=g;ctx.fill();ctx.clip();
+ for(let i=0;i<3;i++){ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=2;ctx.beginPath();for(let x=cx-114;x<=cx+114;x+=6)ctx.lineTo(x,282+i*3+Math.sin(x*.05+A*1.5+i)*1.6);ctx.stroke()}
+ if(n==1){const a=Math.min(.42,Math.max(0,T-3)*.011);if(a>0){const r=Math.min(60+T*6,260),gr=ctx.createRadialGradient(cx,292,5,cx,292+r*.3,r);gr.addColorStop(0,`rgba(130,30,160,${a})`);gr.addColorStop(1,'rgba(130,30,160,0)');ctx.fillStyle=gr;ctx.fillRect(cx-115,280,230,230)}TEND.forEach(t=>tendril(cx,t))}
+ ctx.restore();
+ wpath(cx);ctx.moveTo(cx-114,280);ctx.lineTo(cx-114,236);ctx.moveTo(cx+114,280);ctx.lineTo(cx+114,236);ctx.strokeStyle='rgba(60,95,140,.6)';ctx.lineWidth=3;ctx.stroke();
+ ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(cx-100,300,6,190);
+ /* Glas */
+ rr(cx-46,105,92,187,[16,16,0,0]);const lg=ctx.createLinearGradient(0,140,0,292);
+ if(n==1){lg.addColorStop(0,'#7a1f99');lg.addColorStop(1,'#5b1678')}else{lg.addColorStop(0,'#1d3a9a');lg.addColorStop(1,'#0d1a4d')}
+ ctx.save();ctx.clip();ctx.fillStyle='rgba(235,245,255,.55)';ctx.fillRect(cx-46,105,92,187);ctx.fillStyle=lg;ctx.fillRect(cx-46,140+Math.sin(A*2+n)*.8,92,152);ctx.fillStyle='rgba(255,255,255,.28)';ctx.fillRect(cx-36,112,6,170);ctx.restore();
+ rr(cx-46,105,92,187,[16,16,0,0]);ctx.strokeStyle='rgba(60,95,140,.75)';ctx.lineWidth=3;ctx.stroke();
+ rr(cx-51,282,102,10,3);ctx.fillStyle='rgba(210,230,250,.8)';ctx.fill();ctx.stroke();
+ /* Folie */
+ const fg=ctx.createLinearGradient(cx-52,0,cx+52,0);fg.addColorStop(0,'rgba(255,255,255,.4)');fg.addColorStop(.5+Math.sin(A*2)*.3,'rgba(255,255,255,.9)');fg.addColorStop(1,'rgba(255,255,255,.4)');
+ rr(cx-53,291,106,6,3);ctx.fillStyle=fg;ctx.fill();ctx.strokeStyle='rgba(90,110,140,.8)';ctx.lineWidth=1.2;ctx.stroke();
+ ctx.fillStyle='#d4343e';ctx.fillRect(cx-49,284,98,4);
+ 
+ /* Halterung */
+ const cg=ctx.createLinearGradient(0,0,1,0);ctx.fillStyle='#8c99ad';ctx.fillRect(cx-7,50,14,60);rr(cx-54,100,108,20,5);ctx.fillStyle='#6f7d93';ctx.fill();ctx.strokeStyle='#4d5a70';ctx.lineWidth=1.5;ctx.stroke();
+ txt(n==1?'Glas 1':'Glas 2',cx,533,15,'#22304f');txt(n==1?'Kaliumpermanganat-Lösung':'Iod-Stärke-Komplex-Lösung',cx,551,13,'#22304f');
+ if(n==1&&T>4){ctx.globalAlpha=sm(4,9,T);txt('violette Schlieren sinken ab',cx,465,13,'#5a1678');ctx.globalAlpha=1}
+ if(n==2&&T>6){ctx.globalAlpha=sm(6,11,T);txt('Wasser bleibt farblos',cx,465,13,'#244a82');ctx.globalAlpha=1}}
+function drawMacro(){let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#f8fbff');g.addColorStop(1,'#dce8f6');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ ctx.fillStyle='#c3cfe2';ctx.fillRect(0,516,W,44);ctx.fillStyle='#b2c0d6';ctx.fillRect(0,516,W,4);
+ ctx.fillStyle='#7f8da4';ctx.fillRect(170,38,10,480);ctx.fillRect(720,38,10,480);ctx.fillRect(170,40,560,12);ctx.fillStyle='#a8b4c7';ctx.fillRect(170,40,560,4);
+ setup(1);setup(2)}
+/* ---------- Stoffteilchenebene ---------- */
+function drawMicro(){
+ let g=ctx.createLinearGradient(0,0,0,FY);if(glass==1){g.addColorStop(0,'#f2e4fb');g.addColorStop(1,'#e6d2f5')}else{g.addColorStop(0,'#dfe6f8');g.addColorStop(1,'#c8d4f0')}
+ ctx.fillStyle=g;ctx.fillRect(0,0,W,FY);g=ctx.createLinearGradient(0,FY,0,H);g.addColorStop(0,'#d6ecfc');g.addColorStop(1,'#bfe0f8');ctx.fillStyle=g;ctx.fillRect(0,FY,W,H-FY);
+ ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+ if(showP)txt(glass==1?'Rollrandglas: Kaliumpermanganat-Lösung':'Rollrandglas: Iod-Stärke-Komplex-Lösung',16,H-532+10,15,'#3a2a5a','left',700);
+ if(showP)txt('Wasser im Becherglas',16,H-14,15,'#24507f','left',700);
+ /* Folie */
+ HEX.forEach((x,i)=>{const y=FY+Math.sin(A*3+i*1.7)*1.3;hexPath(x,y,30);const gr=ctx.createRadialGradient(x-8,y-9,2,x,y,32);gr.addColorStop(0,'#4a4a4f');gr.addColorStop(1,'#0c0c10');ctx.fillStyle=gr;ctx.fill();ctx.strokeStyle='#777';ctx.lineWidth=1.5;ctx.stroke()});
+ txt('Folie (Cellophan)',W-14,FY+82,13,'#333','right',700);
+ if(!showP)PORES.forEach((x,i)=>{ctx.strokeStyle='#1f9a63';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-17,FY);ctx.lineTo(x+17,FY);ctx.moveTo(x-17,FY);ctx.lineTo(x-12,FY-4);ctx.moveTo(x-17,FY);ctx.lineTo(x-12,FY+4);ctx.moveTo(x+17,FY);ctx.lineTo(x+12,FY-4);ctx.moveTo(x+17,FY);ctx.lineTo(x+12,FY+4);ctx.stroke();
+  txt('Pore',x,FY+50,14,'#1f9a63','center',700)});
+ if(showP)for(const p of P){ctx.save();ctx.translate(p.x,p.y);
+  if(p.k=='w'){ctx.rotate(p.rot);ctx.beginPath();for(let i=0;i<3;i++){const a=i*2.094-1.5708;ctx.lineTo(Math.cos(a)*14,Math.sin(a)*14)}ctx.closePath();ctx.fillStyle='#2f8cf0';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=1.5;ctx.stroke()}
+  else if(p.k=='d'){const gr=ctx.createRadialGradient(-4,-4,1,0,0,12);gr.addColorStop(0,'#d29be8');gr.addColorStop(.5,'#8a2fb0');gr.addColorStop(1,'#4f1569');ctx.beginPath();ctx.arc(0,0,12,0,TAU);ctx.fillStyle=gr;ctx.fill()}
+  else{ctx.rotate(.28*Math.sin(A*.8+p.ph));rr(-42,-23,84,46,7);const gr=ctx.createLinearGradient(0,-23,0,23);gr.addColorStop(0,'#4c7cf5');gr.addColorStop(1,'#1d3fb0');ctx.fillStyle=gr;ctx.fill();ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=2;ctx.stroke();}
+  ctx.restore()}
+ if(showP)for(const f of FX){const q=f.t/.9;if(f.ty=='r'){ctx.beginPath();ctx.arc(f.x,f.y,8+q*38,0,TAU);ctx.strokeStyle=`rgba(${f.c},${1-q})`;ctx.lineWidth=3;ctx.stroke()}
+  else{const s=9+q*4;ctx.strokeStyle=`rgba(229,72,77,${1-q})`;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(f.x-s,f.y-s);ctx.lineTo(f.x+s,f.y+s);ctx.moveTo(f.x+s,f.y-s);ctx.lineTo(f.x-s,f.y+s);ctx.stroke()}}}
+/* ---------- Steuerung ---------- */
+function ui(){$('#hint').style.visibility=zt?'hidden':'';$('#g1').style.visibility=$('#g2').style.visibility=zt&&showP?'':'hidden';$('#f1').style.display=$('#f2').style.display=zt?'none':'';$('#tF').classList.toggle('on',zt==1&&!showP);$('#tM').classList.toggle('on',zt==0);$('#tP').classList.toggle('on',zt==1&&showP);$('#g1').classList.toggle('on',glass==1);$('#g2').classList.toggle('on',glass==2);
+ $('#inf').innerHTML=zt==0?'<b>Stoffebene:</b> In Glas 1 sinken violette Schlieren ins Wasser ab – der Farbstoff Kaliumpermanganat tritt durch die Folie. Aus Glas 2 tritt nichts aus, das Wasser bleibt farblos. Obwohl beide Gläser mit Folie verschlossen sind, verhalten sich die Farbstoffe verschieden. <i>Klicke auf die Folie, um hineinzuzoomen!</i>'
+ :!showP?'<b>Folie vergrößert:</b> Die Folie besteht aus Folien-Stoffteilchen (schwarze Sechsecke). Zwischen ihnen bleiben winzige Lücken, die Poren. Wähle „Stoffteilchenebene“, um zu sehen, welche Stoffteilchen hindurchpassen.':glass==1?'<b>Stoffteilchenebene:</b> Die Folie besitzt Poren. Wasser- und Kaliumpermanganat-Stoffteilchen sind klein genug und gelangen durch die Poren – dank ihrer ständigen, ungeordneten Eigenbewegung wandern die lila Teilchen ins Wasser, bis sie sich gleichmäßig verteilen.'
+ :'<b>Stoffteilchenebene:</b> Die Iod-Stärke-Stoffteilchen sind größer als die Poren der Folie. Sie prallen an den Folien-Stoffteilchen ab und bleiben im Glas. Wasser-Stoffteilchen passen dagegen hindurch. Die Folie wirkt wie ein Sieb für Stoffteilchen: Teilchensieben.';if(!locking)fitSize()}
+function go(z,sp){zt=z;if(sp!==undefined)showP=sp;ui()}
+function zoomTo(n){if(glass!=n){glass=n;initMicro()}go(1,started)}
+function pick(n){if(glass!=n){glass=n;initMicro()}ui()}
+$('#tM').onclick=()=>go(0);$('#tF').onclick=()=>go(1,false);$('#tP').onclick=()=>go(1,true);$('#f1').onclick=()=>zoomTo(1);$('#f2').onclick=()=>zoomTo(2);$('#g1').onclick=()=>pick(1);$('#g2').onclick=()=>pick(2);
+$('#pl').onclick=()=>{if(!started){started=true;run=true}else run=!run;$('#pl').textContent=run?'⏸ Pause':'▶ Weiter'};
+$('#rs').onclick=()=>{T=0;started=false;run=false;initMicro();$('#pl').textContent='▶ Versuch starten'};$('#sp').oninput=e=>speed=+e.target.value;
+function pos(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height]}
+function hit(e){if(zt||zp>0)return 0;const[x,y]=pos(e);for(const n of[1,2])if(Math.abs(x-GX[n])<115&&y>95&&y<335)return n;return 0}
+cv.addEventListener('pointermove',e=>cv.style.cursor=hit(e)?'zoom-in':'default');
+cv.addEventListener('pointerup',e=>{const n=hit(e);if(n)zoomTo(n)});
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+ zp+=Math.sign(zt-zp)*Math.min(Math.abs(zt-zp),dt/1.9);const e=ease(zp);
+ A+=dt;if(run){T+=dt*speed;if(e>.3&&showP)stepMicro(dt*speed*1.6)}
+ ctx.clearRect(0,0,W,H);
+ const m=1-sm(.5,.85,e),u=sm(.6,.95,e);
+ if(m>0){ctx.save();ctx.globalAlpha=m;const s=Math.pow(9,e);ctx.translate(W/2,H/2);ctx.scale(s,s);ctx.translate(-(W/2+(GX[glass]-W/2)*e),-(H/2+(293-H/2)*e));drawMacro();ctx.restore()}
+ if(u>0){ctx.save();ctx.globalAlpha=u;const s=.6+.4*u;ctx.translate(W/2,H/2);ctx.scale(s,s);ctx.translate(-W/2,-H/2);ctx.beginPath();ctx.rect(0,0,W,H);ctx.clip();drawMicro();ctx.restore()}
+ if(e>0&&e<1){ctx.fillStyle=`rgba(255,255,255,${.35*Math.sin(Math.PI*e)})`;ctx.fillRect(0,0,W,H)}
+ if(now-st>200){st=now;if(e>.5&&!showP)$('#stat').textContent='';else if(e>.5){const k=P.filter(p=>p.k!='w'&&p.y>FY).length,N=P.filter(p=>p.k!='w').length;$('#stat').textContent=(glass==1?'KMnO₄-Teilchen':'Iod-Stärke-Teilchen')+' unter der Folie: '+k+' von '+N+'   ·   Wasser-Durchtritte: '+wcross}
+  else if(!started)$('#stat').textContent='Klicke auf „Versuch starten“.';else{const s=Math.floor(T*30);$('#stat').textContent='Versuchszeit: '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')+' min (Zeitraffer)'}}
+ requestAnimationFrame(frame)}
+function lockInfo(){const inf=$('#inf'),s=[zt,showP,glass];locking=true;inf.style.boxSizing='border-box';inf.style.minHeight='0px';let m=0;for(const c of [[0,false,1],[1,false,1],[1,true,1],[1,true,2]]){zt=c[0];showP=c[1];glass=c[2];ui();m=Math.max(m,inf.offsetHeight)}
+[zt,showP,glass]=s;ui();inf.style.minHeight=m+'px';locking=false}
+function fitSize(){const cd=document.querySelector('#stage'),cw=$('#cw'),wr=document.querySelector('.w'),cp=innerWidth<760||innerHeight<420;document.documentElement.classList.toggle('cmp',cp);
+const one=()=>{cw.style.width='0px';const s=Math.max(200,cp?Math.min(cd.clientWidth-4,1000):Math.min(cd.clientWidth-4,(cd.clientHeight-4)*900/560));cw.style.width=s+'px';wr.style.setProperty('--cw',(s+2)+'px')};
+one();if(!locking){lockInfo();one()}}
+$('#th').onclick=()=>{const d=document.documentElement,dk=d.dataset.theme!=='dark';d.dataset.theme=dk?'dark':'light';$('#th').textContent=dk?'☀️ Hell':'🌙 Dunkel'};
+if(window.ResizeObserver)new ResizeObserver(fitSize).observe(document.querySelector('#stage'));
+addEventListener('resize',()=>{lockInfo();fitSize()});
+const PDF_B64='JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUgo+PgplbmRvYmoKMiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjEgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iagozIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YyIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNCAwIG9iago8PAovQ29udGVudHMgOSAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCA4IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9Db250ZW50cyAxMCAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCA4IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago2IDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgOCAwIFIgL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL0F1dGhvciAoTWF0dGhpYXMgR2xlaWNoKSAvQ3JlYXRpb25EYXRlIChEOjIwMjYxMTEzMTAyNjU3KzAwJzAwJykgL0NyZWF0b3IgKGFub255bW91cykgL0tleXdvcmRzICgpIC9Nb2REYXRlIChEOjIwMjYxMTEzMTAyNjU3KzAwJzAwJykgL1Byb2R1Y2VyIChSZXBvcnRMYWIgUERGIExpYnJhcnkgLSBcKG9wZW5zb3VyY2VcKSkgCiAgL1N1YmplY3QgKHVuc3BlY2lmaWVkKSAvVGl0bGUgKFRlaWxjaGVuc2llYmVuIFwyMDUgQXJiZWl0c2JsYXR0KSAvVHJhcHBlZCAvRmFsc2UKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0NvdW50IDIgL0tpZHMgWyA0IDAgUiA1IDAgUiBdIC9UeXBlIC9QYWdlcwo+PgplbmRvYmoKOSAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCAyNzQ3Cj4+CnN0cmVhbQpHYXUwRUNOJXJlKEIqWi5fMm1oJ2lVQlJBaGA/ZiZNalknWjllWlpjXWlgQGEmby91PT8hM2FPcD1KYVZXPFhHKiYjXDd1QlRhJW5eQC9WITFhYF8zR2tjYmsnQ3MkbXE+Tk4pPmBkXSVfQS0pM3AvZ2hWbTRAMUkjaiQnYlc5XEZRQTEiZjBQVCswT14yKFdmO2wlLCRZT0dsMDJVbDddajI8dVFIIkpnUD5FYiEiVTknW0hVPWtqT1UxaURGZ0hXZ0lHRFMqI1c9RU9dOFkkOHNLTSFnT2A8Z3J0UEw0VkdhZTdtSGhDYzdtazNlN29nUSIsUEVudWxUV2tgZzZyb3AsKjo5bjFoKy87KF1LQ3InYVEiSEYvPC5vMU5SMzQ8TlBnSTciaHQiQCc5RScpK01yPG9mLmM1LS0tVHEqJGhYMFVHUVgxSCwnLDBFPm9XRUlENU5IK3RRP2NJRyVHPFRobyRhYUlZNChOJFdjYnBobU0jUFtDJiohOlVQPS9lMjJNTkxCUC1hLTlzZiJBNCgwTTwrdWNpWGNPUiQzTC9ZN1c3VlVsLk07PSxIT0lbOkJIXFsiXHFLK2xoVUhRQksidCxRYj9RXUc+ZmJFTSYhXUFaZj0qKEBqW1YuPjlhJV1SQUgqYiluVCE0ajFWVG9kOyU6a1VzYEsqR2ZEOCorQ0IpXnFVPmpwc2g+a2dnWVElL00pYklkPktpZlxdQWg7JmdqalVmLTYuJy4xYWpNa3NkIXEtKU0zLTRXTVx1PGZ1Ty4pImxtLTY1bT5OYTdaaFczTUNZQitGJSgubChfSihxJy1ERTtdK3FtajY1QVErKVhNWjY/XCxbKCUsclotblxQPmpPaU5eUjYyZSJjcjlNTjU0PE8wOnV0LGklSHJkQjY8J0ZrSnE+MSVLOkMtNmRqOmBgTU9FayVFWy1dSSouJUkxYmhIV2ZFZWBiI0wwcG1WU05jWkxTdVVrXmJbNC87QzUiVGZpPChnP2lvZEQ6JSxLNzhHU3AsXFVrdURqQGctbVouM2g3bzMnUllEM2prSj84NlQnRzEoVDsqXiQ1QFREOS9qRDNHTy4hYUVoYV5tMm5kTT9OR2hIS3NFT1lEN0BIalQzbW5GTjdVQFUzaEAsS2JiNnFUJVNjNE0zMW9HWVZ1Y1E/P0w7YkkzbUo+Py9JcGIwcV5mUzojdS5zKXNhdD9tcEciPUQrQldEJmpBMmctQU5NLEgvdHQ3SD42W21XRkphWGVcdSlSNTMzSEd0K04zQVA8Wko3aCchIm1TMEleWU9ITjc3PjUnIU4hZUtQJjtJOF8uPi9xJ0MtUlYlJkhbWCowTF0xV2MkLyxMOXMmRmhIYUZUaTI5LVxZTCskW19rKTFASjEnYXMlU2phKCNEKHM/RVwzUEApXVMudD9hTC5sX2UhX1pmNlgjNk5OMClPKVotcyRsODIqPnRPVDcvSERgTnMmZEBfJUpWTVtba0xiLGVWK0dNZicnMzUuT2NKV3EqQEJjNC4tUltqWmNzKmBFWWVlXCRMOXRvbCRUNUZfT1RmVzQhXTheMGAkcmpyVC4kOjJFIyQzTzBNajJmWGc4QUskM1pII2cuZHNccDhAXS4vIUo4YkliOEdgN2cnUDFgUj1VKjhMZ0xaTzwpa2EjQzdMLERITi08OnQqWHVOVi9zbC1kOGxUZTImNk9LcVsxUTxQVDtbYlUrMCk6NS40Jk0iOSlpO2whNExFXS4+bWNqVk4wPVgvW1xkcUZcM10kU3E1ajJiY0tKMU4nSCNILl4iTztwR01nZDJJOkM2RywxXWBoYGpKLjdmRi5HIkFQJDZOTTpMdC1PU1QockBaRCZgbyoyWygwZ1RJblZGWEQsYj5fa1AmTixqNnN0KSsySGA3OFhbMkcjTidAVCdpMzpVK0UyPjVaQm1UKVhTSlE9SlpraW9Aa3E9KVFfalpIQ0RabEIyTGlEY0lyanJuVCxZZ05ZcVR1Oyk5Z3QwSGdrOU5TQCROSyhMclAtWiQuSUZIVmhtX0QhSDlXPCxNTGVjZGBxJD9JOHFBNSExRCpGZUwxTnI3QjMjcnQ9c2QiTUAsU3JGX11vTGAoPGBEPUpKZnEqO05wQj9QNjlOITQ1Jk9hSy1oYFpEMm9KN2EjIiwpWDkiUCNwOEs1aSVPIyMsO1tQWDRxLCxAT2pIX2sjSitAMltlc0tbbnBsYV9EITo2QUw1OUgvV2MvR15GW2NHYTQuT28qZCslTiRSTGI0TCtWSGNiPzwmP2BMaictSmZpPEtfSC0yO0RbTnAidENTRj5PKTQjT1JUdFtVRTtpUG10OXE+a2MjLXJGJF9hUktJPVJWcV1rZkxoVCpvL1xNLEsiLmgpNU0/Il1zXU4rIVdrTS9ULDo9RzonXC1LVFpwWXVWM0k7VmtLaFVVMFNRIlteI1pAY0dLNCkwcF9LLUpoUCZTc3ErbCIrTyopOVk8VUMzWUItRjVxVkc4LDoza2giTk9rPV4oN3RSPCQtVldYZS1qSipaaT01aS0/KE83MDxeRUstXTAtV1E4RG9gJ2csSGs3OiMzJzovLThLKFZlR00tcjw2WWRMaFJNLHU9a0gsV2A2YStXVlE5Jk9LS0AjQmE8MDo9IWoxQGtAIV1xIjheTTxqNCVRZz8jbSplZzVLbSVqZmA9QzhUZmZvLEhgXWhhbXFgPmclSkVALnVYJENlXVdJJVRiNElXNGFVZ05eKko6L1BrX2slPklCYE07U1NkLSkhams+ZTk0LGZpTG1lRyxnI0dqZmZ1QWpuKlNjaGgkRUZfak1nKEgqdURWdCZRWCUyQXFjPUNpKzAzMTJDQ2IrVz0hZylEMHRZVDdkZDBHUkJuJiQ/TWkqJHN0Q2dAWS1ENHJzMUEuXEVrPDonbTNMVVokdGtwRkNRXG1XTClOcTA+P2g0IS03JTJaLlo0RVNgKlBuR24+KjQlOltVTE87YFBVImNQOU46cCQlIipVN0kuO1kpc1pvKlg3TUZIQlpRXTgxJipJaiY3bjVDWm1YdV1dPyJIKyknQi9ZMSFjZjUyb0NKNzc1YF03V0soKGkxOTlpIWwuTm1MLzpjWilyMiksPjgoSW9sZERoc0trIm9ESzFaOjpSKTQpNipoNzNrOyIoVExVV1pLdSM9JihvTi9AW10lJyxZQU8qby9hJW8lLmY6VVNFJ0lHX2AqWVNpXDJqPEFRTCV1LkQ8JXM+VGA5VylyaiZrYFg7dSRHamRLa2ctdWtKXGo/cVZlXGdfLytNZGohdVwiaF0xcW8qJVc1ZnJsZjQ6SGEmaDEnRy5zOCxNcG4lZCZ0PScjOTQjMTVQbFJcRylnIXFiRzhGNHQ3dSFtMFZxViRCYU5KKkwscUohOTpLN204am5rYSJkVmFvaSo/ZzhoYWI5OTJjRSNqIUk8U2FDcSkxTGRPJ0NBayxfbTwtSSoqQipXI1YxPCZhMjUkIkAlN0NQcD1rOjsxJTMxOzNJKmheN3A/SUltPlM1JSMnZm9hKygkYCJPTEklKzAqTzRjVF9pJGIuKkRiMT9ULHMxVlE0MzxvVWYpQmo3P3IoJk82akdQcVxHLkBGbUJZaF0rMUowNS8vRixDRDFiJ0xKPiRsZGdgWiNLUl1WYzVmaTtBPk0wbDV+PmVuZHN0cmVhbQplbmRvYmoKMTAgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggNjI3Ngo+PgpzdHJlYW0KR2F1MEg/I3EhcFEkcWkha1hYPWYrU2JzKmVpcWFQWzQ7dFJbPkBrJlEocmFFO0N1bGhfa0I0TFpyNm5ySFMybEtcRUtXJkVrNWkmVGxldSc0VEksJmByV2JPLWg0Q19zKm8rQUZeTW9LcnFybmBQalZra20/QT9vSGhEZ11obGoyZz5eJmRIUVtgTDUqLkszPzhRdHBiLXVYYVY6Wmw7RltRRC1zN1ZfO0lIL1hyXldYSTJcUSRoaydoL3RCYkg/YWVNSDBGLFdMW01xUmg8dDoqZ1dmXm5ocW1oMXJGYXJlczZGIT5yZCwiT25fS0siaDFyJG9tcCQ0Z1EwbiEjQjswP0JMRlYmJDA8XWk4M1g7SUdMYjlTUysyO0VMQVMzbFtwKCFqb1otcDpcQEpFL1xOJ1pGI0ZZXnAya2tzSzFZJ11dYFtcJlZXSGk7cU84RGBfbGE0SHIrZkRZNmhoayVGKF9fRkNOWWUqLW5VQU4uJFRhW0IlSElWUjJwVFhcSGJMP0ZFXCM0XGVdPUk+J3EpSlpCIlouMztERWhxSV5cLUYrcm9XcSxobjhETGY2Nm5jaGZvJEJobkBfImduK0ImVXVLQU5xVTlBV3FydSNsODNNLmdmT0xxbWxXcTk9YG01MU1yR1VHN0lKPFxVJy5lSWVJbzNlJ0stPzg6LmRtPkk1PEtFdHMpQDBjb1IjbGhEayRfKD8lOWBWXkg6NWMyQ0E+LFZMPHNHckZbTG1POm5VVXMmN2IwbGQjXGlMcWh0V09kcUtoRjxdWks8YHU0OFs7ZmAiLCV0VWYtYzVZSiNjaHFvUnU+UFJAXzxLKD1QajkyS2xZIlAuUUEjVm0hS01xLi5rcjM/W2lRJEdpSCVvSWJzSXFLXzUkRXFJVnF1T21SbycmSSglI0xiUFAnbzxbWFVhcD0xZ18kQ2RQSzFxMTc8Lk4oa1JJTUlNNlk5VFgpTTwkNlBAWHI7OVBDJmZBQDkyLC5oKGQ0OmRZclJrbHRpWUgnVERGN0UsbTQ5YzZiOWFHJmo0YSFUSXBURiNzSyJpSEkrV05hXVsxQyRxIitJJztDQzRgcSQtRk0vb1o6LlRsJHVmampSOGc0RD5iLFlCVHVuajxnOXM+VTtAPUBQQ25JMi1iRmtqOEtXVihTTj8yX3U+JUorL0MhMy9ZODpHME08T049OUVQX3J0KWxRZUhdPU1TaVdmMDRsRCZIOnRLaEpDbkNfU0gnQzsldTg5NkVralxZVSZaNlZ1SmxUTjMzTVs/YiEtYkZqLmgjPU5RcjYxa05yY2A3N2JPWUktPC9WRT0kUzYlSmpGJSpNR0M5WzFtXylHMVgmbEgpLi1QNkdXPXUpYGZPRVhhNyIuRWNESjBwaE5Oczk6NzxxM25sSy46QEI4bTtLVyJ1cmc5RFM3NXUiUCQnRyM4QUE7bD06U3VXRmNwR1g/cmsmKTpUP0xPMGU1OC1KOi9RODRwZUQ7T3JcOW1UTjhjMSdZLm5YXGBfJkA6bEs9W0xCMUVfVFhSXWtwMShcV0M9YCpQYTJgVlU5MyROQzZeQFFNVW0pY1dRa11WQXNRVjMkcG5bT1RVR2xEZVFRXlFjKEg5KDtkKTMyJEdvSGMhNGloVWFSVilPI0RFLVI/X2xxKS4vJms4azwpSERPVXQrUFFxMSlpRkAtM2NbTVw9dTVacWVQPFIvWVdbQyhyOiNOQDtjNzpIZkwsbWkqV1BqbjdEamlQbE83ZDpSXzUjZ2BHWm5jXzJnSj9MT2Y3RUBbY2xEZkxwVSo8KVw4NCdiRlsvbSJXYXBhb0x0NzxAQEtCW1VYOUA/Zi1eYmByJ3MubyNCZF9bWDVwLD1tOk1eJDE1YWFoJDBfbGdfTkJYUkhgMS5BbWFUdWdJOFxyXExiaXEpIiFfOmI4cXNFWDQ4VipqZzUrWFpmcFlFJU9pU0VITWdeS0kqclNkREZaVDQxKyNSVlo8TGU7NTw5ZSJrbSUpLmdpSjplUnQrSDokSDckMm5OUVtuQjdRNGhWZT86K0lSUWRBT2QtLVVXZHJfcFNOPmtfTjkjUSFraENTRDFYcEAlazptcTNzRlwhdDsuT18zWzhmU0chZ3MuXUNAMCZBXjQ4LFYiWERKaFBmPyNQZHBQMi1aJ3JQT0lvTThQK25pUkFyRlVBS2hYTTk3Ml5ZNTwoRkgkR2ZlSHJsWHNnSSpBKGNLRzdecG5BPjQ7IytUUyNhaCxLT01oZDROckgwIkl1a2pkM1g/SWI1VDZjMC0zNDtsNEEkRGNrKiUnbSN1WGhVTl0oLi5VWEVpSGcjLnUlUTlGbydSSEgpZTpqLEJDY1s/IjZlbmVrXUROO2Q6MFZfb1teXElMJG4/LjcyN2I/O2dvQVZfJjA0SCYlMFRXZTYpYyo1X1toLUMmQkpCVFEiQU5IRU9lSzosJWQoNjFENUYmQzdaNXJCV2QxRF1DMCslVWFfMyxaPSkkZ1w7LzVDVkY2Jik7MDMzWD0rLF1ZMFI/OUZrNmsyNiQ8ZmRlS0VnYTU2TzpyO1c5ZUppLTByWE4jYWVGQz0lJFtkdS9SPlpEZkY1N0FlS2haOF8/UDMmZ1VOJkk7Yy0hNzkrYWp0ZCY7YU8sIkkwNS9BMjJJO2QrM0FQTjpsK2lbSVtSRUshJk9PNmdJMUstaFVsLjUwN1oyblNJcGg5WiZZRFI0aSVmbCdWdWxOVUU4M246Q2RqQC0/JFtEVGwiXzdTLWFPXXNbR0FWYTdkIlRvcWI+O01nPlZzOm86bS1zR2MrTiNKai9ZWDdSQUM0TTgrdUFgLmhFI0QtP1hcLGYiS0BRbCQnUz4iODE9ZE5eaCJvQTppKD9gcFF1LlNcTmxNYjJbbnByZ0tpMnIxWlwrYjlJREtKVCNTTEY/aiZfWE5NNmFCTmV0Y2xlPU5RPVQ/bCQzZWAlVGJVRFdCXD1pIko1aGRHOEkpZiN1UXFvOjlSNThNKDYlYz1SSG4jJkZMPkpfTyhkU2klWTc1Ui1zKUAjKUlcKGAjLklHKC9xa2s+ZCVOZC1lWEEvXC90TkJyOSI6NlQ5KjdQKzdSVWY/LzpaYTMySihidHEob2k/WWxaOiVNYktRVGtwR1Y+O2JkKXBqPihTMS5HbSNJNGAqb1wxLEpDb1Vhbzo/WXQ6ZFFzYUg5IVNLNDxzZCFDbFFrRisnbS91VWs3LkdvYCFtIltsXEYiRHMxVGg0PUBkQEtuXVBuYW4iKjpEPT4nPkhXXFIlVlghRFMrMSRdNUpmLVFvOlJFNVo1Y0BPdS1CJjNjR1lgMClIPjJbb2tfNVErN1RAJ3RETFNsQCxHaFY2YGlLTTJOKSQtKUcuKkQiXyUnPmU3YkIqLT0raypXL21CUDglZTA7Pz0lK0Y8NzFNbV8hTTkjXCdFTksrRV9xSC5fNVQsWSwvQ0grVF1ZcEJfbWE4bzY5Z2hxJ0ZWakRebk01by46VTE/J00wZz5iKmFnPzIlMU50WVoiPDRtYzNtcjNNZUhZU2xVQlNSRVwvMXIuLSp0SlFCcT9wKXRtaS02RjUpKTdeIUhccF86QmxjPWslQEJnN15sOy5lRlpvXj02Izc/QzosTlwyKmlcZGhQWkRcLjEpMD5tcFU8LGFgN1FdZmQjN1RvMWolb3EnIUw1SmtAaVVuR1taX0VNIm0yX2Y7UShPVlZRKlFjZyYvJ1A9TD07YUg+KmlBS1o2bjUjaUlGKVdMcGFlJz91VUI3W2dbRWFuVzVyODBhYiRSUVlwYFFEUHRVM1o+dUFRVHUtOFojYUdFT3EuImkoYmRKLGNfMDI+MG9ackFMUVVgailVcU0/XnJlNVsrNDknXE1oJDQlQU1HXWtDISlrNj1ONSlrWllqO2M0cy1tTGIiMWwkQ0dRdVRfMnVhNjxLb0NfcjY+PDg/KydoPW4scF1BaXVaSE07KklMaUM0M2EmU0tMQktYaVt1ZmhNaHFobWlqUSwtPXFCP0psMVJqN0hkLycwTnBsbydjL0VjN1I8XWdVc1htO2ZkOmArMC1gJyxfQ2pFbWJcOXQtYVltbnU0UVYxLiRnNDssITh1OyJPKlJdUXBkYUMuMWYtUHVubm9TMixhbEE8Nj5CYGVuIT5DbGJtVFBVaiYhQUI5XThWTiIxZGFlLWcpTTwtTnNTa2FaITY8O0M9aClaWFtqN1U1YVA2OyIuNmVeNzc+ZkFbVDhcLXNkJ1FQTi1PTFdqJUAoWm9xSm43OFRGUlRUaWIwRDQ4TUZDYC0mYyEvWytYT0NBaWVKYzBQYDdFMUZUW00+Z1poRyclKDNkXCROUTlnTV84V0pzIyJyNVU7Z3JEOUtNaTlxTUQmSDplRmtFdDFIKjU0KDYuTDYubEdjXlo7MUM4bWhLPilgI2RsNzokNktKWU4iKzhcPjZZaCNSLiJMJ1cqIWpNXCMrXltBLjMzZT5HNWRtZSQuKW0oPT1uMWRAWFJBLUpxIm5lMStyNjhtO0tWa1ZHbDZaOi5TIXIzU28oYyhRJUxKczNjS3JbT3JbQz4wKkctbk1kc2MxNHJoMThybWQyajksNiNhKkBpU3UnUkhKdUwxJE1AYzdNLmZOUDQvSFRbYClwWiY0O04hUHNfKUtQRUFKSU9LYkZnMjhqLnIuKllIaF85T280PXFHVDpIbjUjVUY+V2YwNHFEKEFULi1Ccj9APDBdJWZNWDU+I1dLby5IYnEtOUYoa2c+JzYpPmdMUkFFczsxOG4wPFs/YUYhZ3RZZi5OJDRSVzE4K0YwZ2V0MWgmUHRFV2JdOU1ISz1SZ1o9YlRdLDxpP0wkNGgmb2pSbUkjTWIsaVRcbEEyVGQ7JTsvNTgiKS8mcVRIJFFbSmtLJXBbYlFmcFo6Ymg3ITo0LU8wbUJnU0VBa0Y0RipDQUhXbFVxMThtUGtbYyZTWk8hcjQ2USw0bW1Oc3FSdGEqZDtZYTxOcW8nI0FWWk0hQHRDcE5sKWBxO2AtZTY5T2gvND5KZ08sVEgwLW1cZHE0PztNQFBtYDslODlFWSlmXDBGQCdObiZ1LTdpN1VJJjIjKWQlK1ZwcTNDWSYtXG4jW0xURixzVDBdMi9pUlgxY2lCYDgpWzxmQik2RlVDUDEwXj9fJS9xZy9VP3MqaFo3JGheL2hNQ2ZzUz1jdExBX3RMUTcxQXU8Im5mZVFkMnJkNipsXS9IKTIoUjYwXSdsMU1LSkBpYjpDNDtPW1c7U2NacGEwIVJ0Yj5Fb04nLCFFSUY1Imhdc21XN1I2XVMyZDhAZj5RV2lFP15HNlRuUEZsKSM2UT5rczJFbVc2LSZuPXVZVWFrRGYmWksiUEtaJD8mPyU/JjRwXzdpSzJUaERLPzU4NFNXYD5yJjNCKjloaWordT9LWDMyLU4uVF8pZFVSNWdwPlRwWCUtJFdXIS02cE1vZDk6UnVpRkQzUFkhRUxNLFc6SkErPyw2OlBpXmI6MlY1UFJjTl8jRyEiLVlrXDdpSkVGQnRJWUcqMEooVCFaYFlLMiEkSjthIz1UI0giNUsrazNuV2E4J0U5dCZUKTMnVmA4WyxGSihEcmM1WS9ZIkJsXF8pXTpaTUBgKC9McDA8bEptTT0vPSR0bDhpQzwnPVJvcDpzWkFtcE1KQG9dckNrIV0sZFMuZTMsRSMnJic9ZGlCYUtjZj0jKCJqZSgnQ0VcZzpAbykiPiFyY2FDIShzJGxrIlpMYUhjZlhVXm1RMmFKJT0vJ2liN0EuMERWTjZRQmQlL0hSdDE0cmljUyU1Rk1FYC40L04oJEokcG5dKiEoLCsnJiZfZFE8WSY7KytSOVJnZCE/ciI/R0okLWtZISVpOiciJ1RCM2cyZSEvITQ/TUU+JClzST5gZ1Q+M2pMbWdrPG9ZM1M0MUJnOkchSS5NJWVtMCgiajRlTCRFKSskUkpjIVkrYzhyMkojLSQ3WWgtdVo6LiMrVTUmaUEjVSdEWkxgIkxlWmlWaCwmOl5rKCgnMHQ+KlkqOmRLLERyWkBLOSMhIyc9PSxwaUFtNCNqQkEjMFYhaCpXWj4uUWRtKDZOMElKSy81Pzs7Zj9sIldUai4qJWpMOWxbY0pELkAzL1BIXypZL2plPmNRUyg4X0hPJFwxS2B0KmtmUGdzMm5zMypRZV9rcz4jMD5zYkFIL11VWUVUKj8zZTFvTk8vcTtcYjEwclw5bykmTDdDJERMNVpzYCFGOkQjQW45cEtkMS5ASF9aNk9iLFV1PiFKcjRTamhsb2BCI0ora3VGJmhiUSxfQHMwRztbTEhYPS9Iaj0kInFdTXQyImFKdFBZUC5hVEEsP14xMzE5NUNxSFJDMUlpT1w/VUJDUV1GNjQiZCFsMiJhJEFxSjw9U2JBZCw4W1JXJkpxYj4kYGw4bFw+RDh0Pl9DOl1CRnM2cXI/TzgiRlluUm9GX2gmaj9eKFQ/QTlKYm8+SmhzVUJaNVgjLD9FI0BIQkliM0lwRyclZGRNZExCIWxldFhXamsvUDxEYDxJO2g+TT9nOT4ybD1yOi88XnAkVD5kZ1RsSGo/YCJual5NYExhclRUUkg7UWFOJT8nXnU5XWNKVzduYitvdERnRGNoSDltYiQlOCF0K1ZYJ0FPK2h1XG9ubV1JaSlDUmo9MVk7LWQ6RD5BL1ZXYl5rQ21KPlxwbWxzLlslTmUxRkFLOWtaP14rM2Q7dG4lLlwrW0QtbjpxOTlJXSknNUM7LnNtIiNUYDptJyIwNkZkcGtsXkdZLW11clhaLUhUWE85LitCK1ZRVjhIVm9DXy9sKHNxP2MxWj1xVkBMMUpOanBnUVdqZ2FdUmhhSF5wUDc2bGJuNk9hNFZhOS0rPlpyOXJaUjBcTT86SXA0XWg4ZmBOPSVCbylVOFs9cSxHUGNlTzMoIlg8M1ZQcShkUyUpV0dkN0NMbnM8IWsuOzVDUiNRVVB1TXMyUVYlTj4mV2wnXGc/V2ZWSVdFMVh0WF5rVUx0SmRIaUlcOFEjbjs0Nj5TTUNtLCtuQiEkNTU8Zm9UQyRJPlU+VC4jRSEncCwoUD88MWdzckM8bT1bLVgkS2hNOFFkKFkyY3JuSmBsRFtKNitkTTM7VldnLHFoSD5mJVkrYiskIXVzM2YwZzZFJSZFUTRgWEdIRVInLGVnUkZVYzItbGI+TjNpLy44WV91LigyK0YnZDBUKCo5Wk8wZjkuSChaSG1SV0ppay9WUz4sL190OFpfK0BuU2hTYk5iVVUqRyNaaDpXXHIqbS0sXy9mKVYzMCFsJUlpaXEzcDJNOCgyIk5RalIiW1M+OCZoXj9MXCxfUU1NPjZEcy1rS1xMMGNSa0wuNllGIzE5LV1hZWpaVW5AWzk7Qzd0RlJuKmdmNDI5TzAlRTNHXEJXZkElSDJaUSo3ME4qZHFoPVlDQmMlL1AjTzRAaGBaOHBrMGE8Nkg3WGNAV0RGQyQ0R2giOF4sWCV1aEJaO1trIlQtVlYsRDsoTkU4ZSwmWXU4U1ppNCQjMEJqVDVRT2Q/PW4lOG45QzZmYiVnL0ZkQkpoMl0mXkVbJCdAVlxfL28wR3RGJC5iVjs/Zk5PcmoxKl5iRjMnN2lAcUhZMU4tVkBbS1hHNmNpVHImdTk4ZSc0RGZAS1kwQSE6IVY4WS1FS10zbjZvUzZHZyFZXkZBVCswaTRxXDshKENUL1RCbGIuJWBUSnJBIkNuZjM9PjVCM0Q+QCsoW0sxLWZIY1NDQW80VTJxNjhEOWcoaUByaTJQJTw1cTI6RjcuNiQxKEZmYTpMcylKbGNzbW9LKFhuNE05P3JVXW9kLysuMzthSkkyJW8kKicmIS4iJERkbklbJThKQFlhZStZclknajZbQm9TTDs+ZEl0PWliIV9UMic1XjFANipKcGhVQUtNJkNsSGghU0hjZHJXXWJQRGAkbFVdNkA0LUk7N2t1I2YvJW9HXVJWTidvdFAqNjdXMzskLXRhSUxYW3FjVVVeX19zMCs4WlA1QVVsIWYuNWNHcmFxaWVlJDdhWCcmQCsrRXQvKkFcXldIaTc3a1Bqb0cqWmVIMjdmS2xbaUZ0T088SDVtOT82JWtyPCc2Ty89VmllZiEnaHEqXyxVUl1cMGZOLGAsZkNmVXQ0YUFHZyViWFJmbHF0NSYhXHBRNmFaIkVdQ2tfJGw5YnIjQCk1OShiR2o9dVRaNlRSXSlORlU5MjRDcDFtcVwzKFgyc15eWlYyYD8hWGgjQmJWXT4rTFtNYWkhZG8wVlFXUmlbRl1uZy1RbixHT29PNVIoVkZoXidbWUJRSytsOVAqb19zLjBpQWJROTBcKGYwNHFlayJNOGk4YU5QRG8sVFEjOD1pS19FLi9KKixfJF1EQCJUamJAQH4+ZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgMTEKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDYxIDAwMDAwIG4gCjAwMDAwMDAxMDIgMDAwMDAgbiAKMDAwMDAwMDIwOSAwMDAwMCBuIAowMDAwMDAwMzIxIDAwMDAwIG4gCjAwMDAwMDA1MjQgMDAwMDAgbiAKMDAwMDAwMDcyOCAwMDAwMCBuIAowMDAwMDAwNzk2IDAwMDAwIG4gCjAwMDAwMDEwODcgMDAwMDAgbiAKMDAwMDAwMTE1MiAwMDAwMCBuIAowMDAwMDAzOTkwIDAwMDAwIG4gCnRyYWlsZXIKPDwKL0lEIApbPGNhYzBmZjVkNWU1N2VhMzM2ZjYwNGI0YTJlNjA1MzBhPjxjYWMwZmY1ZDVlNTdlYTMzNmY2MDRiNGEyZTYwNTMwYT5dCiUgUmVwb3J0TGFiIGdlbmVyYXRlZCBQREYgZG9jdW1lbnQgLS0gZGlnZXN0IChvcGVuc291cmNlKQoKL0luZm8gNyAwIFIKL1Jvb3QgNiAwIFIKL1NpemUgMTEKPj4Kc3RhcnR4cmVmCjEwMzU4CiUlRU9GCg==';
+function pdfBlob(){const b=atob(PDF_B64),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new Blob([u],{type:'application/pdf'})}
+function wsHTML(){
+const F=p=>(p*.3528).toFixed(3),S=160/900,T0=98;
+const T=(x,y,s,p,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${F(p)}" fill="${o.f||'#1a2540'}" text-anchor="${o.a||'start'}" font-weight="${o.w||400}">${s}</text>`};
+const L=(a,b,c,d,w,col,dash)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${col||'#1a2540'}" stroke-width="${w||.3}"${dash?` stroke-dasharray="${dash}"`:''}/>`;
+const R=(x,y,w,h,f,s,sw,r)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r||0}" fill="${f||'none'}" stroke="${s||'none'}" stroke-width="${sw||.3}"/>`;
+const PG=(pts,f,s,sw)=>`<polygon points="${pts}" fill="${f}" stroke="${s}" stroke-width="${sw}"/>`;
+const tri=(x,y,r,a)=>{let p='';for(let i=0;i<3;i++){const t=a+i*2.0944-1.5708;p+=(x+r*Math.cos(t)).toFixed(2)+','+(y+r*Math.sin(t)).toFixed(2)+' '}return PG(p,'#2f8cf0','#fff',.4)};
+const hx=(x,y,r)=>{let p='';for(let i=0;i<6;i++){const t=Math.PI/3*i-Math.PI/2;p+=(x+r*Math.cos(t)).toFixed(2)+','+(y+r*Math.sin(t)).toFixed(2)+' '}return PG(p,'#111','#666',.3)};
+const cc=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#8a2fb0" stroke="#5b1678" stroke-width=".3"/>`;
+const D=(top,html,css,left,w)=>`<div style="position:absolute;left:${left==null?20:left}mm;top:${top}mm;width:${w||170}mm;${css||''}">${html}</div>`;
+const H=(s,base)=>D(base-4.5,s,'font:700 11.5pt/6mm Helvetica,Arial,sans-serif;color:#3d2a8f;border-bottom:.6pt solid #3d2a8f;height:6.3mm');
+const BODY='font-size:9.5pt;line-height:13pt;';
+const pg=(n,html,svg)=>`<div class="pg"><svg viewBox="0 0 210 297" style="position:absolute;left:0;top:0;width:210mm;height:297mm;pointer-events:none" font-family="Helvetica,Arial,sans-serif">${svg}</svg>${html}${D(284.8,'Teilchensieben · Arbeitsblatt · Autor: Matthias Gleich','font-size:7.5pt;line-height:3mm;color:#555a66')}${D(284.8,'Seite '+n+'/2','font-size:7.5pt;line-height:3mm;color:#555a66;text-align:right')}</div>`;
+/* Seite 1 */
+const ln=()=>'<div style="height:7.5mm;border-bottom:.3pt solid #555a66"></div>';
+const blk=l=>`<div style="height:7.5mm;display:flex;align-items:flex-end;padding-bottom:.4mm;font:700 9pt Helvetica,Arial,sans-serif">${l}</div>${ln()}${ln()}${ln()}`;
+const h1=D(11.8,'Teilchensieben','font:700 24pt/10mm Helvetica,Arial,sans-serif;color:#3d2a8f')
++D(22.9,'Farbstoff ist nicht gleich Farbstoff','font:700 11.5pt/5mm Helvetica,Arial,sans-serif;color:#555a66')
++D(32.2,'Name: ______________________ &nbsp;&nbsp; Klasse: ________ &nbsp;&nbsp; Datum: ________________','font-size:9.5pt;line-height:5mm')
++H('Materialien und Durchführung',46)
++D(50,'<p style="margin:0 0 2mm"><b>Materialien:</b> Kleine Bechergläser, Rollrand-Gläser, Einmachfolie (Cellophan), Gummibänder, Stative, Muffen, Klemmen, Schere<br><b>Chemikalien:</b> Kaliumpermanganat-Lösung, Iod-Stärke-Komplex-Lösung</p><p style="margin:0"><b>Durchführung:</b> Zwei Rollrand-Gläser werden mit Kaliumpermanganat-Lösung (Glas 1) und Iod-Stärke-Komplex-Lösung (Glas 2) gefüllt. Beide werden <b>dicht</b> mit Cellophan-Folie verschlossen. Dabei ist darauf zu achten, dass die Folie nicht beschädigt wird. Anschließend werden die Rollrand-Gläser kopfüber jeweils in ein Becherglas mit Wasser gehalten, sodass lediglich der Rand eintaucht.</p>',BODY)
++H('Versuchsaufbau',93)+H('Aufgaben',191)
++D(195,'<b>1</b> Male das Wasser in den Bechergläsern des Versuchsaufbaus in der Farbe an, die du nach 5 bis 10 Minuten beobachtest.',BODY)
++D(204.6,'<b>2</b> Formuliere deine Beobachtungen.',BODY)
++D(207.5,blk('Glas 1 (Kaliumpermanganat-Lösung):')+'<div style="height:.5mm"></div>'+blk('Glas 2 (Iod-Stärke-Komplex-Lösung):'));
+let s1=R(19,T0,1.6,78,'#8c99ad','#4d5a70')+R(189,T0,1.6,78,'#8c99ad','#4d5a70')+R(19,T0+4.5,171.6,2.5,'#8c99ad','#4d5a70');
+const su=(cx,liq,n,n1,n2)=>{const bl=cx-17,br=cx+17,y=v=>T0+v,gl=cx-8,gr=cx+8,r=3.2;
+ return `<path d="M${bl},${y(38)} L${bl},${y(73)} C${bl},${y(74.8)} ${bl+1.2},${y(76)} ${bl+3},${y(76)} L${br-3},${y(76)} C${br-1.2},${y(76)} ${br},${y(74.8)} ${br},${y(73)} L${br},${y(38)}" fill="none" stroke="#3c5f8c" stroke-width=".8"/>`
+ +L(bl+.4,y(43.5),br-.4,y(43.5),.5,'#2f8cf0','1.2 1')
+ +R(cx-1.5,y(4),3,10,'#8c99ad','#4d5a70')+R(cx-11,y(13.5),22,4.5,'#6f7d93','#4d5a70',.3,1)
+ +R(gl,y(23),16,23,liq)
+ +`<path d="M${gl},${y(46)} L${gl},${y(12+r)} C${gl},${y(12+r*.45)} ${gl+r*.45},${y(12)} ${gl+r},${y(12)} L${gr-r},${y(12)} C${gr-r*.45},${y(12)} ${gr},${y(12+r*.45)} ${gr},${y(12+r)} L${gr},${y(46)}" fill="none" stroke="#3c5f8c" stroke-width=".9"/>`
+ +R(gl-.5,y(43),17,1.6,'#d4343e')+R(gl-1,y(46),18,1.3,'#e9eef5','#5a6e8c',.4)
+ +T(cx,y(34),n,9,{f:'#fff',a:'middle',w:700})+T(cx,y(81),n1,8,{a:'middle',w:700})+T(cx,y(85),n2,8,{a:'middle'})};
+s1+=su(72,'#5b1678','1','Glas 1:','Kaliumpermanganat-Lösung')+su(138,'#14234f','2','Glas 2:','Iod-Stärke-Komplex-Lösung');
+s1+=['Rollrandglas','mit Farbstoff-','lösung'].map((s,i)=>T(22,T0+20+i*3.4,s,7.5)).join('')+L(41,T0+25,64,T0+28)
++['Cellophan-Folie','mit Gummiband'].map((s,i)=>T(22,T0+43+i*3.4,s,7.5)).join('')+L(44,T0+45.5,63,T0+45.8)
++['Becherglas','mit Wasser'].map((s,i)=>T(22,T0+62+i*3.4,s,7.5)).join('')+L(41,T0+63,55,T0+63)
++T(160,T0+16,'Klemme',7.5)+L(159,T0+15,149,T0+15.5)+T(160,T0+34,'Stativ',7.5)+L(170,T0+33,189,T0+33);
+/* Seite 2 */
+const ans=['Folien','Poren','Kaliumpermanganat','kleiner','violett','größer','zurückgehalten','farblos','Sieb','Teilchensieben'];
+const words=['kleiner','zurückgehalten','Sieb','Folien','farblos','Poren','Teilchensieben','größer','violett','Kaliumpermanganat'];
+const tpl='Die Cellophan-Folie besteht aus {0}-Stoffteilchen. Zwischen ihnen befinden sich Lücken, die man {1} nennt. Die Wasser-Stoffteilchen und die {2}-Stoffteilchen sind {3} als die Poren und können durch die Folie hindurch. Deshalb färbt sich das Wasser in Glas 1 {4}. Die Iod-Stärke-Stoffteilchen sind {5} als die Poren. Sie werden von der Folie {6} und bleiben im Rollrandglas. Das Wasser in Glas 2 bleibt {7}. Die Folie wirkt wie ein {8} für Stoffteilchen. Man nennt den Versuch deshalb {9}.';
+const fz=tpl.replace(/\{(\d)\}/g,(m,i)=>`<span class="b" style="width:${Math.max(18,ans[i].length*2.9+3)}mm"></span>`);
+const h2=H('Aufbau der Cellophan-Folie',20)
++D(24,'Die Cellophan-Folie (Zellglas) besteht aus Cellulose. Ihre <b>Folien-Stoffteilchen</b> (schwarze Sechsecke) bilden ein dichtes Netz. Zwischen den Folien-Stoffteilchen bleiben winzige Lücken, die <b>Poren</b> (nur wenige Nanometer groß; 1 nm = 0,000 000 001 m).',BODY,20,100)
++H('Stoffteilchenebene',60)
++D(64,'<b>3</b> Zeichne in die Abbildungen die <b>Farbstoff-Stoffteilchen</b> ein, wie du sie nach 5 bis 10 Minuten erwartest. Achte dabei auf die Größe der Poren.',BODY)
++H('Fazit',217)
++D(223,'<b>Wortspeicher:</b> '+words.join(' · '),'font-size:8.5pt;line-height:11pt',22,166)
++D(233.4,fz,'font-size:9.5pt;line-height:6.6mm');
+const fx=128,fy=36,s6=62/900;
+let s2=`<clipPath id="c1"><rect x="${fx}" y="${fy-10}" width="62" height="24"/></clipPath>`+R(fx,fy-10,62,24,'#f4f7fc','#b9c4d8',.4)+`<g clip-path="url(#c1)">`+HEX.map(h=>hx(fx+h*s6,fy,30*s6)).join('')+'</g>';
+PORES.forEach(p=>{const x=fx+p*s6;s2+=L(x,fy+4.2,x,fy+8,.35,'#1f9a63')+T(x,fy+11.6,'Pore',7,{f:'#1f9a63',a:'middle',w:700})});
+s2+=T(fx+31,fy+17.6,'Ausschnitt der Folie (stark vergrößert)',6.8,{f:'#555a66',a:'middle'});
+s2+=tri(25,80,14*S,0)+T(32,81.2,'Wasser-Stoffteilchen (vorgegeben)',8)+hx(105,80,30*S)+T(113,81.2,'Folien-Stoffteilchen (vorgegeben)',8)
++cc(25,93,12*S)+T(32,94.2,'Kaliumpermanganat-Stoffteilchen (Abb. 1)',8)+R(112-84*S/2,93-46*S/2,84*S,46*S,'#2a56d6','#14307f',.3,.8)+T(123,94.2,'Iod-Stärke-Stoffteilchen (Abb. 2)',8);
+let sd=3;const rg=()=>{sd=sd*16807%2147483647;return sd/2147483647};const pts=[];
+[[32,86,10],[184,254,11]].forEach(([lo,hi,n])=>{let k=0,t=0;while(k<n&&t<2000){t++;const x=190+rg()*680,y=lo+rg()*(hi-lo);if(pts.every(q=>Math.hypot(x-q[0],y-q[1])>85)){pts.push([x,y,rg()*2.1]);k++}}});
+const dg=(top,title,id)=>{const x0=25;return T(x0,top-1.2,title,9,{w:700})+R(x0,top,160,24,'#f6f2fa')+R(x0,top+24,160,24,'#eaf4fc')+T(x0+1.8,top+4.2,'Rollrandglas',7,{f:'#555a66'})+T(x0+1.8,top+45.8,'Wasser im Becherglas',7,{f:'#555a66'})
+ +pts.map(q=>tri(x0+q[0]*S,top+q[1]*S,14*S,q[2])).join('')+`<clipPath id="${id}"><rect x="${x0}" y="${top}" width="160" height="48"/></clipPath><g clip-path="url(#${id})">`+HEX.map(h=>hx(x0+h*S,top+24,30*S)).join('')+'</g>'+R(x0,top,160,48,'none','#3c5f8c',.8)};
+s2+=dg(103,'Abbildung 1 · Glas 1: Kaliumpermanganat-Lösung','d1')+dg(160,'Abbildung 2 · Glas 2: Iod-Stärke-Komplex-Lösung','d2');
+s2+=R(20,221.5,170,10.5,'#f1eefc','#3d2a8f',.5,1.5);
+const css='@page{size:A4;margin:0}*{box-sizing:border-box}body{margin:0;background:#8a8f99;font-family:Helvetica,Arial,sans-serif;color:#1a2540}.pg{position:relative;width:210mm;height:296mm;margin:12px auto;background:#fff;overflow:hidden}.b{display:inline-block;height:0;border-bottom:.4pt solid #555a66;position:relative;top:.6mm}.bar{position:sticky;top:0;z-index:5;background:#1a2540;padding:8px;text-align:center}.bar button{font:600 14px system-ui,sans-serif;padding:8px 16px;border-radius:999px;border:0;background:#5b3df5;color:#fff;cursor:pointer}@media print{body{background:#fff}.bar{display:none}.pg{margin:0;break-after:page;page-break-after:always}.pg:last-of-type{break-after:auto;page-break-after:auto}}';
+return `<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Teilchensieben – Arbeitsblatt</title><style>${css}</style></head><body><div class="bar"><button id="sv">💾 PDF speichern</button> <button onclick="print()">🖨 Drucken</button></div>${pg(1,h1,s1)}${pg(2,h2,s2)}</body></html>`;
+}
+
+async function savePdf(w){const bl=pdfBlob();try{const d=window.claude&&await claude.use('downloads');if(d){await d.save({filename:'Teilchensieben_Arbeitsblatt.pdf',data:bl});return}}catch(e){if(e&&e.code==='declined')return}
+try{const D=(w||window).document,a=D.createElement('a');a.href=URL.createObjectURL(bl);a.download='Teilchensieben_Arbeitsblatt.pdf';D.body.appendChild(a);a.click();a.remove()}catch(e){alert('Das Speichern war nicht möglich.')}}
+$('#pdf').onclick=()=>{const w=window.open('','_blank');if(!w){alert('Das neue Fenster wurde blockiert. Bitte Pop-ups für diese Seite erlauben.');return}w.document.open();w.document.write(wsHTML());w.document.close();const sv=w.document.getElementById('sv');if(sv)sv.onclick=()=>savePdf(w)};
+
+initMicro();ui();lockInfo();fitSize();setTimeout(()=>{lockInfo();fitSize()},300);requestAnimationFrame(frame);
+</script></body></html>

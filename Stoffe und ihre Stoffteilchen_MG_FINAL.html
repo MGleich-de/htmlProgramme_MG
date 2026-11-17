@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Stoffe und ihre Stoffteilchen</title>
+<style>
+:root{--bg:#eef1f5;--card:#fff;--ink:#14213d;--mut:#586274;--ln:#d5dbe5;--ac:#1fa6a0;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1522;--card:#172033;--ink:#e8ecf4;--mut:#9aa6bd;--ln:#2a3650;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1522;--card:#172033;--ink:#e8ecf4;--mut:#9aa6bd;--ln:#2a3650;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:28px 20px 8px;max-width:1040px;margin:auto}
+h1{font:700 clamp(26px,5vw,40px)/1.15 Georgia,"Times New Roman",serif;margin:0 0 6px}
+header p{margin:0;color:var(--mut);max-width:60ch}
+nav{display:flex;gap:8px;max-width:1040px;margin:16px auto 0;padding:0 20px;overflow-x:auto}
+nav button{flex:1 0 auto;border:2px solid var(--ln);background:var(--card);color:var(--ink);padding:10px 18px;border-radius:12px;font:600 15px system-ui;cursor:pointer;transition:.2s}
+nav button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+main{max-width:1040px;margin:auto;padding:16px 20px 40px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chips button{border:2px solid var(--ac);background:transparent;color:var(--ink);padding:7px 14px;border-radius:99px;font:600 14px system-ui;cursor:pointer}
+.chips button.on{background:var(--ac);color:#fff}
+.stage{border-radius:18px;overflow:hidden;box-shadow:0 12px 36px rgba(8,20,45,.35);border:2px solid var(--ac);background:#0b1a2e}
+canvas{display:block;width:100%;height:auto}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.ctl button{border:0;background:var(--card);color:var(--ink);border:2px solid var(--ln);padding:8px 14px;border-radius:10px;font:600 14px system-ui;cursor:pointer}
+.ctl button.act{background:var(--ac);border-color:var(--ac);color:#fff}
+.ctl label{font-size:14px;color:var(--mut);display:flex;gap:8px;align-items:center}
+.ctl input{accent-color:var(--ac)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+#cap{background:var(--card);border-left:6px solid var(--ac);padding:12px 16px;border-radius:8px;min-height:3.4em;margin:0 0 18px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.cols{grid-template-columns:1fr}}
+article{background:var(--card);border-radius:16px;padding:18px 20px;border:1px solid var(--ln)}
+h2{font:700 20px Georgia,serif;margin:0 0 10px;color:var(--ac)}h3{font:700 15px system-ui;margin:14px 0 4px}
+article p{margin:0 0 6px}
+.ex{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:8px}
+.ex div{background:#0b1a2e;border-radius:12px;padding:6px;text-align:center;color:#e8ecf4;font-size:13px}
+.ex canvas{width:100%}.ex div[role=button]{cursor:pointer;transition:transform .15s}.ex div[role=button]:hover{transform:translateY(-3px);box-shadow:0 0 0 2px var(--ac)}
+table{border-collapse:collapse;width:100%;background:var(--card);border-radius:12px;overflow:hidden;font-size:14px}
+th,td{padding:10px 12px;border:1px solid var(--ln);vertical-align:top;text-align:left}
+th.h{cursor:pointer;color:#fff}.wrap{overflow-x:auto}
+#kls{display:flex;gap:6px;margin-top:12px}#kls button{border:2px solid var(--ln);background:var(--card);color:var(--ink);padding:6px 16px;border-radius:99px;font:600 14px system-ui;cursor:pointer}#kls button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+@media(prefers-reduced-motion:reduce){nav button{transition:none}}
+</style></head><body>
+<header><h1>Stoffe und ihre Stoffteilchen</h1><p style="margin:0 0 8px;font-size:14px;font-weight:600">Autor: Matthias Gleich</p><p>Flüchtige Stoffe, Salze und Metalle: Eigenschaften auf der Stoffebene, Erklärung auf der Teilchenebene. Wähle eine Animation und probiere sie aus.</p><div id="kls"><button data-k="8" class="on">Klasse 8</button><button data-k="9">Klasse 9</button></div></header>
+<nav id="tabs"></nav>
+<main>
+<section id="lab">
+<div class="chips" id="chips"></div>
+<div class="stage"><canvas id="cv"></canvas></div>
+<div class="ctl"><button id="bp">Pause</button><button id="br">Neu starten</button><button id="bb" class="act">Schalter schließen</button><button id="ba" class="act"></button>
+<label id="slw">Temperatur <input type="range" id="sl" min="0" max="1" step=".01" value=".12"></label>
+<label>Tempo <input type="range" id="sp" min=".3" max="2" step=".1" value="1"></label></div>
+<p id="cap"></p>
+<div class="cols"><article id="stoff"></article><article id="teil"></article></div>
+</section>
+<section id="cmp" hidden></section>
+</main>
+<script>
+const $=i=>document.getElementById(i),rnd=(a,b)=>a+Math.random()*(b-a),lerp=(a,b,t)=>a+(b-a)*t,cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),ez=t=>t*t*(3-2*t);
+const W=800,H=400,cv=$('cv'),g=cv.getContext('2d');
+function fit(){const d=window.devicePixelRatio||1;cv.width=W*d;cv.height=H*d;g.setTransform(d,0,0,d,0,0)}fit();
+/* ---------- Zeichenhelfer ---------- */
+function ball(g,x,y,r,h,s,l,t,tc,ns){g.save();if(!ns){g.fillStyle='rgba(0,0,0,.28)';g.beginPath();g.ellipse(x+r*.15,y+r*.95,r*.85,r*.22,0,0,7);g.fill()}
+const q=g.createRadialGradient(x-r*.35,y-r*.4,r*.08,x,y,r);q.addColorStop(0,`hsl(${h},${s}%,${Math.min(l+32,92)}%)`);q.addColorStop(.55,`hsl(${h},${s}%,${l}%)`);q.addColorStop(1,`hsl(${h},${s}%,${Math.max(l-24,6)}%)`);
+g.fillStyle=q;g.beginPath();g.arc(x,y,r,0,7);g.fill();if(t){g.fillStyle=tc||'#fff';g.font=`600 ${Math.max(11,r*.72)}px system-ui`;g.textAlign='center';g.textBaseline='middle';g.fillText(t,x,y+1)}g.restore()}
+function glow(g,x,y,r,c,a){const q=g.createRadialGradient(x,y,0,x,y,r);q.addColorStop(0,`hsla(${c},100%,70%,${a})`);q.addColorStop(1,`hsla(${c},100%,60%,0)`);g.fillStyle=q;g.beginPath();g.arc(x,y,r,0,7);g.fill()}
+function el(g,x,y,s=1){glow(g,x,y,16*s,190,.9);g.fillStyle='#e8fdff';g.beginPath();g.arc(x,y,3.2*s,0,7);g.fill()}
+function txt(g,s,x,y,sz=15,col='#fff',al='center'){g.fillStyle=col;g.font=`${sz}px system-ui`;g.textAlign=al;g.textBaseline='middle';g.fillText(s,x,y)}
+function fml(g,s,x,y,sz=22){g.font=`${sz}px system-ui`;g.textBaseline='middle';g.textAlign='left';const P=s.split(/(\[[A-Za-z]+\])/).filter(Boolean).map(t=>t[0]=='['?{t:t.slice(1,-1),b:1}:{t}),ws=P.map(p=>g.measureText(p.t).width),tot=ws.reduce((a,b)=>a+b,0);let cx=x-tot/2;g.fillStyle=g.strokeStyle='#fff';g.lineWidth=2;P.forEach((p,i)=>{g.fillText(p.t,cx,y);if(p.b){g.beginPath();g.moveTo(cx,y-sz*.62);g.lineTo(cx+ws[i],y-sz*.62);g.moveTo(cx,y+sz*.62);g.lineTo(cx+ws[i],y+sz*.62);g.stroke()}cx+=ws[i]})}
+function fml2(g,s,x,y,sz=22){g.textBaseline='middle';g.textAlign='left';const P=s.split(/(\[[A-Za-z]+\]|\^[^^]+\^)/).filter(Boolean).map(t=>t[0]=='['?{t:t.slice(1,-1),b:1}:t[0]=='^'?{t:t.slice(1,-1),s:1}:{t});P.forEach(p=>{g.font=(p.s?sz*.62:sz)+'px system-ui';p.w=g.measureText(p.t).width});let cx=x-P.reduce((a,p)=>a+p.w,0)/2;g.strokeStyle='#fff';g.lineWidth=2;for(const p of P){g.font=(p.s?sz*.62:sz)+'px system-ui';g.fillStyle=p.s?(p.t[1]=='+'?'#ffd27a':'#9fe8ff'):'#fff';g.fillText(p.t,cx,p.s?y-sz*.5:y);if(p.b){g.beginPath();g.moveTo(cx,y-sz*.62);g.lineTo(cx+p.w,y-sz*.62);g.moveTo(cx,y+sz*.62);g.lineTo(cx+p.w,y+sz*.62);g.stroke()}cx+=p.w}}
+function arrow(g,x1,y1,x2,y2,c){g.strokeStyle=g.fillStyle=c;g.lineWidth=2;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();const a=Math.atan2(y2-y1,x2-x1);g.beginPath();g.moveTo(x2,y2);g.lineTo(x2-9*Math.cos(a-.4),y2-9*Math.sin(a-.4));g.lineTo(x2-9*Math.cos(a+.4),y2-9*Math.sin(a+.4));g.fill()}
+function cloud(g,x,y,r,h){const q=g.createRadialGradient(x,y,0,x,y,r);q.addColorStop(0,`hsla(${h},80%,60%,.05)`);q.addColorStop(1,`hsla(${h},80%,60%,.3)`);g.fillStyle=q;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.setLineDash([5,5]);g.strokeStyle=`hsla(${h},80%,75%,.7)`;g.lineWidth=1.5;g.stroke();g.setLineDash([])}
+function hammer(g,ox,y){g.save();g.translate(ox,y);g.rotate(-Math.PI/2);g.fillStyle='#b98b5e';g.fillRect(-6,-170,12,160);g.fillStyle='#d3d9e3';g.fillRect(-38,-14,76,30);g.restore()}
+function half(g,mx,my,rot,edge,left,fn){const m=g.getTransform();g.save();g.translate(mx,my);g.rotate(rot);g.beginPath();if(left)g.rect(-1000,-1000,1000+edge,2000);else g.rect(edge,-1000,2000,2000);g.clip();g.setTransform(m);fn();g.restore()}
+function elec(g,x,sg,c){g.fillStyle=c;g.fillRect(x-10,70,20,260);txt(g,sg,x,50,24,c)}
+const A={H:[205,30,78],Br:[15,55,28],Na:[40,85,58],Cl:[135,45,42],Cln:[280,45,45],Ne:[220,10,55]};
+const B=(g,x,y,r,k,t,tc)=>ball(g,x,y,r,...A[k],t,tc);
+/* ---------- Moleküle ---------- */
+let M=[];
+function initM(n,x0,x1,y0,y1){M=[];for(let i=0;i<n;i++)M.push({x:rnd(x0,x1),y:rnd(y0,y1),vx:rnd(-60,60),vy:rnd(-60,60),a:rnd(0,6.28),w:rnd(-1.5,1.5)})}
+function stepM(dt,Tm,b){const sp=35+Tm*260,q=(1-Tm)*(1-Tm);
+for(const m of M){let ax=0,ay=q*150;for(const o of M){if(o===m)continue;const dx=o.x-m.x,dy=o.y-m.y,d=Math.hypot(dx,dy)||1;
+if(d<56){const f=(56-d)*14;ax-=dx/d*f;ay-=dy/d*f}else if(d<120){ax+=dx/d*q*60;ay+=dy/d*q*60}}
+m.vx+=(ax+rnd(-1,1)*(80+Tm*500))*dt;m.vy+=(ay+rnd(-1,1)*(80+Tm*500))*dt;
+const s=Math.hypot(m.vx,m.vy)||1,k=1+(sp/s-1)*Math.min(1,dt*3);m.vx*=k;m.vy*=k;m.x+=m.vx*dt;m.y+=m.vy*dt;m.a+=m.w*dt;
+if(m.x<b[0]+24){m.x=b[0]+24;m.vx=Math.abs(m.vx)}if(m.x>b[1]-24){m.x=b[1]-24;m.vx=-Math.abs(m.vx)}
+if(m.y<b[2]+24){m.y=b[2]+24;m.vy=Math.abs(m.vy)}if(m.y>b[3]-24){m.y=b[3]-24;m.vy=-Math.abs(m.vy)}}}
+function drawM(g,lines){if(lines>0){g.setLineDash([4,5]);g.lineWidth=1.6;for(let i=0;i<M.length;i++)for(let j=i+1;j<M.length;j++){const d=Math.hypot(M[i].x-M[j].x,M[i].y-M[j].y);if(d<78){g.strokeStyle=`rgba(120,230,255,${lines*(1-d/90)})`;g.beginPath();g.moveTo(M[i].x,M[i].y);g.lineTo(M[j].x,M[j].y);g.stroke()}}g.setLineDash([])}
+for(const m of M){const dx=Math.cos(m.a)*13,dy=Math.sin(m.a)*13;for(const s of dy>0?[-1,1]:[1,-1])B(g,m.x+dx*s,m.y+dy*s,14,'H')}}
+/* ---------- Gitter ---------- */
+let L=[],ions=[],W2=[],E=[],st=0,volt=true,hit=1e9,T=0;
+const sq=(c,r)=>({x:400+(c-3.5)*70,y:200+(r-1.5)*70}),mq=(c,r)=>({x:150+c*88+(r%2)*44,y:95+r*70});
+function initE(n,free){E=[];for(let i=0;i<n;i++)E.push({x:rnd(130,700),y:rnd(60,340),vx:rnd(-90,90),vy:rnd(-90,90),tr:[],a:rnd(0,6.28),i:i%24})}
+function stepE(dt,drift,xm,xl){for(const e of E){e.vx+=((drift||0)-e.vx)*dt*1.5+rnd(-1,1)*520*dt;e.vy+=-e.vy*dt*1.5+rnd(-1,1)*520*dt;e.x+=e.vx*dt;e.y+=e.vy*dt;
+if(drift){if(e.x>712){e.x=112;e.tr=[]}if(e.x<108){e.x=712;e.tr=[]}}else{const a=xl||110,b=xm||735;if(e.x<a){e.x=a;e.vx=Math.abs(e.vx)}if(e.x>b){e.x=b;e.vx=-Math.abs(e.vx)}}
+if(e.y<60){e.y=60;e.vy=Math.abs(e.vy)}if(e.y>340){e.y=340;e.vy=-Math.abs(e.vy)}e.tr.push([e.x,e.y]);if(e.tr.length>6)e.tr.shift()}}
+function drawE(g,sh){for(const e of E){const o=sh?sh*(1-cl((e.y-170)/60)):0;g.strokeStyle='rgba(120,230,255,.28)';g.lineWidth=2;g.beginPath();e.tr.forEach((p,i)=>i?g.lineTo(p[0]+o,p[1]):g.moveTo(p[0]+o,p[1]));g.stroke();el(g,e.x+o,e.y,.9)}}
+function lattice(g,sh,lab){for(let r=0;r<4;r++)for(let c=0;c<6;c++){const p=mq(c,r),s=r<2?sh:0;B(g,p.x+s,p.y,22,'Na','+')}}
+/* ---------- Szenen ---------- */
+const SC={
+v1:{n:'Bindung bilden',draw(g){const p=ez(cl(T/4.5)),y=200,hx=lerp(110,358,p),bx=lerp(690,442,p),mid=(hx+bx)/2;
+cloud(g,hx,y,50,205);cloud(g,bx,y,50,205);
+B(g,hx,y,24,'H','H','#14213d');B(g,bx,y,24,'H','H','#14213d');
+
+if(T<4.6){el(g,hx+Math.cos(T*3.2)*50,y+Math.sin(T*3.2)*50);el(g,bx+Math.cos(T*2.7+2)*50,y+Math.sin(T*2.7+2)*50)}
+else{const w=Math.sin(T*6)*5;g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=3;g.beginPath();g.moveTo(hx+24,y);g.lineTo(bx-24,y);g.stroke();glow(g,mid,y,34,190,.45);el(g,mid-7+w,y,1.2);el(g,mid+7+w,y,1.2)}
+
+if(T>6)txt(g,'unpolare Bindung: gleiche Atome, gleich starker Zug',400,96,18,'#ffd27a');
+txt(g,'H· + ·H  →  H–H',400,360,22,'#fff')},
+cap:t=>t<4.5?'Zwei Atome mit je einer einfach besetzten Kugelwolke nähern sich.':t<6?'Die Kugelwolken überlappen. Das gemeinsame Elektronenpaar ist die Elektronenpaarbindung.':'Beide H-Atome besitzen das Elektronenpaar gemeinsam und erreichen die Edelgasregel (Helium). Beide ziehen gleich stark: unpolare Elektronenpaarbindung im H₂-Molekül.'},
+v2:{n:'Aggregatzustände',init(){initM(14,110,690,200,350)},draw(g,dt){const Tm=+$('sl').value;stepM(dt,Tm,[60,740,40,370]);
+g.strokeStyle='rgba(255,255,255,.35)';g.lineWidth=3;g.strokeRect(60,40,680,330);drawM(g,cl((.62-Tm)*3));
+txt(g,Tm<.4?'flüssig':Tm<.7?'verdampft':'gasförmig',90,62,20,'#ffd27a','left');txt(g,k8('gestrichelt = London-Wechselwirkungen zwischen H₂-Molekülen (Sdp. −253 °C)'),730,386,12,'#9fe8ff','right')},
+cap:()=>{const t=+$('sl').value;return t<.4?'Flüssig: Die Wechselwirkungen (gestrichelt) halten die Moleküle zusammen, aber sie gleiten noch aneinander vorbei. Bei H₂ sind es nur schwache London-Wechselwirkungen, der Siedepunkt liegt deshalb bei sehr tiefen −253 °C (die Animation zeigt das Prinzip).':t<.7?'Bei höherer Temperatur werden die Wechselwirkungen überwunden, Moleküle verlassen den Verband.':'Gasförmig: Die Moleküle bewegen sich schnell und frei, die Wechselwirkungen spielen kaum noch eine Rolle.'}},
+v3:{n:'Leitfähigkeit',sw:1,init(){initM(22,40,760,40,360)},draw(g,dt){stepM(dt,.55,[0,800,0,400]);cond(g,'gas',false,()=>{drawM(g,0);lab(g,'neutrale Moleküle: kein Ladungstransport')})},
+cap:t=>ccap(t,false,'Die Moleküle sind insgesamt elektrisch neutral. Es gibt keine beweglichen Ladungsträger, daher leiten flüchtige Stoffe nicht.')},
+s1:{n:'Ionenbildung und Gitter',init(){L=[];for(let r=0;r<4;r++)for(let c=0;c<8;c++){const a=rnd(0,6.28);L.push({c,r,x0:400+Math.cos(a)*620,y0:200+Math.sin(a)*420,d:(r*8+c)*.055})}},
+draw(g){const y=200;if(T<6.6&&kl!=8){g.globalAlpha=1-cl((T-6)/.6);const pa=ez(cl(T/2.6)),e=ez(cl((T-3)/1.2)),q=ez(cl((T-4.4)/1.3));
+const nx=lerp(150,335,pa)+q*18,cx=lerp(650,465,pa)-q*18,rn=lerp(34,22,e),rc=lerp(30,40,e);
+B(g,nx,y,rn,'Na',e>.9?'+':'Na','#14213d');ball(g,cx,y,rc,lerp(135,280,e),45,lerp(42,45,e),e>.9?'−':'Cl');
+for(const an of[0,1.5708,-1.5708])for(const s of[-6,6])el(g,cx+Math.cos(an)*(rc+16)-Math.sin(an)*s,y+Math.sin(an)*(rc+16)+Math.cos(an)*s,.55);
+if(e>=1){for(const s of[-6,6])el(g,cx-(rc+16),y+s,.55)}else{const ca=Math.PI+Math.sin(T*1.6)*.3;el(g,cx+Math.cos(ca)*(rc+14),y+Math.sin(ca)*(rc+14));if(e<=0)el(g,nx+Math.cos(T*4)*46,y+Math.sin(T*4)*46);else el(g,lerp(nx+40,cx-50,e),y-Math.sin(Math.PI*e)*60,1.6)}
+if(q>.5){arrow(g,nx+rn+4,y+70,nx+rn+30,y+70,'#ffd27a');arrow(g,cx-rc-4,y+70,cx-rc-30,y+70,'#ffd27a');txt(g,'Anziehung',(nx+cx)/2,y+92,14,'#ffd27a')}
+fml(g,'Na· + ·[Cl]|  →  Na⁺ |[Cl]|⁻',400,350);g.globalAlpha=1}
+if(T>=6){for(const o of L){const p=sq(o.c,o.r),k=ez(cl((T-6.3-o.d)/1.4)),v=k>=1?Math.sin(T*6+o.c*2+o.r)*.6:0,na=(o.c+o.r)%2==0;
+const x=lerp(o.x0,p.x,k)+v,yy=lerp(o.y0,p.y,k)+v;if(na)B(g,x,yy,22,'Na','+','#14213d');else ball(g,x,yy,34,280,45,45,'−')}
+if(T>9.5){const a=sq(3,1),b=sq(4,1);g.setLineDash([6,5]);g.strokeStyle='#fff';g.lineWidth=2;g.strokeRect(a.x-40,a.y-40,b.x-a.x+80,80);g.setLineDash([]);txt(g,'Ionengruppe (NaCl)',400,70,17,'#ffd27a')}}},
+cap:t=>t<3?'Ein Natrium-Atom und ein Chlor-Atom nähern sich.':t<4.5?'Redoxreaktion: Na gibt ein Elektron ab (Oxidation), Cl nimmt es auf (Reduktion).':t<6?'Es entstehen Na⁺ und Cl⁻, beide mit Edelgaskonfiguration. Sie ziehen sich elektrostatisch an.':t<9.5?'Die Anziehung wirkt in alle Richtungen: Die Ionen ordnen sich zum Ionengitter.':'Die Ionengruppe ist die kleinste gedachte Formeleinheit: ein Na⁺ und ein Cl⁻ gleichen ihre Ladungen aus.'},
+s2:{n:'Sprödigkeit',init(){hit=1e9},ctl:{l:'Hammerschlag',f(){hit=T}},draw(g){const d=T-hit,sh=ez(cl((d-.25)/.9))*70,up=cl(d-1.4,0,3);
+for(let r=0;r<4;r++)for(let c=0;c<8;c++){const p=sq(c,r),na=(c+r)%2==0,top=r<2,v=Math.sin(T*6+c*2+r)*.5;let x=p.x+(top?sh:0)+v,y=p.y+(top?-up*38:up*6)+v;if(top)x+=up*12;
+if(na)B(g,x,y,22,'Na','+','#14213d');else ball(g,x,y,34,280,45,45,'−')}
+if(d>=0&&d<1){const ox=d<.22?lerp(20,104,ez(d/.22)):lerp(104,-70,ez(cl((d-.3)/.7)));hammer(g,ox,130)}
+if(d>1.1&&d<3.2){g.strokeStyle=`rgba(255,120,120,${cl(1-(d-1.1)/2.1)})`;for(let c=1;c<8;c++){const px=sq(c,1).x+up*6,ym=200-up*16;arrow(g,px,ym-3,px,ym-24,'#ff3b3b');arrow(g,px,ym+3,px,ym+24,'#ff3b3b')}
+txt(g,'gleichnamige Ionen stoßen sich ab',400,350,17,'#ff9a9a')}
+if(d<0)txt(g,'Ionengitter im Kristall – starte den Hammerschlag',400,360,16,'#9fe8ff')},
+cap:t=>{const d=t-hit;return d<0?'Ein Kristall ist fest, die Ionen sitzen auf festen Plätzen.':d<1.2?'Druck verschiebt eine Ionenschicht um eine Position.':'Jetzt stehen gleichnamige Ionen nebeneinander. Sie stoßen sich ab, das Gitter zerbricht: Salze sind spröde.'}},
+s3:{n:'Leitfähigkeit',sw:1,init(){st=0;ions=[];for(let r=0;r<7;r++)for(let c=0;c<14;c++){const gx=25+c*58,gy=29+r*57;ions.push({na:(c+r)%2==0,gx,gy,x:gx,y:gy,vx:0,vy:0})}
+W2=[];for(let i=0;i<40;i++)W2.push({x:rnd(0,800),y:rnd(0,400),vx:rnd(-30,30),vy:rnd(-30,30),a:rnd(0,6)});$('ba').textContent='Zustand: fest (wechseln)'},
+ctl:{l:'Zustand: fest (wechseln)',f(){st=(st+1)%3;cc=1e9;$('ba').textContent='Zustand: '+['fest','Schmelze','wässrige Lösung'][st]+' (wechseln)'}},
+draw(g,dt){for(const w of W2){w.x+=w.vx*dt;w.y+=w.vy*dt;w.a+=dt;if(w.x<0||w.x>800)w.vx*=-1;if(w.y<0||w.y>400)w.vy*=-1}
+for(const o of ions){if(st==0){o.x+=(o.gx-o.x)*Math.min(1,dt*6)+Math.sin(T*6+o.gx)*.12;o.y+=(o.gy-o.y)*Math.min(1,dt*6);o.vx=o.vy=0}
+else{const D=o.na?-75:75;o.vx+=((D-o.vx)*1.5+rnd(-1,1)*500)*dt;o.vy+=(-o.vy*1.5+rnd(-1,1)*500)*dt;o.x+=o.vx*dt;o.y+=o.vy*dt;
+if(o.x<-30)o.x=830;if(o.x>830)o.x=-30;if(o.y<10){o.y=10;o.vy=20}if(o.y>390){o.y=390;o.vy=-20}}}
+cond(g,['solid','melt','sol'][st],st>0,()=>{if(st==2)for(const w of W2){ball(g,w.x,w.y,7,200,70,55);ball(g,w.x+Math.cos(w.a)*9,w.y+Math.sin(w.a)*9,4,0,0,90);ball(g,w.x+Math.cos(w.a+1.9)*9,w.y+Math.sin(w.a+1.9)*9,4,0,0,90)}
+for(const o of ions){if(st==2){g.strokeStyle='rgba(120,200,255,.35)';g.lineWidth=2;g.beginPath();g.arc(o.x,o.y,(o.na?15:23)+8,0,7);g.stroke()}
+if(o.na)B(g,o.x,o.y,15,'Na','+','#14213d');else ball(g,o.x,o.y,23,280,45,45,'−')}
+if(st>0)lab(g,'Kationen und Anionen wandern in entgegengesetzte Richtungen')})},
+cap:t=>ccap(t,st>0,['Fester Kristall: Die Ionen sind ortsfest, es gibt keine beweglichen Ladungsträger. Er leitet nicht.','Schmelze: Die Ionen sind frei beweglich, Kationen und Anionen wandern in entgegengesetzte Richtungen. Die Schmelze leitet.','Wässrige Lösung: Die Wassermoleküle lösen die Ionen aus dem Gitter, sie sind frei beweglich. Die Lösung leitet.'][st])},
+m1:{n:'Metallbindung',init(){L=[];for(let r=0;r<4;r++)for(let c=0;c<6;c++)L.push({c,r,x0:rnd(100,700),y0:rnd(60,340)});initE(24);},draw(g,dt){
+const f=T>=3;if(f)stepE(dt);
+if(T>4)glow(g,420,200,300,190,.1);
+L.forEach((o,i)=>{const p=mq(o.c,o.r),k=ez(cl(T/2.5)),x=lerp(o.x0,p.x,k),y=lerp(o.y0,p.y,k),r=lerp(34,22,ez(cl(T-3)));
+B(g,x,y,r,'Na',T<3.4?'Na':'+','#14213d');if(!f){const e=E[i];e.x=x+Math.cos(T*3+i)*46;e.y=y+Math.sin(T*3+i)*46;e.vx=rnd(-90,90);e.vy=rnd(-90,90);e.tr=[]}});
+drawE(g);if(T>4.5){txt(g,'Na⁺-Ionen (Atomrümpfe) im Metallgitter',400,370,17,'#ffd27a');txt(g,'bewegliche Außenelektronen = „Elektronengas“',400,30,17,'#9fe8ff')}},
+cap:t=>t<3?'Metall-Atome ordnen sich regelmäßig an. Jedes hat ein Außenelektron.':t<4.5?'Alle Atome geben ihre Außenelektronen ab: Es entstehen positive Atomrümpfe.':'Die Elektronen sind nicht an ein Ion gebunden, sondern zwischen allen Ionen frei beweglich. Die Anziehung hält das Gitter zusammen: metallische Bindung.'},
+m2:{n:'Elektrische Leitung',sw:1,init(){E=[];for(let i=0;i<44;i++)E.push({x:rnd(0,800),y:rnd(10,390),vx:rnd(60,160),vy:rnd(-40,40),tr:[]})},
+draw(g,dt){for(const e of E){e.vx+=((120-e.vx)*1.5+rnd(-1,1)*520)*dt;e.vy+=(-e.vy*1.5+rnd(-1,1)*520)*dt;e.x+=e.vx*dt;e.y+=e.vy*dt;if(e.x>840){e.x=-40;e.tr=[]}if(e.x<-60){e.x=840;e.tr=[]}if(e.y<8){e.y=8;e.vy=Math.abs(e.vy)}if(e.y>392){e.y=392;e.vy=-Math.abs(e.vy)}e.tr.push([e.x,e.y]);if(e.tr.length>6)e.tr.shift()}
+cond(g,'metal',true,()=>{glow(g,400,200,520,190,.08);for(let r=0;r<6;r++)for(let c=0;c<10;c++)B(g,12+c*88+(r%2)*44,30+r*68,22,'Na','+','#14213d');drawE(g);lab(g,'Elektronen wandern gerichtet durch das Gitter: links hinein, rechts hinaus')})},
+cap:t=>ccap(t,true,'Im Metall sind die Elektronen des Elektronengases frei beweglich. Sie wandern gerichtet durch das Gitter, es fließt Strom.')},
+m3:{n:'Verformbarkeit',init(){hit=1e9;initE(24)},ctl:{l:'Hammerschlag',f(){hit=T}},draw(g,dt){stepE(dt,0,665,140);const d=T-hit,sh=ez(cl((d-.25)/.9))*88;
+glow(g,420,200,300,190,.08);lattice(g,sh);drawE(g,sh);
+if(d>=0&&d<1){const ox=d<.22?lerp(20,104,ez(d/.22)):lerp(104,-70,ez(cl((d-.3)/.7)));hammer(g,ox,130)}
+if(d>1.2){arrow(g,200,60,300,60,'#ffd27a');txt(g,'Ionen gleiten, das Elektronengas hält zusammen',400,372,17,'#ffd27a')}
+if(d<0)txt(g,'Metallgitter – starte den Hammerschlag',400,372,16,'#9fe8ff')},
+cap:t=>t-hit<0?'Die positiven Ionen liegen im Gitter, umgeben vom Elektronengas.':'Bei Druck verschieben sich die Ionen leicht gegeneinander. Das Elektronengas sorgt dafür, dass der Zusammenhalt nicht verloren geht: Metalle sind duktil.'}
+};
+let vk='br';
+const AT={H:{k:'H',r:24,h:205,tc:'#14213d',lp:[]},Br:{k:'Br',r:38,h:15,lp:[0,1.5708,-1.5708]},Ne:{k:'Ne',r:30,h:220,lp:[.785,2.356,3.927,5.498]}};
+const MO={
+br:{a:AT.Br,b:AT.Br,d:122,ca:66,cb:66,sh:0,f:'|[Br]· + ·[Br]|  →  |[Br]–[Br]|',cap:['Zwei Brom-Atome: Jedes hat eine einfach besetzte Kugelwolke und drei freie Elektronenpaare.','Die einfach besetzten Kugelwolken überlappen: Es entsteht ein gemeinsames bindendes Elektronenpaar.','Beide Atome erreichen die Edelgasregel (je acht Außenelektronen). Gleiche Atome ziehen gleich stark: unpolare Bindung im Br₂-Molekül.']},
+hbr:{a:AT.H,b:AT.Br,d:112,ca:50,cb:66,sh:6,pol:1,f:'H· + ·[Br]|  →  H–[Br]|',f2:'H· + ·[Br]|  →  H^δ+^–[Br]|^δ−^',cap:['Ein H-Atom und ein Br-Atom nähern sich, beide mit einer einfach besetzten Kugelwolke.','Die Kugelwolken überlappen: Es entsteht ein gemeinsames bindendes Elektronenpaar.','Br zieht das bindende Elektronenpaar stärker an als H: polare Bindung mit δ+ am H und δ− am Br.']},
+ne:{a:AT.Ne,b:AT.Ne,d:170,ca:60,cb:60,sh:0,ne:1,f:'|[Ne]| + |[Ne]|  →  keine Bindung',cap:['Zwei Neon-Atome nähern sich. Jedes hat bereits vier freie Elektronenpaare, die Edelgasregel ist erfüllt.','Es gibt kein einfach besetztes Orbital, das überlappen könnte: Neon bildet keine Bindung und liegt als einzelne Atome vor.']}};
+SC.vx={n:'Bildung',draw(g){const c=MO[vk],y=200,p=ez(cl(T/(c.ne?3:4.5))),D=lerp(560,c.d,p),hx=400-D/2,bx=400+D/2,mid=400+c.sh,bond=!c.ne&&T>4.6;
+const at=[[hx,c.a,c.ca,Math.PI,T*3.2],[bx,c.b,c.cb,0,T*2.7+2]];
+for(const [x,q,cr] of at)cloud(g,x,y,cr,q.h);
+for(const [x,q] of at)B(g,x,y,q.r,q.k,q.k,q.tc);
+for(const [x,q,cr,aw] of at)for(const an of q.lp)for(const s of[-6,6]){const a=aw+an;el(g,x+Math.cos(a)*(q.r+16)-Math.sin(a)*s,y+Math.sin(a)*(q.r+16)+Math.cos(a)*s,.55)}
+if(!c.ne){if(!bond){for(const [x,q,cr,aw,ph] of at){if(!q.lp.length){el(g,x+Math.cos(ph)*cr,y+Math.sin(ph)*cr);continue}const a=aw+Math.PI+Math.sin(ph*.5)*.3;el(g,x+Math.cos(a)*(q.r+14),y+Math.sin(a)*(q.r+14))}}else{const w=Math.sin(T*6)*5;g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=3;g.beginPath();g.moveTo(hx+c.a.r,y);g.lineTo(bx-c.b.r,y);g.stroke();glow(g,mid,y,34,190,.45);el(g,mid-7+w,y,1.2);el(g,mid+7+w,y,1.2)}}
+if(c.pol&&T>6){txt(g,'δ+',hx,y-48,24,'#ffd27a');txt(g,'δ−',bx,y-80,24,'#9fe8ff')}
+if(c.ne&&T>3)txt(g,'kein Elektronenpaar wird geteilt',400,110,18,'#ffd27a');
+fml2(g,(c.f2&&T>6)?c.f2:c.f,400,360)},
+cap:t=>{const c=MO[vk].cap;return c.length==2?c[+(t>3)]:t<4.5?c[0]:t<6?c[1]:c[2]}};
+let cc=1e9;
+function lab(g,s){g.font='15px system-ui';const w=g.measureText(s).width+24;g.fillStyle='rgba(11,26,46,.82)';g.fillRect(400-w/2,360,w,26);txt(g,s,400,373,15,'#9fe8ff')}
+function k8(s){return kl==8?s.replace(/London-Wechselwirkungen/g,'Anziehungskräfte').replace(/Wechselwirkungen/g,'Anziehungskräfte'):s}
+const kv=(o,f)=>kl==8&&o[f+'8']?o[f+'8']:o[f],scl=o=>kl==8&&o.sc8?o.sc8:o.sc,chipN=s=>kl==8&&s=='s1'?'Ionengitter':SC[s].n;
+function ccap(t,lit,fin){const d=t-cc;return d<0?'Versuchsaufbau auf der Stoffebene: Gleichspannungsquelle, Schalter, Lampe und Probe bilden einen Stromkreis. Schließe den Schalter.':d<.4?'Der Schalter wird geschlossen …':d<2.6?(lit?'Die Lampe leuchtet: Der Stoff leitet den elektrischen Strom.':'Die Lampe leuchtet nicht: Der Stoff leitet den elektrischen Strom nicht.'):d<3.7?'Wir zoomen in den Stoff hinein: Was geschieht auf der Teilchenebene?':fin}
+function rig(g,kind,d,lit){g.save();g.lineWidth=4;g.lineCap='round';g.strokeStyle='#c9d3e3';g.beginPath();g.moveTo(90,320);g.lineTo(90,214);g.moveTo(90,196);g.lineTo(90,70);g.lineTo(190,70);g.moveTo(270,70);g.lineTo(498,70);g.moveTo(542,70);g.lineTo(710,70);g.lineTo(710,320);g.lineTo(510,320);g.moveTo(90,320);g.lineTo(290,320);g.stroke();
+g.lineWidth=5;g.beginPath();g.moveTo(68,196);g.lineTo(112,196);g.moveTo(78,214);g.lineTo(102,214);g.stroke();txt(g,'+',128,190,16,'#c9d3e3');txt(g,'−',122,218,16,'#c9d3e3');txt(g,'Gleichspannungsquelle',100,246,13,'#9fb3d0','left');
+const a=d<0?-.65:d<.4?lerp(-.65,0,ez(d/.4)):0;g.strokeStyle='#ffd27a';g.beginPath();g.moveTo(190,70);g.lineTo(190+80*Math.cos(a),70+80*Math.sin(a));g.stroke();g.fillStyle='#c9d3e3';for(const x of[190,270]){g.beginPath();g.arc(x,70,5,0,7);g.fill()}txt(g,'Schalter',230,40,13,'#9fb3d0');
+const on=lit&&d>=.4;if(on)glow(g,520,70,85,55,.9);g.fillStyle=on?'#fff2a8':'#16294a';g.strokeStyle='#c9d3e3';g.lineWidth=3;g.beginPath();g.arc(520,70,22,0,7);g.fill();g.stroke();g.beginPath();g.moveTo(504,54);g.lineTo(536,86);g.moveTo(536,54);g.lineTo(504,86);g.stroke();
+if(d>=.6)txt(g,lit?'Lampe leuchtet':'Lampe leuchtet nicht',520,114,15,lit?'#ffe680':'#aab');else txt(g,'Lampe',520,36,13,'#9fb3d0');
+g.lineWidth=2;if(kind=='gas'){g.strokeStyle='rgba(180,220,255,.7)';g.strokeRect(296,292,208,56)}
+else if(kind=='solid'){g.fillStyle='#eef1f7';g.fillRect(310,296,180,48);g.strokeStyle='#c4cbd8';g.strokeRect(310,296,180,48);g.beginPath();g.moveTo(370,296);g.lineTo(370,344);g.moveTo(430,296);g.lineTo(430,344);g.moveTo(310,320);g.lineTo(490,320);g.stroke()}
+else if(kind=='melt'){g.fillStyle='rgba(255,140,50,.85)';g.fillRect(300,300,200,46);glow(g,400,300,90,30,.5)}
+else if(kind=='sol'){g.fillStyle='rgba(80,150,255,.5)';g.fillRect(300,300,200,46);g.strokeStyle='#c9d3e3';g.strokeRect(298,288,204,62)}
+else{g.fillStyle='#9aa5b5';g.fillRect(296,306,208,28);g.fillStyle='#d9dfe9';g.fillRect(296,310,208,4)}
+g.fillStyle='#aab4c4';g.fillRect(284,284,12,72);g.fillRect(504,284,12,72);
+txt(g,{gas:'Wasserstoff H₂ (farbloses Gas)',solid:'Natriumchlorid (fest)',melt:'Natriumchlorid-Schmelze',sol:'Natriumchlorid-Lösung',metal:'Metall (z. B. Natrium)'}[kind],400,376,15,'#e8ecf4');txt(g,'Stoffebene: Versuchsaufbau',400,16,14,'#9fb3d0');g.restore()}
+function cond(g,kind,lit,dP){const d=T-cc,z=ez(cl((d-2.6)/1.1));
+if(z<1){g.save();g.globalAlpha=1-z;g.translate(400,320);g.scale(1+z*3,1+z*3);g.translate(-400,-320);rig(g,kind,d,lit);g.restore()}
+if(z>0){g.save();g.globalAlpha=z;const k=lerp(.35,1,z);g.translate(400,200);g.scale(k,k);g.translate(-400,-200);dP();g.restore();if(z>.6)txt(g,'Teilchenebene',90,22,15,'#9fb3d0','left')}}
+const K8M={h2:{a:AT.H,b:AT.H,f:'H + H  →  H₂',n:'H₂'},br:{a:AT.Br,b:AT.Br,f:'Br + Br  →  Br₂',n:'Br₂'},hbr:{a:AT.H,b:AT.Br,f:'H + Br  →  HBr',n:'HBr'},ne:{a:AT.Ne,b:AT.Ne,f:'Ne + Ne  →  keine Reaktion',ne:1}};
+SC.vk8={n:'Moleküle bilden',draw(g){const c=K8M[vk],ra=c.a.r*1.7,rb=c.b.r*1.7,p=ez(cl(T/(c.ne?3:4))),df=c.ne?ra+rb+30:(ra+rb)*.56;let D=lerp(560,df,p);if(c.ne)D+=ez(cl((T-3.6)/3.4))*(560-df);
+const rot=!c.ne&&T>4.5?(T-4.5)*.7:0,ca=Math.cos(rot),sa=Math.sin(rot),y=200;
+const sx=-D/2+(D*D+ra*ra-rb*rb)/(2*D),pa=[400-ca*D/2,y-sa*D/2],pb=[400+ca*D/2,y+sa*D/2];
+half(g,400,y,rot,sx,1,()=>ball(g,pa[0],pa[1],ra,...A[c.a.k],'',c.a.tc,1));half(g,400,y,rot,sx,0,()=>ball(g,pb[0],pb[1],rb,...A[c.b.k],'',c.b.tc,1));
+if(D<ra+rb){const h=Math.sqrt(Math.max(0,ra*ra-(sx+D/2)**2));g.save();g.translate(400,y);g.rotate(rot);g.strokeStyle='rgba(0,0,0,.3)';g.lineWidth=1.5;g.beginPath();g.moveTo(sx,-h);g.lineTo(sx,h);g.stroke();g.restore()}
+
+if(!c.ne&&T>3.8&&T<5){const f=1-(T-3.8)/1.2;glow(g,400,y,90*f,50,.7*f)}
+if(!c.ne&&T>4.8)txt(g,c.n+'-Molekül',400,110,20,'#ffd27a');txt(g,c.f,400,360,22,'#fff')},
+cap:t=>{const c=K8M[vk];return c.ne?(t<3?'Zwei Neon-Atome nähern sich.':'Neon-Atome verbinden sich nicht: Neon liegt als einzelne Atome vor (Edelgas).'):t<4?'Zwei Atome (Kalottenmodell) nähern sich.':'Die Atome haben sich zu einem Molekül verbunden: '+c.n+'.'}};
+/* ---------- Inhalte ---------- */
+const D={
+v:{n:'Flüchtige Stoffe',ac:'#1fa6a0',sc:['v1','v2','v3'],sc8:['vk8','v2','v3'],bind8:'Wenn sich Nichtmetall-Atome miteinander verbinden, entstehen Moleküle. Im Kalottenmodell werden die Atome als Kugeln dargestellt, die sich zu einem Molekül zusammenlagern.',erk8:'Die Moleküle sind insgesamt elektrisch neutral, daher leiten flüchtige Stoffe nicht. Zwischen den Molekülen wirken nur schwache Anziehungskräfte. Sie sind meist nur so stark, dass sich die Moleküle noch frei bewegen können: Die meisten flüchtigen Stoffe sind flüssig oder gasförmig.',
+eig:'Flüchtige Stoffe leiten Elektrizität nicht, sie sind bei Raumtemperatur meistens flüssig oder gasförmig.',
+teil:'Moleküle (Ausnahme: Edelgase sind aus Atomen aufgebaut).',
+bind:'Wenn sich Nichtmetall-Atome miteinander verbinden, entstehen Moleküle. Durch Überlappung von jeweils zwei einfach besetzten Kugelwolken entsteht eine Elektronenpaarbindung. Beide Atome erfüllen durch den gemeinsamen Besitz des bindenden Elektronenpaars die Edelgasregel. Man unterscheidet unpolare und polare Elektronenpaarbindungen.',
+erk:'Die Moleküle sind insgesamt elektrisch neutral, daher leiten flüchtige Stoffe nicht. Die Aggregatzustände erklären Wechselwirkungen zwischen den Molekülen (Wasserstoffbrücken, Dipol-Dipol-Wechselwirkungen, London-Wechselwirkungen). Sie sind meist nur so stark, dass sich die Moleküle noch frei bewegen können: flüssig oder gasförmig.',
+ex:[['Wasserstoff','H₂',g=>{B(g,52,40,17,'H');B(g,80,40,17,'H')},'v1'],['Brom','Br₂',g=>{B(g,46,40,28,'Br');B(g,94,40,28,'Br')},'br'],['Bromwasserstoff','HBr (δ+ / δ−)',g=>{B(g,86,40,28,'Br');B(g,50,46,15,'H')},'hbr'],['Neon','Ne',g=>B(g,70,40,24,'Ne'),'ne']]},
+s:{n:'Salze',ac:'#8a5cd6',sc:['s1','s2','s3'],bind8:'Salze bestehen aus positiv geladenen Ionen (Kationen) und negativ geladenen Ionen (Anionen). Die Ionengruppe ist die kleinste gedachte Formeleinheit: Beide Ionenarten kommen im kleinsten passenden Anzahlverhältnis vor, sodass sich die Ladungen ausgleichen. Elektrostatische Anziehungskräfte halten die Ionen zusammen: Ionenbindung.',
+eig:'Salze bilden Kristalle und sind spröde. Sie sind Feststoffe mit hoher Schmelztemperatur. Im festen Zustand leiten sie Elektrizität nicht, ihre wässrigen Lösungen und Schmelzen aber schon.',
+teil:'Ionengruppen.',
+bind:'Wenn Nichtmetall-Atome mit Metall-Atomen reagieren, läuft eine Redoxreaktion ab: Metall-Atome geben Elektronen ab (Oxidation), Nichtmetall-Atome nehmen sie auf (Reduktion). Die entstehenden Kationen und Anionen erfüllen die Edelgasregel. Die Ionengruppe ist die kleinste gedachte Formeleinheit. Elektrostatische Anziehungskräfte halten die Ionen zusammen: Ionenbindung.',
+erk:'Die Anziehungskräfte wirken in alle Raumrichtungen, die Ionen bilden ein Ionengitter. Die starken Kräfte werden erst bei sehr hohen Temperaturen überwunden. Bei Druck verschieben sich Ionenschichten, gleichnamige Ionen stoßen sich ab, der Kristall zerbricht. Im Gitter sind die Ionen ortsfest, in der Schmelze und in Lösung frei beweglich und wandern zu den Elektroden.',
+ex:[['Natriumchlorid','NaCl  (Na⁺ und Cl⁻)',g=>{B(g,45,26,15,'Na','+','#14213d');ball(g,95,26,22,280,45,45,'−');ball(g,45,60,22,280,45,45,'−');B(g,95,60,15,'Na','+','#14213d')},'s1']]},
+m:{n:'Metalle',ac:'#d2693c',sc:['m1','m2','m3'],
+eig:'Metalle zeigen einen charakteristischen Glanz, sind gute elektrische Leiter und Wärmeleiter und duktil (verformbar).',
+teil:'Atome (im Atomverband).',
+bind:'Metall-Atome bilden untereinander eine Metallbindung (Atomverband). Alle Atome geben ihre Außenelektronen ab und werden zu positiven Atomrümpfen in einem regelmäßigen Metallgitter. Die abgegebenen Elektronen sind zwischen allen Ionen frei beweglich („Elektronengas“). Die Anziehung zwischen Ionen und Elektronen hält die Metall-Atome zusammen: metallische Bindung.',
+erk:'Bei angelegter Spannung wandern die Elektronen zum Pluspol, vom Minuspol werden neue nachgeliefert: Es fließt Strom. Bei Druck verschieben sich die positiven Ionen leicht gegeneinander, das Elektronengas hält den Zusammenhalt aufrecht: Metalle sind verformbar.',
+ex:[['Natrium','Na  (Na·)',g=>{for(const [x,y] of[[30,24],[70,24],[110,24],[50,58],[90,58]]){B(g,x,y,16,'Na','+','#14213d');el(g,x+rnd(-6,6)+18,y+8,.8)}},'m1']]}};
+const TB=[['v','Flüchtige Stoffe'],['s','Salze'],['m','Metalle'],['c','Vergleich']];
+/* ---------- Steuerung ---------- */
+let kl=8,tab='v',cur=null,play=!matchMedia('(prefers-reduced-motion:reduce)').matches,spd=1,last=0;
+function load(id){if(id=='vk8'&&!K8M[vk])vk='h2';cur=SC[id];T=0;hit=1e9;cc=1e9;cur.init&&cur.init();if(kl==8&&id=='s1')T=6;
+$('slw').style.display=id=='v2'?'':'none';$('ba').style.display=cur.ctl?'':'none';$('bb').style.display=cur.sw?'':'none';if(cur.ctl)$('ba').textContent=cur.ctl.l;
+if(id=='s3')$('ba').textContent='Zustand: fest (wechseln)';
+document.querySelectorAll('#chips button').forEach(b=>b.classList.toggle('on',b.dataset.id==id));$('bp').textContent=play?'Pause':'Weiter'}
+function setTab(k){tab=k;const o=D[k];document.documentElement.style.setProperty('--ac',o?o.ac:'#4a6fa5');
+document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.k==k));
+$('lab').hidden=k=='c';$('cmp').hidden=k!='c';if(k=='c'){cur=null;buildCmp();return}
+$('chips').innerHTML=scl(o).map(s=>`<button data-id="${s}">${chipN(s)}</button>`).join('');
+document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>load(b.dataset.id));
+$('stoff').innerHTML=`<h2>Stoffebene</h2><h3>Eigenschaften der Stoffe</h3><p>${o.eig}</p><h3>Beispiele <small style="font-weight:400;color:var(--mut)">(antippen: Bildung animieren)</small></h3><div class="ex" id="exs"></div>`;
+$('teil').innerHTML=`<h2>Teilchenebene</h2><h3>Stoffteilchen</h3><p>${o.teil}</p><h3>Bindung</h3><p>${kv(o,'bind')}</p><h3>Erklärung der Stoffeigenschaften</h3><p>${kv(o,'erk')}</p>`;
+for(const [n,f,d,sc] of o.ex){const w=document.createElement('div'),c=document.createElement('canvas');if(sc){w.tabIndex=0;w.setAttribute('role','button');w.title='Bildung animieren';const go=()=>{if(kl==8&&tab=='v'){vk=sc=='v1'?'h2':sc;load('vk8')}else if(SC[sc])load(sc);else{vk=sc;load('vx')}cv.scrollIntoView({behavior:'smooth',block:'center'})};w.onclick=go;w.onkeydown=e=>{if(e.key=='Enter'||e.key==' '){e.preventDefault();go()}}}c.width=280;c.height=160;const x=c.getContext('2d');x.scale(2,2);d(x);w.append(c);w.insertAdjacentHTML('beforeend',`<b>${n}</b><br>${kl==8?f.replace(' (δ+ / δ−)',''):f}`);$('exs').append(w)}
+if(kl==8)vk='h2';load(scl(o)[0])}
+function buildCmp(){const rows=[['Eigenschaften','eig'],['Stoffteilchen','teil'],['Beispiel',null,['H₂, Br₂, HBr, Ne','NaCl','Na']],['Bindung','bind'],['Erklärung der Stoffeigenschaften','erk']];
+$('cmp').innerHTML='<p>Tippe auf eine Spalte, um die Animationen zu öffnen.</p><div class="wrap"><table><tr><th></th>'+['v','s','m'].map(k=>`<th class="h" data-k="${k}" style="background:${D[k].ac}">${D[k].n}</th>`).join('')+'</tr>'+rows.map(r=>`<tr><th>${r[0]}</th>`+['v','s','m'].map((k,i)=>`<td>${r[1]?kv(D[k],r[1]):r[2][i]}</td>`).join('')+'</tr>').join('')+'</table></div>';
+document.querySelectorAll('th.h').forEach(h=>h.onclick=()=>{setTab(h.dataset.k);scrollTo(0,0)})}
+$('tabs').innerHTML=TB.map(([k,n])=>`<button data-k="${k}">${n}</button>`).join('');
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.k));
+$('bp').onclick=()=>{play=!play;$('bp').textContent=play?'Pause':'Weiter'};
+$('br').onclick=()=>{const id=Object.keys(SC).find(k=>SC[k]===cur);load(id)};
+$('ba').onclick=()=>cur&&cur.ctl.f();
+$('sp').oninput=e=>spd=+e.target.value;
+function frame(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
+if(cur){const k=dt*spd*(play?1:0);T+=k;const q=g.createLinearGradient(0,0,0,H);q.addColorStop(0,'#0b1a2e');q.addColorStop(1,'#16335c');g.fillStyle=q;g.fillRect(0,0,W,H);
+cur.draw(g,k);$('cap').textContent=k8(cur.cap(T))}requestAnimationFrame(frame)}
+$('bb').onclick=()=>{if(cur&&cur.sw&&cc>1e8)cc=T};
+document.querySelectorAll('#kls button').forEach(b=>b.onclick=()=>{kl=+b.dataset.k;document.querySelectorAll('#kls button').forEach(x=>x.classList.toggle('on',x===b));setTab(tab)});
+setTab('v');requestAnimationFrame(frame);
+</script></body></html>

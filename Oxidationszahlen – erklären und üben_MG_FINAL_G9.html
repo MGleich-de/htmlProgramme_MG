@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oxidationszahlen – erklären und üben</title>
+<style>
+:root{color-scheme:light;--card:#fff;--c2:#e6edfa;--inset:#f0f4fc;--t:#12244a;--m:#5a6d94;--a:#0e9d90;--onA:#fff;--o:#c96a14;--pos:#d23b3b;--neg:#1f6fd1;--ok:#12934f;--bond:#5f739e;--lp:#b9810a;--hair:#c3d1ea;--hit:rgba(18,36,74,.07);--sh:#1b2f6122;--eO:#c0392b;--eN:#2c59c9;--eCl:#1f8f45;--eH:#5f739e;--bg1:#f5f8ff;--bg2:#e4ecfa;--bg3:#dff2ef;--orb:.16;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme=dark]{color-scheme:dark;--card:#12244a;--c2:#1c3668;--inset:var(--inset);--t:#e9f0ff;--m:#9db1db;--a:#2fd8c8;--onA:var(--onA);--o:#ffa34d;--pos:#ff7070;--neg:#62b6ff;--ok:#3ddc84;--bond:#9db1db;--lp:#ffd27a;--hair:var(--hair);--hit:rgba(255,255,255,.07);--sh:var(--sh);--eO:#ff8a80;--eN:#82aaff;--eCl:#7be08d;--eH:#9db1db;--bg1:#0a1430;--bg2:#0f2150;--bg3:#0b2a3f;--orb:.28}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:linear-gradient(160deg,var(--bg1),var(--bg2) 60%,var(--bg3));color:var(--t);font:16px/1.5 "Trebuchet MS","Segoe UI",system-ui,sans-serif;overflow-x:hidden}
+.orb{position:fixed;border-radius:50%;filter:blur(60px);opacity:var(--orb);z-index:0;animation:fl 14s ease-in-out infinite alternate;pointer-events:none}
+.o1{width:300px;height:300px;background:#2fd8c8;left:-80px;top:10%}.o2{width:360px;height:360px;background:#ff9d4a;right:-120px;top:50%;animation-delay:-5s}.o3{width:240px;height:240px;background:#6a7bff;left:40%;bottom:-80px;animation-delay:-9s}
+@keyframes fl{to{transform:translate(60px,-80px) scale(1.2)}}
+#app{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:16px}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.top h1{font-size:1.25rem;margin:0;flex:1}
+.bk{background:var(--c2);color:var(--t);border:0;border-radius:12px;width:42px;height:42px;font-size:1.2rem;cursor:pointer}
+.sc{background:var(--card);border-radius:20px;padding:6px 14px;font-weight:700;white-space:nowrap}
+.hero{text-align:center;padding:26px 0 10px}
+.hero h1{font-family:Georgia,"Palatino Linotype",serif;font-size:clamp(2rem,6vw,3.4rem);margin:0;letter-spacing:.5px;background:linear-gradient(90deg,var(--a),var(--o));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--m);margin:6px 0 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:22px}
+.big{background:linear-gradient(145deg,var(--card),var(--c2));border:1px solid var(--hair);border-radius:22px;padding:22px;cursor:pointer;text-align:left;color:var(--t);font:inherit;transition:transform .25s,box-shadow .25s}
+.big:hover{transform:translateY(-6px);box-shadow:0 14px 40px var(--sh)}
+.big h2{margin:8px 0 4px;font-family:Georgia,serif}.big p{margin:0;color:var(--m)}
+.fo{font-size:2.4rem;font-weight:700;color:var(--o);display:block;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tabs button{flex:1;padding:11px;border:0;border-radius:14px;background:var(--card);color:var(--m);font:inherit;font-weight:700;cursor:pointer;transition:.2s}
+.tabs button.on{background:var(--a);color:var(--onA)}
+.card{background:var(--card);border-radius:22px;padding:20px;box-shadow:0 10px 30px var(--sh);min-height:300px}
+h2{margin:0 0 8px}p{margin:8px 0}
+button.pri,button.sec,.nb button{border:0;border-radius:12px;padding:10px 16px;font:inherit;font-weight:700;cursor:pointer;margin:8px 8px 0 0;color:var(--onA);background:var(--a)}
+button.sec,.nb button.s{background:var(--c2);color:var(--t)}
+button:disabled{opacity:.4}
+.nb{display:flex;justify-content:space-between;margin-top:14px}.dots{color:var(--m);align-self:center}
+svg{max-width:100%;height:auto}
+.sv{width:100%;max-height:230px}
+.at{fill:#fff;font:700 22px sans-serif;text-anchor:middle}
+.ox{font:700 28px Georgia,serif;text-anchor:middle}
+.el{fill:var(--o);animation:mv 2s 1s ease-in-out forwards}
+@keyframes mv{to{transform:translateX(var(--dx))}}
+.fade{opacity:0;animation:fd .8s var(--d,0s) forwards}
+@keyframes fd{to{opacity:1}}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:10px}
+.rl{background:var(--c2);border-radius:14px;padding:10px 12px;border-left:5px solid var(--o)}
+.rl b{color:var(--o)}
+.eq{font:1.15rem Georgia,serif;background:var(--inset);border-radius:14px;padding:14px;margin:10px 0;line-height:1.9}
+.res{color:var(--ok);font-weight:700}
+.F{font:700 2.6rem Georgia,serif;text-align:center;margin:6px 0}
+.F sub,.F sup{font-size:.5em}
+.row{display:flex;align-items:center;gap:10px;margin:8px 0;justify-content:center}
+.lab{font:700 1.5rem Georgia,serif;min-width:70px;text-align:right}
+select{background:var(--inset);color:var(--t);border:2px solid var(--hair);border-radius:10px;padding:8px;font:inherit;font-size:1.1rem}
+select.good{border-color:var(--ok)}select.bad{border-color:var(--pos)}
+.fb{min-height:1.6em;font-weight:700}.fb.bad{color:var(--pos);animation:sh .4s}.fb.good{color:var(--ok)}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.mw{text-align:center}.mw svg{max-height:260px;width:100%}
+.nm{text-align:center;color:var(--m);margin:0}
+g[data-i]{cursor:pointer}g[data-i]:hover circle{stroke:var(--a);stroke-width:3}
+.ring{fill:none;stroke:var(--o);stroke-width:3;animation:pl 1.2s ease-in-out infinite}
+@keyframes pl{50%{stroke-width:7;opacity:.5}}
+.bd{font:700 20px Georgia,serif;text-anchor:middle;opacity:0;animation:fd .6s var(--d,0s) forwards}
+.hn{font:11px sans-serif;fill:var(--o);text-anchor:middle}
+.nums{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.nums button{background:var(--c2);color:var(--t);border:2px solid var(--hair);border-radius:10px;padding:8px 12px;font:700 1rem Georgia,serif;cursor:pointer}
+.nums button:hover{background:var(--a);color:var(--onA)}
+.big10{font:700 3rem Georgia,serif;text-align:center}
+input[type=range]{width:100%;accent-color:var(--a)}
+.ln{background:var(--c2);border-radius:10px;padding:6px 12px;margin:5px 0;opacity:0;animation:fd .5s var(--d,0s) forwards}
+.cf{position:fixed;left:50%;top:40%;width:8px;height:12px;z-index:50;pointer-events:none;animation:cf 1.3s ease-out forwards}
+@keyframes cf{40%{transform:translate(var(--x),var(--y)) rotate(300deg)}100%{transform:translate(calc(var(--x)*1.3),420px) rotate(720deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important}}
+.z{display:inline-block;text-align:center;line-height:1.15;margin:0 1px}.z i{display:block;font:700 .72rem sans-serif;font-style:normal}.rx{position:relative;overflow-x:auto;padding:74px 10px;white-space:nowrap;font:1.1rem Georgia,serif;background:var(--inset);border-radius:14px;margin:12px 0}.rx svg{position:absolute;left:0;top:0;pointer-events:none}@keyframes dr{to{stroke-dashoffset:0}}
+.F .z i{font-size:.95rem}.nums button.on{background:var(--a);color:var(--onA)}
+.glow{opacity:.28;pointer-events:none;animation:gl 1.8s ease-in-out infinite}@keyframes gl{50%{opacity:.55}}
+.eqs{overflow-x:auto;background:var(--inset);border-radius:14px;margin:12px 0}.eqs svg{max-width:none;display:block}g[data-k]{cursor:pointer}.rx.big{font-size:1.55rem;padding:26px 14px}.tp{cursor:pointer;border-radius:6px;padding:0 3px}.tp:hover{background:var(--c2)}.tp.on{background:var(--a);color:var(--onA)}
+</style></head><body>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+<div id="app"></div>
+<script>
+const $=s=>document.querySelector(s),app=$('#app');
+const rom=n=>n==0?'0':(n>0?'+':'–')+['','I','II','III','IV','V','VI','VII'][Math.abs(n)];
+const chg=c=>c==0?'0':(c>0?'+':'–')+Math.abs(c);
+const col=n=>n>0?'var(--pos)':n<0?'var(--neg)':'var(--m)';
+const sb=n=>String(n).replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d]);
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+let S={pts:0,streak:0,chap:0,mode:'e',step:0,h:0,sl:0},COL=0,COR=0,dk=false;try{dk=localStorage.getItem('oz-theme')=='dark'}catch(e){}
+const applyTh=()=>document.documentElement.dataset.theme=dk?'dark':'light';
+function th(){dk=!dk;try{localStorage.setItem('oz-theme',dk?'dark':'light')}catch(e){}applyTh();render()}
+const thb=()=>`<button class=bk onclick="th()" aria-label="Design wechseln" title="Hell/Dunkel">${dk?'☀️':'🌙'}</button>`;applyTh();
+
+/* ---------- Teil 1: Daten ---------- */
+const P1=['NH3|0|N-3,H1','HNO2|0|H1,N3,O-2','SO2|0|S4,O-2','SO3|0|S6,O-2','P2O5|0|P5,O-2','MgCl2|0|Mg2,Cl-1','PbO2|0|Pb4,O-2','Al2O3|0|Al3,O-2','Cu2O|0|Cu1,O-2','NH4|1|N-3,H1','Na2SO4|0|Na1,S6,O-2','N2O4|0|N4,O-2','NH4Cl|0|N-3,H1,Cl-1','NO3|-1|N5,O-2','KMnO4|0|K1,Mn7,O-2','CO3|-2|C4,O-2','CO|0|C2,O-2','H2O2|0|H1,O-1','NaH|0|Na1,H-1','CH4|0|C-4,H1','H2S|0|H1,S-2','H2SO4|0|H1,S6,O-2','Cr2O7|-2|Cr6,O-2','MnO4|-1|Mn7,O-2'].map(s=>{const[f,c,o]=s.split('|'),ox={};o.split(',').forEach(x=>{const m=x.match(/([A-Za-z]+)(-?\d+)/);ox[m[1]]=+m[2]});return{f,c:+c,ox,at:[...f.matchAll(/([A-Z][a-z]?)(\d*)/g)].map(m=>[m[1],+m[2]||1])}});
+const KN=['H','O','Na','K','Mg','Ca','Al','Cl'];
+const fm=it=>it.f.replace(/(\d+)/g,'<sub>$1</sub>')+(it.c?`<sup>${Math.abs(it.c)>1?Math.abs(it.c):''}${it.c>0?'+':'–'}</sup>`:'');
+const fz=(it,f,g)=>it.f.replace(/([A-Z][a-z]?)(\d*)/g,(_,e,n)=>{const d=f?f(e):null;return`<span class=z>${d==null?'<i>&nbsp;</i>':`<i class=fade style="--d:${d}s;color:${g&&g(e)?'var(--ok)':col(it.ox[e])}">${rom(it.ox[e])}</i>`}${e}</span>${n?`<sub>${n}</sub>`:''}`})+(it.c?`<sup>${Math.abs(it.c)>1?Math.abs(it.c):''}${it.c>0?'+':'–'}</sup>`:'');
+const unk=it=>it.at.find(a=>!KN.includes(a[0]))||it.at[it.at.length-1];
+const eqX=(it,sol)=>{const u=unk(it)[0];return it.at.map(([e,n])=>(n>1?n+'·':'')+(e==u?'<b style="color:var(--o)">x</b>':`(${rom(it.ox[e])})`)).join(' + ')+' = '+chg(it.c)+(sol?` → <span class=res>x = ${rom(it.ox[u])}</span>`:'')};
+const find=f=>P1.find(p=>p.f==f);
+
+/* ---------- Teil 2: Moleküle ---------- */
+const M=[['Ethanol','C0,0 C1,0 O2,0','0-1 1-2'],['Ethanal','C0,0 C1,0 O1,-1','0-1 1-2=2'],['Ethansäure','C0,0 C1,0 O1,-1 O2,0','0-1 1-2=2 1-3'],['Propanon (Aceton)','C0,0 C1,0 C2,0 O1,-1','0-1 1-2 1-3=2'],['Propan-2-ol','C0,0 C1,0 C2,0 O1,-1','0-1 1-2 1-3'],['Propanal','C0,0 C1,0 C2,0 O2,-1','0-1 1-2 2-3=2'],['Chlorethan','C0,0 C1,0 Cl2,0','0-1 1-2'],['Milchsäure','C0,0 C1,0 C2,0 O1,1 O2,-1 O3,0','0-1 1-2 1-3 2-4=2 2-5'],['Brenztraubensäure','C0,0 C1,0 C2,0 O1,1 O2,-1 O3,0','0-1 1-2 1-3=2 2-4=2 2-5'],['Glycin','N0,0 C1,0 C2,0 O2,-1 O3,0','0-1 1-2 2-3=2 2-4'],['Ethansäureethylester','C0,0 C1,0 O1,-1 O2,0 C3,0 C4,0','0-1 1-2=2 1-3 3-4 4-5'],['Oxalsäure','O-1,0 C0,0 C1,0 O2,0 O0,-1 O1,-1','0-1 1-2 2-3 1-4=2 2-5=2']].map(([n,a,b])=>({n,a:a.split(' ').map(s=>{const m=s.match(/^([A-Z][a-z]?)(-?\d+),(-?\d+)$/);return[m[1],+m[2],+m[3]]}),b:b.split(' ').map(s=>{const m=s.match(/^(\d)-(\d)(?:=(\d))?$/);return[+m[1],+m[2],+(m[3]||1)]})}));
+const mk=(n,a,b)=>({n,a,b}),CO2=mk('Kohlenstoffdioxid',[['O',-1,0],['C',0,0],['O',1,0]],[[0,1,2],[1,2,2]]);
+const HET=['O','N','Cl'],VAL={O:2,N:3,Cl:1,C:4,Cu:0,Na:0},VE={O:6,N:5,Cl:7,Cu:0,Na:0},CL={C:'#fff',H:'#9db1db',O:'#ff8a80',N:'#82aaff',Cl:'#7be08d'};
+const DIR={left:[-1,0],right:[1,0],up:[0,-1],down:[0,1]};
+const EN={H:2.1,C:2.5,N:3,Cl:3,O:3.5,Cu:1.9,Na:.9},HZ={C:4,H:1,O:6,N:5,Cl:7};
+const bs=(m,i)=>m.b.reduce((s,[x,y,o])=>s+(x==i||y==i?o:0),0);
+function cnt(m,i){let het=0;m.b.forEach(([x,y,o])=>{const j=x==i?y:y==i?x:-1;if(j>=0&&HET.includes(m.a[j][0]))het+=o});const h=4-bs(m,i);return{het,h,ox:het-h}}
+const lab=(m,i)=>{const h=VAL[m.a[i][0]]-bs(m,i);return m.a[i][0]+(h>0?'H'+(h>1?sb(h):''):'')};
+const cs=m=>m.a.map((a,i)=>a[0]=='C'?i:-1).filter(i=>i>=0);
+function lay(m){const ux=84,uy=60,A=[],B=[],P=[],MK={};
+ const dr=(i,j)=>{const dx=m.a[j][1]-m.a[i][1],dy=m.a[j][2]-m.a[i][2];return dx<0?'left':dx>0?'right':dy<0?'up':'down'};
+ const mp=(x,y,dx,dy,v,o=1)=>({mx:x+dx*ux/2,my:y+dy*uy/2,hz:dx!=0,o,v});
+ m.a.forEach((a,i)=>A.push({el:a[0],x:a[1]*ux,y:a[2]*uy,i,ch:a[3]||0}));
+ m.b.forEach(([i,j,o])=>{const a=m.a[i],b=m.a[j];B.push({x1:a[1]*ux,y1:a[2]*uy,x2:b[1]*ux,y2:b[2]*uy,o,het:(a[0]=='C'&&HET.includes(b[0]))||(b[0]=='C'&&HET.includes(a[0]))})});
+ const taken=new Set(m.a.map(a=>a[1]+','+a[2]));
+ [...m.a.keys()].sort((p,q)=>(m.a[p][0]!='C')-(m.a[q][0]!='C')).forEach(i=>{const[el,gx,gy,ch=0]=m.a[i];const x=gx*ux,y=gy*uy,used=[];m.b.forEach(([p,q])=>{if(p==i)used.push(dr(i,q));if(q==i)used.push(dr(i,p))});
+  const b=bs(m,i),h=ch>0?0:VAL[el]-b+ch,free=['left','right','down','up'].filter(d=>!used.includes(d)),pri=el=='C'?['left','right','down','up']:el=='N'?['up','down','right','left']:['right','left','down','up'],hd=(()=>{const f=d=>(gx+DIR[d][0])+','+(gy+DIR[d][1]),c=pri.filter(d=>free.includes(d)),a=c.filter(d=>!taken.has(f(d))),r=a.concat(c.filter(d=>!a.includes(d))).slice(0,h);r.forEach(d=>taken.add(f(d)));return r})(),hb={};
+  if(m.bent&&el=='O'&&!used.length&&h==2){[-1,1].forEach(sx=>{A.push({el:'H',x:x+sx*50,y:y+39});B.push({x1:x,y1:y,x2:x+sx*50,y2:y+39,o:1});P.push({x,y,d:'up',v:[sx*.6,-.8]})});return}
+  hd.forEach(d=>{const[dx,dy]=DIR[d];A.push({el:'H',x:x+dx*ux,y:y+dy*uy});B.push({x1:x,y1:y,x2:x+dx*ux,y2:y+dy*uy,o:1});hb[d]=B.length-1});
+  if(el!='C'){const np=ch>0?0:(VE[el]-ch-b-h)/2,ord=used.length+hd.length==1?(['left','right'].includes(used[0])?['up','down','left','right']:['left','right','up','down']):['up','down','left','right'];
+   free.filter(d=>!hd.includes(d)).sort((p,q)=>ord.indexOf(p)-ord.indexOf(q)).slice(0,np).forEach(d=>P.push({x,y,d}))}
+  else{MK[i]=[];m.b.forEach(([p,q,o],bi)=>{const j=p==i?q:q==i?p:-1;if(j<0)return;const[dx,dy]=DIR[dr(i,j)];MK[i].push({...mp(x,y,dx,dy,HET.includes(m.a[j][0])?o:0,o),bi})});hd.forEach(d=>{const[dx,dy]=DIR[d];MK[i].push({...mp(x,y,dx,dy,-1),bi:hb[d]})})}});
+ const MZ={};m.a.forEach(([el,gx,gy],i)=>{const x=gx*ux,y=gy*uy,e=EN[el];MZ[i]=[];
+  m.b.forEach(([p,q,o],bi)=>{const j=p==i?q:q==i?p:-1;if(j<0)return;const[dx,dy]=DIR[dr(i,j)],f=EN[m.a[j][0]];MZ[i].push({...mp(x,y,dx,dy,0,o),a:e>f?2*o:e==f?o:0,bi})});
+  B.slice(m.b.length).filter(b=>b.x1==x&&b.y1==y).forEach(b=>{MZ[i].push({...mp(x,y,Math.sign(b.x2-x),Math.sign(b.y2-y),0),a:e>2.1?2:0,bi:B.indexOf(b)})});
+  P.filter(p=>p.x==x&&p.y==y).forEach(p=>{const[dx,dy]=p.v||DIR[p.d];MZ[i].push({lp:1,x:x+dx*44,y:y+dy*44,dx,dy,a:2,pi:P.indexOf(p)})})});
+ const xs=A.map(a=>a.x),ys=A.map(a=>a.y),cx=(Math.min(...xs)+Math.max(...xs))/2,cy=(Math.min(...ys)+Math.max(...ys))/2,w=Math.max(440,Math.max(...xs)-Math.min(...xs)+130,(Math.max(...ys)-Math.min(...ys)+130)*1.6),hh=w/1.6;
+ return{A,B,P,mk:MK,mz:MZ,full:[cx-w/2,cy-hh/2,w,hh],zoom:i=>[A[i].x-140,A[i].y-87.5,280,175]}}
+function molB(m,o={}){const L=lay(m),f=L.full,z=o.zoom!=null?L.zoom(o.zoom):null,S4='paint-order:stroke;stroke:var(--card);stroke-width:4px',occ=[],
+ ov=r=>occ.some(q=>r[0]<q[2]+2&&r[2]>q[0]-2&&r[1]<q[3]+2&&r[3]>q[1]-2),
+ put=(cs,w,h,dir)=>{const bx=c=>[c[0]-w/2,c[1]-h/2,c[0]+w/2,c[1]+h/2],cr=c=>dir>0?[c[0]-5,-3000,c[0]+5,c[1]-h/2]:[c[0]-5,c[1]+h/2,c[0]+5,3000];let c=cs.find(c=>!ov(bx(c))&&(!dir||!ov(cr(c))));if(!c){c=cs.find(c=>!ov(bx(c)));if(c&&dir)COR++}if(!c){c=cs[0];COL++}occ.push(bx(c));return c},bp={},tw=t=>String(t).length*11.5+6,
+ LC={C:'var(--t)',H:'var(--eH)',O:'var(--eO)',N:'var(--eN)',Cl:'var(--eCl)',Cu:'var(--t)',Na:'var(--t)'};
+ let s=o.raw?'':`<svg ${z||o.id?'id="ms"':''} viewBox="${f.join(' ')}" data-full="${f.join(' ')}" ${z?`data-zoom="${z.join(' ')}" data-mode="${o.mode}" data-delay="${o.delay}"`:''}>`;
+ if(o.hi!=null){const a=L.A[o.hi];s+=`<circle class="glow" cx="${a.x}" cy="${a.y}" r="18" style="fill:var(--ok)"/>`}
+ if(o.sel)L.A.forEach((a,j)=>{if(o.sel.includes(o.k+':'+j))s+=`<circle cx="${a.x}" cy="${a.y}" r="23" style="fill:var(--o);opacity:.38"/>`});
+ L.B.forEach(b=>{const dx=b.x2-b.x1,dy=b.y2-b.y1,d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d,t=14,nx=-uy*3.8,ny=ux*3.8,hc=o.hint1&&b.het?'var(--o)':'var(--bond)',e=b.o==2?8:4;
+  occ.push([Math.min(b.x1,b.x2)-e,Math.min(b.y1,b.y2)-e,Math.max(b.x1,b.x2)+e,Math.max(b.y1,b.y2)+e]);
+  (b.o==2?[1,-1]:[0]).forEach(k=>s+=`<line x1="${b.x1+ux*t+nx*k}" y1="${b.y1+uy*t+ny*k}" x2="${b.x2-ux*t+nx*k}" y2="${b.y2-uy*t+ny*k}" style="stroke:${hc};stroke-width:3" stroke-linecap="round"/>`)});
+ L.P.forEach(p=>{const[dx,dy]=p.v||DIR[p.d],cx=p.x+dx*18,cy=p.y+dy*18,px=-dy*7,py=dx*7;occ.push([cx-Math.abs(px)-3,cy-Math.abs(py)-3,cx+Math.abs(px)+3,cy+Math.abs(py)+3]);s+=`<line x1="${cx-px}" y1="${cy-py}" x2="${cx+px}" y2="${cy+py}" style="stroke:var(--lp);stroke-width:3.2" stroke-linecap="round"/>`});
+ L.A.forEach((a,j)=>{const c=a.el=='C',h=a.el=='H',w=a.el.length>1?34:h?18:26,kk=`${o.k}:${j}`;occ.push([a.x-w/2,a.y-(h?13:16),a.x+w/2,a.y+(h?9:12)]);
+  s+=`<g ${c?`data-i="${a.i}"`:''} ${o.tap?`data-k="${kk}"`:''}>${o.tap?`<circle cx="${a.x}" cy="${a.y}" r="22" style="fill:transparent"/>`:''}${c&&o.clk?`<circle cx="${a.x}" cy="${a.y}" r="24" style="fill:var(--hit)"/>`:''}<text x="${a.x}" y="${a.y+(h?6:8)}" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="${h?19:24}" style="fill:${LC[a.el]}">${a.el}</text>${a.ch?`<text x="${a.x+w/2+8}" y="${a.y-16}" font-size="15" font-weight="700" font-family="Georgia,serif" style="fill:var(--t)">${Math.abs(a.ch)>1?Math.abs(a.ch):''}${a.ch>0?'+':'–'}</text>`:''}</g>`;if(a.ch)occ.push([a.x+w/2,a.y-32,a.x+w/2+30,a.y-14])});
+ const mz=o.mz!=null,mks=mz?L.mz[o.mz]:o.mk!=null?L.mk[o.mk]:[],red=[];
+ mks.map((q,k)=>[q,k]).sort((a,b)=>(a[0].lp?2:a[0].hz?0:1)-(b[0].lp?2:b[0].hz?0:1)).forEach(([q,k])=>{const val=mz?q.a:q.v,t=mz?(val?val+'e⁻':'0'):(val>0?'+'+val:val<0?'–'+-val:'0'),w=tw(t),h=22,off=(q.o==2?8:4)+h/2+4,so=(q.o==2?12:8)+w/2;
+  const c=put(q.lp?[[q.x,q.y],[q.x+q.dx*16,q.y+q.dy*16],[q.x+q.dx*32,q.y+q.dy*32],[q.x-q.dy*26,q.y+q.dx*26],[q.x+q.dy*26,q.y-q.dx*26]]:q.hz?[[q.mx,q.my-off],[q.mx,q.my+off],[q.mx-14,q.my-off],[q.mx+14,q.my-off],[q.mx-14,q.my+off],[q.mx+14,q.my+off]]:[[q.mx+so,q.my],[q.mx-so,q.my],[q.mx+so,q.my-14],[q.mx-so,q.my-14],[q.mx+so,q.my+14],[q.mx-so,q.my+14],[q.mx+so+6,q.my-26],[q.mx-so-6,q.my-26],[q.mx+so+6,q.my+26],[q.mx-so-6,q.my+26],[q.mx+so+22,q.my-26],[q.mx-so-22,q.my-26],[q.mx+so+22,q.my+26],[q.mx-so-22,q.my+26]],w,h);
+  s+=`<text class="bd" style="--d:${(o.md||2.6)+k*.3}s;fill:${mz?(val?'var(--pos)':'var(--m)'):col(val)};${S4}" x="${c[0]}" y="${c[1]+7}">${t}</text>`;const dl=(o.md||2.6)+k*.3;if(q.lp)red.push(['p',q.pi,dl]);else if(q.bi!=null)red.push(['b',q.bi,dl,mz?(q.a>=2*q.o?1:q.a>0?.5:0):(q.v>0?1:q.v<0?-1:0)])});
+ const tg=mks.length?L.A[mz?o.mz:o.mk]:null;
+ red.forEach(r=>{if(r[0]=='p'){const p=L.P[r[1]],[dx,dy]=p.v||DIR[p.d],cx=p.x+dx*18,cy=p.y+dy*18,px=-dy*7,py=dx*7;s+=`<line class="fade" style="--d:${r[2]}s;stroke:var(--pos);stroke-width:3.4" stroke-linecap="round" x1="${cx-px}" y1="${cy-py}" x2="${cx+px}" y2="${cy+py}"/>`;return}
+  const b=L.B[r[1]],fr=r[3];if(!fr)return;const cl=fr<0?'var(--neg)':'var(--pos)',s0=b.x1==tg.x&&b.y1==tg.y,[ax,ay,bx,by]=s0?[b.x1,b.y1,b.x2,b.y2]:[b.x2,b.y2,b.x1,b.y1],dx=bx-ax,dy=by-ay,d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d,nx=-uy*3.8,ny=ux*3.8,e=fr==.5?d/2:d-14;
+  (b.o==2?[1,-1]:[0]).forEach(k=>s+=`<line class="fade" style="--d:${r[2]}s;stroke:${cl};stroke-width:3.4" stroke-linecap="round" x1="${ax+ux*14+nx*k}" y1="${ay+uy*14+ny*k}" x2="${ax+ux*e+nx*k}" y2="${ay+uy*e+ny*k}"/>`)});
+ const bd=(i,v,d,cl,dir)=>{const a=L.A[i],t=rom(v),cs=[];(o.rad||[34,46,60,76,92]).forEach(r=>[-45,-135,45,135,-30,-150,30,150,-60,-120,60,120,0,180,-90,90].forEach(g=>cs.push([a.x+r*Math.cos(g*Math.PI/180),a.y+r*Math.sin(g*Math.PI/180)])));const c=put(cs,tw(t)+4,24,dir);bp[i]=c;return`<text class="bd" style="--d:${d}s;fill:${cl};font-size:22px;${S4}" x="${c[0]}" y="${c[1]+8}">${t}</text>`};
+ if(o.bg)s+=bd(o.bg.i,o.bg.v,o.bg.d,'var(--ok)');
+ if(o.bdg)o.bdg.forEach(b=>s+=bd(b.i,b.v,b.d||0,col(b.v),b.dir));
+ if(o.show)cs(m).forEach(i=>{const v=cnt(m,i).ox;s+=bd(i,v,.9+i*.15,i==o.hi?'var(--ok)':col(v))});
+ return o.raw?{s,L,bp}:s+'</svg>'}
+const mol=(m,o)=>molB(m,o);
+
+/* ---------- Hilfsfunktionen ---------- */
+function burst(){for(let i=0;i<40;i++){const e=document.createElement('i');e.className='cf';e.style.cssText=`background:hsl(${Math.random()*360},85%,60%);--x:${(Math.random()-.5)*640}px;--y:${-Math.random()*300-60}px;animation-delay:${Math.random()*.15}s`;document.body.appendChild(e);setTimeout(()=>e.remove(),1700)}}
+function countTo(el,to){const t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/700);el.textContent=rom(Math.round(to*p));el.style.color=col(to);if(p<1)requestAnimationFrame(f)})(t0)}
+const head=t=>`<div class=top><button class=bk onclick="go(0)" aria-label="Zurück">←</button><h1>${t}</h1>${thb()}<div class=sc>⭐ ${S.pts}${S.streak>1?' · 🔥'+S.streak:''}</div></div>`;
+function go(c){S.chap=c;S.step=0;S.q=null;S.q2=null;S.rq=null;S.mode='e';render()}
+function mode(m){S.mode=m;S.step=0;S.q=null;S.q2=null;S.rq=null;S.h=0;render()}
+function st(d){S.step+=d;render()}
+const nav=n=>`<div class=nb><button class=s onclick="st(-1)" ${S.step==0?'disabled':''}>← Zurück</button><span class=dots>${S.step+1} / ${n}</span><button onclick="st(1)" ${S.step==n-1?'disabled':''}>Weiter →</button></div>`;
+
+/* ---------- Render ---------- */
+function render(){
+ if(!S.chap){app.innerHTML=`<div style="display:flex;justify-content:flex-end">${thb()}</div><div class=hero><h1>Oxidationszahlen</h1><p>erklären und üben</p><p>von Matthias Gleich</p></div><div class=grid><button class=big onclick="go(9)"><span class=fo>H₂SO₄</span><h2>Klasse 10</h2><p>Oxidationszahlen der Atome in Summenformeln bestimmen</p></button><button class=big onclick="go(10)"><div style="max-width:200px;margin:0 auto">${mol(M[2])}</div><h2>Klasse 11</h2><p>Das höchstoxidierte Kohlenstoffatom in organischen Molekülen</p></button></div>`;return}
+ const k9=S.chap==9;
+ app.innerHTML=head(k9?'Klasse 10 · Summenformeln':'Klasse 11 · Organische Moleküle')+`<div class=tabs><button class="${S.mode=='e'?'on':''}" onclick="mode('e')">📘 Erklären</button><button class="${S.mode=='u'?'on':''}" onclick="mode('u')">🧪 Üben</button><button class="${S.mode=='x'?'on':''}" onclick="mode('x')">⚖️ Redox</button></div><div class=card>${S.mode=='x'?ux():k9?(S.mode=='e'?e9():u9()):(S.mode=='e'?e10():u10())}</div>`;
+ subs();zinit();rxfit();rxa();eqz();
+}
+
+/* ---------- Klasse 10: Erklären ---------- */
+function e9(){const N=7,h2=find('H2SO4'),no=find('NO3');let c='';
+ if(S.step==0)c=`<h2>Was ist eine Oxidationszahl?</h2><p>Man ordnet das bindende Elektronenpaar ganz dem <b>elektronegativeren</b> Atom zu. Die Ladung, die dann entstünde, ist die Oxidationszahl. Beobachte HCl:</p><svg class=sv viewBox="0 0 400 200"><circle cx="110" cy="85" r="34" fill="#3b5fa8"/><text class=at x="110" y="92">H</text><circle cx="290" cy="85" r="52" fill="#2a9d8f"/><text class=at x="290" y="92">Cl</text><circle class=el cx="188" cy="85" r="6" style="--dx:62px"/><circle class=el cx="212" cy="85" r="6" style="--dx:48px"/><text class="ox fade" style="--d:3s;fill:var(--pos)" x="110" y="178">+I</text><text class="ox fade" style="--d:3s;fill:var(--neg)" x="290" y="178">–I</text></svg><p>Das Elektronenpaar wandert zum Chlor: H bekommt <b style="color:var(--pos)">+I</b>, Cl bekommt <b style="color:var(--neg)">–I</b>. Oxidationszahlen schreibt man mit römischen Ziffern.</p>`;
+ if(S.step==1)c=`<h2>Elemente haben die Oxidationszahl 0</h2><p>In H₂, Cl₂, O₂ oder Na ziehen beide Atome gleich stark – kein Atom bekommt das Elektronenpaar ganz.</p><svg class=sv viewBox="0 0 400 150"><circle cx="150" cy="75" r="42" fill="#3b5fa8"/><circle cx="250" cy="75" r="42" fill="#3b5fa8"/><circle cx="189" cy="75" r="6" fill="var(--o)"/><circle cx="211" cy="75" r="6" fill="var(--o)"/><text x="200" y="28" text-anchor="middle" fill="var(--m)" font-size="15" font-family="sans-serif">◀ gleich starker Zug ▶</text><text class="ox fade" style="--d:.5s;fill:var(--m)" x="150" y="85">0</text><text class="ox fade" style="--d:.8s;fill:var(--m)" x="250" y="85">0</text></svg>`;
+ if(S.step==2)c=`<h2>Die Regeln</h2><div class=rules>`+['<b>Summe</b> aller Oxidationszahlen = 0 beim Molekül, = Ionenladung bei mehratomigen Ionen','<b>Einatomige Ionen:</b> Oxidationszahl = Ionenladung','<b>Metalle</b> positiv: 1. Hauptgruppe +I, 2. Hauptgruppe +II, Al meist +III','<b>Wasserstoff</b> meist +I (Metallhydride: –I)','<b>Sauerstoff</b> meist –II (Peroxide: –I)','<b>Halogene</b> in Verbindungen meist –I, Fluor immer –I'].map((r,i)=>`<div class="rl fade" style="--d:${i*.3}s">${r}</div>`).join('')+`</div><p>Vorgehen: erst die sicheren Atome eintragen, dann die Unbekannte über die Summe berechnen.</p>`;
+ if(S.step==3)c=`<h2>Beispiel H₂SO₄</h2><div class=F>${fz(h2,e=>({H:.3,O:1,S:2.6})[e],e=>e=='S')}</div><div class=eq><span class=fade style="--d:.3s">H: +I (Regel)</span><br><span class=fade style="--d:1s">O: –II (Regel)</span><br><span class=fade style="--d:1.7s">${eqX(h2)}</span><br><span class=fade style="--d:2.6s">2 + x – 8 = 0 → ${eqX(h2,1).split('→')[1]}</span></div>`;
+ if(S.step==4)c=`<h2>Beispiel Ion NO₃⁻</h2><div class=F>${fz(no,e=>({O:.3,N:2.6})[e],e=>e=='N')}</div><div class=eq><span class=fade style="--d:.3s">O: –II</span><br><span class=fade style="--d:1s">Summe = Ionenladung = –1</span><br><span class=fade style="--d:1.7s">${eqX(no)}</span><br><span class=fade style="--d:2.6s">x – 6 = –1 → ${eqX(no,1).split('→')[1]}</span></div><button class=pri onclick="mode('u')">Jetzt üben 🧪</button>`;
+ if(S.step==5)c=`<h2>Oxidation und Reduktion erkennen</h2>${DEF}<p>Die Oxidationszahlen zeigen, welches Atom Elektronen abgibt und welches sie aufnimmt:</p>${rx(REA9[5],1)}`;
+ if(S.step==6)c=`<h2>Keine Änderung – keine Redoxreaktion</h2>${rx(REA9[3])}<p>Hier bleiben alle Oxidationszahlen gleich. Oxidation und Reduktion laufen immer gleichzeitig ab.</p><button class=pri onclick="mode('x')">Redox üben ⚖️</button>`;
+ return c+nav(N)}
+
+/* ---------- Klasse 10: Üben ---------- */
+function u9(){if(!S.q){let q;do q=rnd(P1);while(q==S.last);S.q=S.last=q;S.h=0;S.done=0;S.fb='';S.fc=''}
+ const it=S.q,u=unk(it)[0],o='<option value="">?</option>'+[-4,-3,-2,-1,0,1,2,3,4,5,6,7].map(v=>`<option value="${v}">${rom(v)}</option>`).join('');
+ const rows=it.at.map(([e,n])=>{const pre=S.h>=2&&e!=u||S.done;return`<div class=row><span class=lab>${e}</span><select data-e="${e}" ${pre?'disabled':''}>${o.replace(`value="${it.ox[e]}"`,pre?`value="${it.ox[e]}" selected`:`value="${it.ox[e]}"`)}</select></div>`}).join('');
+ return`<p class=nm>Bestimme die Oxidationszahl jedes Atoms.</p><div class=F>${fz(it,e=>S.done||S.h>=2&&e!=u?0:null,e=>e==u)}</div>${rows}`+(S.h>=1?`<div class=eq>Summe = ${chg(it.c)}${S.h>=3||S.done?'<br>'+eqX(it,1):''}</div>`:'')+`<p id=fb class="fb ${S.fc}">${S.fb}</p>`+(S.done?`<button class=pri onclick="S.q=null;render()">Nächste Aufgabe →</button>`:`<button class=pri onclick="chk()">Prüfen</button><button class=sec onclick="S.h=Math.min(3,S.h+1);render()">💡 Tipp ${S.h}/3</button>`)}
+function chk(){const it=S.q;let ok=true;document.querySelectorAll('select').forEach(s=>{const g=s.value!==''&&+s.value==it.ox[s.dataset.e];s.className=g?'good':'bad';if(!g)ok=false});
+ const keep={};document.querySelectorAll('select').forEach(s=>keep[s.dataset.e]=s.value);
+ if(ok){S.pts+=Math.max(1,3-S.h);S.streak++;S.done=1;S.fb='Richtig! 🎉';S.fc='good';render();burst()}
+ else{S.streak=0;S.fb='Noch nicht ganz – rechne nach: Die Summe muss '+chg(it.c)+' ergeben.';S.fc='bad';render();document.querySelectorAll('select').forEach(s=>{if(keep[s.dataset.e]!==undefined){s.value=keep[s.dataset.e];if(!s.disabled)s.className=s.value!==''&&+s.value==it.ox[s.dataset.e]?'good':'bad'}})}}
+
+/* ---------- Klasse 11: Erklären ---------- */
+const METOH=mk('Methanol',[['C',0,0],['O',1,0]],[[0,1,1]]);
+const DEF='<div class=eq style="line-height:1.5"><b style="color:var(--pos)">Oxidation</b>: Erhöhung der Oxidationszahl (Elektronenabgabe)<br><b style="color:var(--neg)">Reduktion</b>: Verringerung der Oxidationszahl (Elektronenaufnahme)</div>';
+const zzTxt=(m,i)=>{const a=lay(m).mz[i].map(q=>q.a),zz=a.reduce((x,y)=>x+y,0),hz=HZ[m.a[i][0]];return`ZZ = ${a.filter(x=>x).join(' + ')||0} = <b>${zz}</b> · HZ = <b>${hz}</b><br>OZ = HZ – ZZ = ${hz} – ${zz} = <b style="color:var(--ok)">${rom(hz-zz)}</b>`};
+const ozz=(m,i)=>HZ[m.a[i][0]]-lay(m).mz[i].reduce((x,y)=>x+y.a,0);
+function e10(){const N=10,t=S.step;
+ if(t==0)return`<h2>Oxidationszahlen mit der Elektronegativität</h2><p>Gilt für <b>jedes Atom</b> im Molekül. EN: O &gt; C &gt; H. Ein Querstrich am Atom ist ein nichtbindendes, jeder Strich zwischen Atomen ein bindendes Elektronenpaar.</p><div class=rules><div class="rl fade" style="--d:.2s"><b>①</b> Dem elektronegativeren Element werden die bindenden Elektronenpaare zugeordnet. Gleiche EN: Das Paar wird geteilt (je 1 Elektron).</div><div class="rl fade" style="--d:.6s"><b>②</b> Anzahl der zugeordneten Elektronen (mit den nichtbindenden Paaren) = <b>Zuordnungszahl ZZ</b></div><div class="rl fade" style="--d:1s"><b>③</b> <b>Hauptgruppenzahl HZ</b> = Anzahl der Außenelektronen (H 1, C 4, N 5, O 6, Cl 7)</div></div><div class=eq style="text-align:center;font-size:1.5rem" ><span class=fade style="--d:1.6s">④ OZ = HZ – ZZ</span></div><p class=fade style="--d:2.2s">Kontrolle: Die Summe aller Oxidationszahlen ist 0 beim Molekül, bei mehratomigen Ionen gleich der Ionenladung.</p><p class=fade style="--d:2.8s">In der Zeichnung wird alles Zugeordnete <b style="color:var(--pos)">rot</b>: Bindungen und freie Elektronenpaare. Ein halber roter Strich bedeutet 1 Elektron (gleiche EN, z. B. C–C).</p>`+nav(N);
+ if(t<=3){const[m,i]=[[METOH,0],[METOH,1],[M[1],1]][t-1];return`<h2>${m.n}: ${m.a[i][0]}-Atom</h2><div class=mw>${mol(m,{zoom:i,mode:'in',delay:1700,mz:i,hi:i,md:3.2,bg:{i,v:ozz(m,i),d:5.8}})}</div><div class=eq><span class=fade style="--d:5.6s">${zzTxt(m,i)}</span></div>`+nav(N)}
+ if(t==4)return`<h2>Abkürzung nur für C-Atome</h2><p>Das Ergebnis der Zuordnung lässt sich bei Kohlenstoff schneller zählen:</p><div class=rules><div class="rl fade" style="--d:.2s"><b>C–H</b>: je H <b>–1</b></div><div class="rl fade" style="--d:.5s"><b>C–C</b>: <b>0</b></div><div class="rl fade" style="--d:.8s"><b>C–O, C–N, C–Cl</b>: je Strich <b>+1</b> (C=O: +2)</div></div><div class=eq>Oxidationszahl(C) = (Bindungen zu O, N, Cl) – (Bindungen zu H)</div><p>In den Zeichnungen: Bindungen mit <b style="color:var(--pos)">+1 rot</b>, Bindungen mit <b style="color:var(--neg)">–1 blau</b>.</p>`+nav(N);
+ if(t<=7){const[m,i]=[[M[0],1],[M[2],1],[CO2,1]][t-5],c=cnt(m,i);
+  return`<h2>${m.n}</h2><div class=mw>${mol(m,{zoom:i,mode:'in',delay:1700,mk:i,hi:i,md:3.2,bg:{i,v:c.ox,d:5.2}})}</div><div class=eq><span class=fade style="--d:5s">Bindungen zu O: <b>${c.het}</b> · zu H: <b>${c.h}</b> · zu C: 0<br>${c.het} – ${c.h} = <b style="color:var(--ok)">${rom(c.ox)}</b></span></div>`+nav(N)}
+ if(t==8)return`<h2>Oxidation und Reduktion erkennen</h2>${DEF}<p>Vergleiche die Oxidationszahlen vor und nach der Reaktion:</p>${rx(REA10[0],1)}<p>Oxidation und Reduktion laufen immer gleichzeitig ab: <b>Redoxreaktion</b>.</p>`+nav(N);
+ return`<h2>Mit und ohne Redoxreaktion</h2>${rx(REA10[1],1)}<p>Ändert sich keine Oxidationszahl, ist es <b>keine</b> Redoxreaktion:</p>${rx(REA10[2])}<button class=pri onclick="mode('x')">Redox üben ⚖️</button>`+nav(N)}
+const vb=s=>s.split(' ').map(Number);
+function zinit(){const s=$('#ms');if(!s||!s.dataset.zoom)return;const f=vb(s.dataset.full),z=vb(s.dataset.zoom),inn=s.dataset.mode=='in',A=inn?f:z,B=inn?z:f,tk=S.tk=(S.tk||0)+1;s.setAttribute('viewBox',A.join(' '));
+ setTimeout(()=>{const t0=performance.now();(function fr(t){if(S.tk!=tk||!s.isConnected)return;const p=Math.min(1,(t-t0)/1200),e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;s.setAttribute('viewBox',A.map((v,k)=>v+(B[k]-v)*e).join(' '));if(p<1)requestAnimationFrame(fr)})(t0)},+s.dataset.delay)}
+
+/* ---------- Klasse 11: Üben ---------- */
+function u10(){if(!S.q2){let m;do m=rnd(M);while(m==S.last2);S.q2=S.last2=m;S.ph='c';S.hn=0;S.err=0;S.fb='';S.fc='';S.mx=Math.max(...cs(m).map(i=>cnt(m,i).ox));S.tgt=null}
+ const m=S.q2,ph=S.ph;let o={};
+ if(ph=='c')o={hint1:S.hn,clk:1};
+ if(ph=='n')o={zoom:S.tgt,mode:'in',delay:500,hi:S.tgt,mk:S.hn?S.tgt:null,md:1.9};
+ if(ph=='d')o={zoom:S.tgt,mode:'out',delay:500,show:1,hi:S.tgt};
+ let b='';
+ if(ph=='n')b=`<div class=nums>${[-4,-3,-2,-1,0,1,2,3,4].map(v=>`<button onclick="num(${v})">${rom(v)}</button>`).join('')}</div>`;
+ if(ph=='d')b=cs(m).map((i,k)=>{const c=cnt(m,i);return`<div class=ln style="--d:${1+k*.25}s">${lab(m,i)}: ${c.het} Bindung(en) zu O/N/Cl – ${c.h} zu H = <b style="color:${col(c.ox)}">${rom(c.ox)}</b>${c.ox==S.mx?' ⭐ höchstoxidiert':''}</div>`}).join('')+`<button class=pri onclick="S.q2=null;render()">Nächste Aufgabe →</button>`;
+ if(ph!='d')b+=`<div style="text-align:center"><button class=sec onclick="hn()">💡 Hilfe${ph=='c'?': Bindungen zu O/N/Cl markieren':': Bindungen zählen'}</button></div>`;
+ return`<p class=nm style="font-size:1.1rem;color:var(--t)">${ph=='c'?'Klicke das <b>höchstoxidierte Kohlenstoffatom</b> an.':ph=='n'?'Richtig! Welche Oxidationszahl hat dieses C-Atom?':'Geschafft! 🎉'}</p><div class=mw>${mol(m,o)}</div><p class=nm>${m.n}</p>${S.hn&&ph=='c'?'<p class=nm>Orange = Bindung zu O/N/Cl (+1 je Strich), jede C–H-Bindung zählt –1.</p>':''}<p id=fb class="fb ${S.fc}" style="text-align:center">${S.fb}</p>${b}`}
+app.onclick=e=>{const t=e.target.closest('[data-k],[data-e]');if(t&&S.mode=='x'&&S.rs=='a'){if(t.dataset.k)tgk(t.dataset.k);else tg(S.rq.E.indexOf(t.dataset.e));return}const g=e.target.closest('g[data-i]');if(!g||S.chap!=10||S.mode!='u'||S.ph!='c')return;const i=+g.dataset.i,c=cnt(S.q2,i);
+ if(c.ox==S.mx){S.tgt=i;S.ph='n';S.pts+=S.err?0:2;S.fb='';S.fc='';render()}
+ else{S.err=1;S.streak=0;S.fb=`Dieses C hat nur ${rom(c.ox)}. Suche das C mit den meisten Bindungen zu O/N/Cl.`;S.fc='bad';render()}};
+function num(v){if(v==S.mx){S.pts+=S.hn?1:2;S.streak++;S.ph='d';S.fb='Richtig!';S.fc='good';render();burst()}
+ else{S.streak=0;S.fb=`${rom(v)} stimmt nicht – zähle: Bindungen zu O/N/Cl minus Bindungen zu H.`;S.fc='bad';render()}}
+function hn(){S.hn=1;render()}
+/* ---------- Redox ---------- */
+const eqh=s=>s.replace(/\{([^:}]+):(-?\d+)(?::(\w+))?\}/g,(_,t,z,g)=>`<span class=z${g?` data-t="${g}"`:''}><i style="color:${col(+z)}">${rom(+z)}</i>${t}</span>`);
+const eqp=s=>s.replace(/\{([^:}]+):(-?\d+)(?::(\w+))?\}/g,'$1');
+const rx=(r,a,p)=>`<div class=rx ${a?`data-arr=1 data-lo="${r.lo}" data-lr="${r.lr}"`:''}>${p?eqp(r.eq):eqh(r.eq)}</div>`;
+const mkR=a=>a.map(([eq,E,ch])=>{const o=ch.find(c=>c[2]>c[1]),d=ch.find(c=>c[2]<c[1]);return{eq,E,ch,lo:o?`Oxidation: ${rom(o[1])} → ${rom(o[2])}`:'',lr:d?`Reduktion: ${rom(d[1])} → ${rom(d[2])}`:'',ex:ch.length?ch.map(c=>`${c[0]}: ${rom(c[1])} → ${rom(c[2])} = ${c[2]>c[1]?'Oxidation (Elektronenabgabe)':'Reduktion (Elektronenaufnahme)'}`).join('<br>'):'Alle Oxidationszahlen bleiben gleich → keine Redoxreaktion.'}});
+const REA9=mkR([['2 {Mg:0:o1} + {O:0:r1}₂ → 2 {Mg:2:o2}{O:-2:r2}',['Mg','O'],[['Mg',0,2],['O',0,-2]]],['2 {Na:0:o1} + {Cl:0:r1}₂ → 2 {Na:1:o2}{Cl:-1:r2}',['Na','Cl'],[['Na',0,1],['Cl',0,-1]]],['{Cu:2:r1}{O:-2} + {H:0:o1}₂ → {Cu:0:r2} + {H:1:o2}₂{O:-2}',['Cu','O','H'],[['H',0,1],['Cu',2,0]]],['{S:6}{O:-2}₃ + {H:1}₂{O:-2} → {H:1}₂{S:6}{O:-2}₄',['S','O','H'],[]],['{H:1}{Cl:-1} + {Na:1}{O:-2}{H:1} → {Na:1}{Cl:-1} + {H:1}₂{O:-2}',['H','Cl','Na','O'],[]],['{Fe:3:r1}₂{O:-2}₃ + 3 {C:2:o1}{O:-2} → 2 {Fe:0:r2} + 3 {C:4:o2}{O:-2}₂',['Fe','O','C'],[['C',2,4],['Fe',3,0]]],['{C:-4:o1}{H:1}₄ + 2 {O:0:r1}₂ → {C:4:o2}{O:-2}₂ + 2 {H:1}₂{O:-2}',['C','H','O'],[['C',-4,4],['O',0,-2]]],['{Zn:0:o1} + 2 {H:1:r1}{Cl:-1} → {Zn:2:o2}{Cl:-1}₂ + {H:0:r2}₂',['Zn','H','Cl'],[['Zn',0,2],['H',1,0]]]]);
+const REA10=mkR([['{CH₃:-3}–{CH₂:-1:o1}–OH + {Cu:2:r1}O → {CH₃:-3}–{CH:1:o2}O + {Cu:0:r2} + H₂O',['C in CH₃','C in CH₂OH','H','O','Cu'],[['C in CH₂OH',-1,1],['Cu',2,0]]],['CH₃–{CH:0:o1}(OH)–CH₃ + {Cu:2:r1}O → CH₃–{C:2:o2}(=O)–CH₃ + {Cu:0:r2} + H₂O',['C in CH₃','C in CHOH','H','O','Cu'],[['C in CHOH',0,2],['Cu',2,0]]],['H–{C:2}(=O)–OH + NaOH → H–{C:2}(=O)–O⁻ + Na⁺ + H₂O',['C','H','O','Na'],[]],['CH₃–{CH:1:o1}O + {Cu:2:r1}O → CH₃–{C:3:o2}OOH + {Cu:0:r2}',['C in CH₃','C in CHO','H','O','Cu'],[['C in CHO',1,3],['Cu',2,0]]],['{CH₃:-2:o1}OH + {Cu:2:r1}O → {CH₂:0:o2}O + {Cu:0:r2} + H₂O',['C','H','O','Cu'],[['C',-2,0],['Cu',2,0]]],['CH₃–{C:3}OOH + C₂H₅OH → CH₃–{C:3}OO–C₂H₅ + H₂O',['C in CH₃','C in COOH','C in C₂H₅','H','O'],[]]]);
+function rxa(){document.querySelectorAll('.rx[data-arr]').forEach(c=>{const cb=c.getBoundingClientRect(),W=c.scrollWidth,g=t=>{const e=c.querySelector(`[data-t="${t}"]`);if(!e)return null;const r=e.getBoundingClientRect();return{x:r.left-cb.left+c.scrollLeft+r.width/2,t:r.top-cb.top+c.scrollTop-3,b:r.bottom-cb.top+c.scrollTop+3}},a=g('o1'),b=g('o2'),d=g('r1'),e=g('r2');if(!a||!e)return;
+ const pt=(x1,y1,x2,y2,k,cl,tx,ty,dl)=>{const ye=y2+(k<0?-7:7),mx=Math.max(85,Math.min(W-85,(x1+x2)/2));return`<path pathLength="1" d="M${x1} ${y1} C${x1} ${y1+k} ${x2} ${ye+k} ${x2} ${ye}" fill="none" style="stroke:${cl};stroke-width:2;stroke-dasharray:1;stroke-dashoffset:1;animation:dr 1.4s ${dl}s forwards"/><polygon class="fade" style="--d:${dl+1.4}s;fill:${cl}" points="${x2-3.5},${ye} ${x2+3.5},${ye} ${x2},${y2}"/><text class="fade" style="--d:${dl+1.4}s;fill:${cl};paint-order:stroke;stroke:var(--inset);stroke-width:4px" x="${mx}" y="${ty}" text-anchor="middle" font-size="14" font-weight="700" font-family="sans-serif">${tx}</text>`};
+ c.insertAdjacentHTML('beforeend',`<svg width="${W}" height="${c.scrollHeight}">`+pt(a.x,a.t,b.x,b.t,-56,'var(--pos)',c.dataset.lo,a.t-52,.3)+pt(d.x,d.b,e.x,e.b,56,'var(--neg)',c.dataset.lr,d.b+62,.9)+'</svg>')})}
+const OPT='<option value="">?</option>'+[-4,-3,-2,-1,0,1,2,3,4,5,6,7].map(v=>`<option value="${v}">${rom(v)}</option>`).join('');
+const fbk=t=>{const f=$('#fb');f.className='fb bad';f.textContent=t;S.streak=0};
+/* ---------- Strukturgleichungen (Klasse 11) ---------- */
+const SP={ethanol:M[0],ethanal:M[1],ethansaeure:M[2],propanon:M[3],propanol:M[4],ester:M[10],methanol:METOH,methanal:mk('Methanal',[['C',0,0],['O',0,-1]],[[0,1,2]]),methansaeure:mk('Methansäure',[['C',0,0],['O',0,-1],['O',1,0]],[[0,1,2],[0,2,1]]),formiat:mk('Formiat',[['C',0,0],['O',0,-1],['O',1,0,-1]],[[0,1,2],[0,2,1]]),cuo:mk('CuO',[['Cu',0,0,2],['O',1,0,-2]],[]),cu:mk('Cu',[['Cu',0,0]],[]),h2o:{...mk('Wasser',[['O',0,0]],[]),bent:1},naoh:mk('NaOH',[['Na',0,0,1],['O',1,0,-1]],[]),na:mk('Na',[['Na',0,0,1]],[])};
+const ozAtom=(m,i)=>{const el=m.a[i][0],c=m.a[i][3]||0;return !HZ[el]||(bs(m,i)==0&&c)?c:ozz(m,i)};
+const mkB=a=>a.map(([sp,nl,ch])=>({sp,nl,ch,...mkR([['',[],ch]])[0]}));
+const REB=mkB([[['ethanol','cuo','ethanal','cu','h2o'],2,[['C in CH₂OH',-1,1,[0,1],[2,1]],['Cu',2,0,[1,0],[3,0]]]],[['propanol','cuo','propanon','cu','h2o'],2,[['C in CH(OH)',0,2,[0,1],[2,1]],['Cu',2,0,[1,0],[3,0]]]],[['methansaeure','naoh','formiat','na','h2o'],2,[]],[['ethanal','cuo','ethansaeure','cu'],2,[['C in CHO',1,3,[0,1],[2,1]],['Cu',2,0,[1,0],[3,0]]]],[['methanol','cuo','methanal','cu','h2o'],2,[['C',-2,0,[0,0],[2,0]],['Cu',2,0,[1,0],[3,0]]]],[['ethansaeure','ethanol','ester','h2o'],2,[]]]);
+function eqS(r,o){const k=.62,BAND=72,OP=34,ph=o.ph,n=r.sp.length,key=(j,i)=>j+':'+i,ch=r.ch,all=ch.flatMap(c=>[key(...c[3]),key(...c[4])]);
+ const I=r.sp.map((nm,j)=>{const m=SP[nm],bdg=[];
+  if(ph=='a'&&o.hx)m.a.forEach((_,i)=>bdg.push({i,v:ozAtom(m,i),d:.1}));
+  if(ph=='k'||ph=='d')ch.forEach(c=>[[c[3],c[1]],[c[4],c[2]]].forEach(([ref,v])=>{if(ref[0]==j)bdg.push({i:ref[1],v,d:ph=='d'?.2:.1,dir:ph=='d'?(c[2]>c[1]?1:-1):0})}));
+  const R=molB(m,{raw:1,k:j,tap:ph=='a',sel:ph=='a'?S.sel:all,bdg,rad:[34,44,54,66,78,92]}),xs=[],ys=[];
+  R.L.A.forEach(a=>{xs.push(a.x-24,a.x+36);ys.push(a.y-34,a.y+26)});bdg.forEach(b=>{const q=R.bp[b.i];xs.push(q[0]-32,q[0]+32);ys.push(q[1]-14,q[1]+14)});
+  const mn=Math.min(...xs);return{R,bdg,mn,w:(Math.max(...xs)-mn)*k+14,t:-Math.min(...ys)*k,b:Math.max(...ys)*k}});
+ const mt=Math.max(...I.map(a=>a.t)),mb=Math.max(...I.map(a=>a.b)),y0=BAND+mt,H=BAND*2+mt+mb,pos={};let X=4,g='';
+ I.forEach((a,j)=>{const tx=X+7-a.mn*k;a.bdg.forEach(b=>pos[key(j,b.i)]=[tx+a.R.bp[b.i][0]*k,y0+a.R.bp[b.i][1]*k]);
+  g+=`<g transform="translate(${tx} ${y0}) scale(${k})">${a.R.s}</g>`;X+=a.w;
+  if(j<n-1){g+=`<text x="${X+OP/2}" y="${y0+10}" text-anchor="middle" font-size="30" font-family="Georgia,serif" style="fill:var(--t)">${j==r.nl-1?'→':'+'}</text>`;X+=OP}});
+ const W=Math.round(X+4);
+ if(ph=='d')ch.forEach(c=>{const up=c[2]>c[1],p=pos[key(...c[3])],q=pos[key(...c[4])];if(!p||!q)return;const sg=up?1:-1,ya=up?BAND*.5:H-BAND*.5,s1=p[1]+(up?-15:15),e2=q[1]+(up?-15:15),cl=up?'var(--pos)':'var(--neg)',dl=up?.3:.9,mx=Math.max(90,Math.min(W-90,(p[0]+q[0])/2));
+  g+=`<path pathLength="1" d="M${p[0]} ${s1} V${ya+8*sg} Q${p[0]} ${ya} ${p[0]+8} ${ya} H${q[0]-8} Q${q[0]} ${ya} ${q[0]} ${ya+8*sg} V${e2-7*sg}" fill="none" style="stroke:${cl};stroke-width:2;stroke-dasharray:1;stroke-dashoffset:1;animation:dr 1.6s ${dl}s forwards"/><polygon class="fade" style="--d:${dl+1.6}s;fill:${cl}" points="${q[0]-3.5},${e2-7*sg} ${q[0]+3.5},${e2-7*sg} ${q[0]},${e2}"/><text class="fade" style="--d:${dl+1.6}s;fill:${cl}" x="${mx}" y="${up?ya-8:ya+20}" text-anchor="middle" font-size="14" font-weight="700" font-family="sans-serif">${up?r.lo:r.lr}</text>`});
+ return`<div class=eqs><svg viewBox="0 0 ${W} ${Math.round(H)}">${g}</svg></div>`}
+function eqz(){const c=$('.eqs'),v=c&&c.querySelector('svg');if(!v)return;const W=v.viewBox.baseVal.width,fit=c.clientWidth/W,d=S.rs=='d'&&S.zu!='d',zs=d?fit:(S.zs||Math.max(.9,fit));if(!d)S.zs=zs;
+ v.style.transition='none';v.style.width=W*fit+'px';
+ if(d)return;if(S.za!==S.rq){S.za=S.rq;v.getBoundingClientRect();v.style.transition='width 1.2s ease .9s';requestAnimationFrame(()=>v.style.width=W*zs+'px')}else v.style.width=W*zs+'px'}
+function rxfit(){document.querySelectorAll('.rx').forEach(c=>{c.style.fontSize='';for(let n=0;n<3&&c.scrollWidth>c.clientWidth+1;n++){const f=parseFloat(getComputedStyle(c).fontSize);c.style.fontSize=Math.max(8,f*c.clientWidth/c.scrollWidth*.97)+'px'}})}
+function subs(){const w=document.createTreeWalker(app,NodeFilter.SHOW_TEXT),L=[];while(w.nextNode()){const t=w.currentNode;if(/[₀-₉]/.test(t.nodeValue)&&!(t.parentElement&&t.parentElement.closest('svg')))L.push(t)}L.forEach(t=>{const sp=document.createElement('span');sp.innerHTML=t.nodeValue.replace(/[₀-₉]+/g,m=>`<sub>${[...m].map(c=>c.charCodeAt(0)-8320).join('')}</sub>`);t.replaceWith(...sp.childNodes)})}
+function keep(){const c=$('.rx,.eqs'),sl=c?c.scrollLeft:0;render();const d=$('.rx,.eqs');if(d)d.scrollLeft=sl}
+function zm(f){S.zs=Math.max(.5,Math.min(2.2,(S.zs||1)*f));S.za=S.rq;S.zu=S.rs;keep()}
+const eqt=(s,sl,hx)=>s.replace(/\{([^:}]+):(-?\d+)(?::(\w+))?\}/g,(_,t,z,g)=>`<span class="tp${sl.includes(t)?' on':''}${hx?' z':''}" data-e="${t}">${hx?`<i style="color:${col(+z)}">${rom(+z)}</i>`:''}${t}</span>`);
+function ux(){const R=S.chap==9?REA9:REB;if(!S.rq){let r;do r=rnd(R);while(r==S.rl);S.rq=S.rl=r;S.rs='a';S.sel=[];S.ki=0;S.hx=0;S.zs=null}
+ const r=S.rq,s=S.rs,ch=r.ch,K=S.chap==10,bt=(t,f,c)=>`<button ${c?'class=on':''} onclick="${f}">${t}</button>`,zb=K?bt('🔍＋','zm(1.25)')+bt('🔍－','zm(.8)'):'';let q,b='',v;
+ if(s=='a'){q=`<b>1. Erkennen:</b> Tippe in der Gleichung ${K?'die Atome':'die Elementsymbole'} an, bei denen sich die Oxidationszahl ändert (nichts antippen → keine Redoxreaktion).`;b=`<div style="width:100%;text-align:center">${bt('Prüfen','ca()')}${bt('💡 Hilfe','S.hx=1;render()')}${zb}</div>`;v=K?eqS(r,{ph:'a',hx:S.hx}):`<div class="rx big">${eqt(r.eq,S.sel.map(i=>r.E[i]),S.hx)}</div>`}
+ if(s=='z'){q='<b>2. Bestimmen:</b> Gib die Oxidationszahl dieser Atome vor und nach der Reaktion an.';b=ch.map((c,k)=>`<div class=row style="width:100%"><span class=lab style="font-size:1.1rem;min-width:0">${c[0]}:</span> vorher <select id=za${k}>${OPT}</select> → nachher <select id=zb${k}>${OPT}</select></div>`).join('')+`<div style="width:100%;text-align:center">${bt('Prüfen','cz()')}${zb}</div>`;v=K?eqS(r,{ph:'z'}):rx(r,0,1)}
+ if(s=='k'){const c=ch[S.ki];q=`<b>3. Kennzeichnen:</b> ${c[0]}: ${rom(c[1])} → ${rom(c[2])}. Was geschieht mit diesem Atom bzw. Ion?`;b=bt('Oxidation','kk(1)')+bt('Reduktion','kk(0)')+zb;v=K?eqS(r,{ph:'k'}):rx(r,0)}
+ if(s=='d'){q='Geschafft! 🎉';b=zb;v=K?eqS(r,{ph:'d'}):rx(r,1)}
+ return`<p class=nm style="font-size:1.05rem;color:var(--t)">${q}</p>${v}${s=='d'?`<div class=eq>${r.ex}</div><button class=pri onclick="S.rq=null;render()">Nächste Aufgabe →</button>`:''}<p id=fb class=fb style="text-align:center"></p><div class=nums>${b}</div>`}
+function tg(i){const k=S.sel.indexOf(i);k<0?S.sel.push(i):S.sel.splice(k,1);keep()}
+function tgk(k){const i=S.sel.indexOf(k);i<0?S.sel.push(k):S.sel.splice(i,1);keep()}
+function ca(){const r=S.rq,K=S.chap==10;let ok,m1;
+ if(K){const ks=r.ch.flatMap(c=>[c[3].join(':'),c[4].join(':')]),ex=S.sel.some(k=>!ks.includes(k)),ms=r.ch.some(c=>!S.sel.includes(c[3].join(':'))&&!S.sel.includes(c[4].join(':')));ok=!ex&&!ms;m1=ex?'Mindestens ein angetipptes Atom ändert seine Oxidationszahl nicht.':'Es fehlt noch ein Atom, bei dem sich die Oxidationszahl ändert. (Hilfe zeigt die Oxidationszahlen.)'}
+ else{const w=r.ch.map(c=>c[0]),g=S.sel.map(i=>r.E[i]);ok=w.length==g.length&&w.every(x=>g.includes(x));m1=w.length&&!g.length?'Es ändert sich etwas – prüfe die Oxidationszahlen der Atome.':'Noch nicht richtig: Welche Atome haben vorher und nachher eine andere Oxidationszahl? (Hilfe zeigt sie dir.)'}
+ if(ok){S.pts+=S.hx?1:2;if(r.ch.length)S.rs='z';else{S.rs='d';S.streak++;burst()}render()}else fbk(m1)}
+function cz(){const r=S.rq;if(r.ch.every((c,k)=>$('#za'+k).value!==''&&$('#zb'+k).value!==''&&+$('#za'+k).value==c[1]&&+$('#zb'+k).value==c[2])){S.pts+=2;S.rs='k';S.ki=0;render()}else fbk('Mindestens eine Oxidationszahl stimmt nicht – Regeln anwenden: Summe = 0 bzw. Ionenladung.')}
+function kk(v){const c=S.rq.ch[S.ki];if((c[2]>c[1])==!!v){S.pts++;S.ki++;if(S.ki>=S.rq.ch.length){S.rs='d';S.streak++;render();burst()}else render()}else fbk(c[2]>c[1]?'Die Oxidationszahl steigt: Das Atom gibt Elektronen ab.':'Die Oxidationszahl sinkt: Das Atom nimmt Elektronen auf.')}
+
+addEventListener('resize',()=>{clearTimeout(S.rt);S.rt=setTimeout(()=>{if(S.chap&&S.mode=='x'&&$('.eqs,.rx'))keep()},200)});
+render();
+</script></body></html>

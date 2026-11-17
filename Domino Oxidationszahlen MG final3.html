@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Domino – Oxidationszahlen (Erweitert)</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  font-family:'Segoe UI',Arial,sans-serif;
+  background:#eef2f7;
+  min-width:1000px;
+  color:#1a1a2e;
+}
+
+header{
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
+  color:#fff;padding:16px 32px 12px;
+  box-shadow:0 3px 10px rgba(0,0,0,.35);
+}
+header h1{font-size:1.45rem;letter-spacing:.03em;margin-bottom:4px}
+header p{font-size:.82rem;opacity:.72;line-height:1.6}
+
+#controls{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  background:#fff;padding:11px 32px;
+  border-bottom:2px solid #dde3ee;
+  box-shadow:0 2px 6px rgba(0,0,0,.07);
+}
+#controls label{font-size:.88rem;font-weight:600;white-space:nowrap}
+#controls input[type=range]{width:110px;accent-color:#3b82f6;cursor:pointer}
+#stoneCountDisplay{font-size:.88rem;font-weight:700;color:#3b82f6;
+  min-width:20px;text-align:center}
+
+.btn{
+  padding:7px 14px;border:none;border-radius:8px;
+  font-size:.84rem;font-weight:700;cursor:pointer;
+  transition:filter .15s,transform .1s;white-space:nowrap;
+}
+.btn:hover {filter:brightness(1.08)}
+.btn:active{transform:scale(.97)}
+.btn-blue {background:#3b82f6;color:#fff}
+.btn-slate{background:#64748b;color:#fff}
+.btn-green{background:#22c55e;color:#fff}
+.btn-amber{background:#f59e0b;color:#fff}
+
+main{padding:22px 32px 48px}
+.section-label{
+  font-size:.73rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:#64748b;margin-bottom:10px;
+}
+
+/* ── Chain wrapper ── */
+#chain-wrapper{
+  background:#fff;border:2px solid #dde3ee;border-radius:16px;
+  padding:18px 14px;min-height:270px;overflow-x:auto;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:8px;
+}
+#chain{
+  display:flex;align-items:center;flex-wrap:nowrap;
+  gap:0;min-height:230px;
+}
+
+/* ── Drop slot ── */
+.drop-slot{
+  width:118px;min-height:232px;
+  border:2.5px dashed #94a3b8;border-radius:12px;
+  background:#f1f5f9;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .18s,border-color .18s;
+  flex-shrink:0;
+}
+.drop-slot.drag-over{background:#dbeafe;border-color:#3b82f6}
+.slot-hint{
+  font-size:.68rem;color:#94a3b8;text-align:center;
+  pointer-events:none;line-height:1.9;
+}
+
+/* ── Connector ── */
+.connector{
+  flex-shrink:0;padding:0 3px;
+  color:#94a3b8;font-size:1.3rem;user-select:none;
+}
+
+/* ══════════════════════════════════════
+   DOMINOSTEIN
+══════════════════════════════════════ */
+.domino{
+  width:116px;
+  border-radius:12px;
+  box-shadow:0 4px 14px rgba(0,0,0,.17);
+  display:flex;flex-direction:column;
+  overflow:visible;          /* rotate-btn muss rausragen dürfen */
+  border:2.5px solid #94a3b8;
+  flex-shrink:0;
+  user-select:none;
+  transition:transform .15s,box-shadow .15s;
+  -webkit-user-drag:element;
+  cursor:grab;
+  position:relative;
+  border-radius:12px;
+}
+.domino-inner{
+  border-radius:10px;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  flex:1;
+}
+.domino:hover  {transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.22)}
+.domino.dragging{opacity:.32;cursor:grabbing}
+/* Kinder blocken keine Pointer-Events beim Drag */
+.domino .domino-inner *{pointer-events:none}
+
+/* ── Hälften ── */
+.domino-half{
+  flex:1;
+  min-height:96px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:9px 6px;
+  gap:5px;
+  text-align:center;
+}
+
+/* Formel-Hälfte */
+.half-formula{background:#f8faff;}
+.half-formula .form-text{
+  font-size:.9rem;font-weight:600;
+  line-height:1.55;color:#1a1a2e;
+}
+
+/* Ox-Hälfte */
+.half-ox{background:#f0f4ff;}
+.half-ox .ox-val{
+  font-weight:700;color:#1e3a8a;
+  font-size:.92rem;line-height:1.25;
+}
+
+/* Trennlinie */
+.domino-divider{
+  height:3px;background:#94a3b8;flex-shrink:0;
+}
+
+/* Typ-Badge oben links */
+.type-badge{
+  position:absolute;
+  top:-9px;left:6px;
+  font-size:.55rem;font-weight:700;
+  border-radius:4px;padding:1px 5px;
+  pointer-events:none;z-index:6;
+  border:1.5px solid;
+}
+.badge-fo {background:#dbeafe;color:#1e40af;border-color:#93c5fd}  /* F|O */
+.badge-ff {background:#ede9fe;color:#5b21b6;border-color:#c4b5fd}  /* F|F */
+.badge-oo {background:#fef3c7;color:#92400e;border-color:#fcd34d}  /* O|O */
+
+/* Dreh-Button */
+.rotate-btn{
+  position:absolute;
+  right:-12px;top:50%;
+  transform:translateY(-50%);
+  width:22px;height:22px;
+  border-radius:50%;
+  background:#fff;
+  border:2px solid #3b82f6;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;color:#3b82f6;
+  cursor:pointer;
+  pointer-events:all !important;
+  z-index:20;
+  transition:background .15s,color .15s;
+  box-shadow:0 1px 4px rgba(0,0,0,.18);
+  line-height:1;
+}
+.rotate-btn:hover{background:#3b82f6;color:#fff;}
+
+/* ── Farbvarianten ── */
+.domino.stone-start{border-color:#16a34a}
+.domino.stone-start .half-formula {background:#dcfce7}
+.domino.stone-start .domino-divider{background:#16a34a}
+.domino.stone-start .half-ox      {background:#bbf7d0}
+.domino.stone-start .ox-val       {color:#14532d}
+.domino.stone-start .form-text    {color:#14532d}
+
+.domino.stone-end{border-color:#dc2626}
+.domino.stone-end .half-formula {background:#fee2e2}
+.domino.stone-end .domino-divider{background:#dc2626}
+.domino.stone-end .half-ox      {background:#fecaca}
+.domino.stone-end .ox-val       {color:#7f1d1d}
+.domino.stone-end .form-text    {color:#7f1d1d}
+
+.domino.correct{
+  border-color:#22c55e!important;
+  box-shadow:0 0 0 3px #bbf7d0,0 4px 12px rgba(0,0,0,.13)!important;
+}
+.domino.wrong{
+  border-color:#ef4444!important;
+  box-shadow:0 0 0 3px #fecaca,0 4px 12px rgba(0,0,0,.13)!important;
+}
+
+/* ── Stock ── */
+#stock-wrap{
+  background:#fff;border:2px solid #dde3ee;border-radius:16px;
+  padding:18px 14px;min-height:220px;
+  display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  transition:background .18s,border-color .18s;
+}
+#stock-wrap.drag-over{background:#f0fdf4;border-color:#22c55e}
+.stock-empty{color:#94a3b8;font-size:.86rem;margin:auto;font-style:italic}
+
+/* ── Feedback ── */
+#feedback{
+  margin:14px 0 0;padding:11px 18px;border-radius:10px;
+  font-size:.92rem;font-weight:600;display:none;
+}
+#feedback.show   {display:block}
+#feedback.success{background:#dcfce7;color:#15803d;border:1.5px solid #86efac}
+#feedback.error  {background:#fee2e2;color:#b91c1c;border:1.5px solid #fca5a5}
+#feedback.info   {background:#dbeafe;color:#1d4ed8;border:1.5px solid #93c5fd}
+
+/* ── Legende ── */
+#legend{
+  margin-top:24px;padding:13px 18px;
+  background:#fff;border:1.5px solid #dde3ee;border-radius:12px;
+  font-size:.8rem;color:#475569;line-height:1.9;
+}
+#legend strong{color:#1a1a2e}
+.pill{display:inline-block;border-radius:5px;padding:1px 6px;
+  font-weight:700;font-size:.77rem;border:1.5px solid}
+.pill-green {background:#dcfce7;color:#14532d;border-color:#86efac}
+.pill-red   {background:#fee2e2;color:#7f1d1d;border-color:#fca5a5}
+.pill-fo    {background:#dbeafe;color:#1e40af;border-color:#93c5fd}
+.pill-ff    {background:#ede9fe;color:#5b21b6;border-color:#c4b5fd}
+.pill-oo    {background:#fef3c7;color:#92400e;border-color:#fcd34d}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚗️ Domino – Oxidationszahlen (Erweitert)</h1>
+  <p>
+    Drei Steintypen: <strong>Formel | Ox.-Zahlen</strong> ·
+    <strong>Formel | Formel</strong> · <strong>Ox.-Zahlen | Ox.-Zahlen</strong>.<br>
+    <strong>Formel | Formel</strong> und <strong>Ox.-Zahlen | Ox.-Zahlen</strong> kommen nur selten vor,
+    auch Start- und Endstein können variieren.<br>
+    Alle Steine können mit <strong>⟳</strong> gedreht werden –
+    manche liegen im Vorrat verkehrt herum und müssen für die Lösung gedreht werden.
+    Zwei Steine passen nur zusammen, wenn an der Berührungsstelle <strong>Oxidationszahlen auf eine
+    passende Verbindung</strong> treffen (<em>untere</em> Hälfte von Stein A zur <em>oberen</em> Hälfte von Stein B).
+    Formel an Formel oder Ox.-Zahlen an Ox.-Zahlen passen nie.
+  </p>
+</header>
+
+<div id="controls">
+  <label for="stoneCount">Dominosteine:</label>
+  <input type="range" id="stoneCount" min="4" max="12" value="8"/>
+  <span id="stoneCountDisplay">8</span>
+  <button class="btn btn-blue"  onclick="newGame()">🎲 Neues Spiel</button>
+  <button class="btn btn-slate" onclick="reshuffleGame()">🔀 Neu mischen</button>
+  <button class="btn btn-green" onclick="checkSolution()">✅ Lösung prüfen</button>
+  <button class="btn btn-amber" onclick="showSolution()">💡 Lösung anzeigen</button>
+</div>
+
+<main>
+  <div class="section-label">🔗 Spielfeld – Kette</div>
+  <div id="chain-wrapper"><div id="chain"></div></div>
+  <div id="feedback"></div>
+
+  <div class="section-label" style="margin-top:22px">🗃️ Vorrat</div>
+  <div id="stock-wrap"></div>
+
+  <div id="legend">
+    <strong>Steintypen:</strong><br>
+    <span class="pill pill-fo">F|O</span>
+    &nbsp;Oben: Summenformel – Unten: Oxidationszahlen (klassisch)<br>
+    <span class="pill pill-ff">F|F</span>
+    &nbsp;Oben: Summenformel – Unten: andere Summenformel<br>
+    <span class="pill pill-oo">O|O</span>
+    &nbsp;Oben: Oxidationszahlen – Unten: andere Oxidationszahlen<br><br>
+    <strong>Verbindungsregel:</strong>
+    Das Muster der <em>unteren</em> Hälfte von Stein A muss zur
+    <em>oberen</em> Hälfte von Stein B passen:
+    An jeder Berührungsstelle muss <strong>eine Seite eine Summenformel</strong> und die
+    <strong>andere Seite die dazu passenden Oxidationszahlen</strong> zeigen.
+    Zwei gleiche Formeln oder zwei gleiche Oxidationszahlen-Muster
+    nebeneinander sind <strong>falsch</strong>.<br>
+    <strong>⟳</strong> dreht jeden Stein (oben ↔ unten) –
+    die <span class="pill pill-green">grüne Startkarte</span> und
+    <span class="pill pill-red">rote Endkarte</span> sind fest.
+    Alle gültigen Lösungen werden erkannt.
+  </div>
+</main>
+
+<script>
+"use strict";
+
+/* ══════════════════════════════════════════════════
+   1. toRoman
+══════════════════════════════════════════════════ */
+function toRoman(n){
+  if(n===0) return "0";
+  const sign=n>0?"+":"−", abs=Math.abs(n);
+  const MAP=[[10,"X"],[9,"IX"],[8,"VIII"],[7,"VII"],[6,"VI"],
+             [5,"V"],[4,"IV"],[3,"III"],[2,"II"],[1,"I"]];
+  let r="",rem=abs;
+  for(const [v,s] of MAP){while(rem>=v){r+=s;rem-=v;}}
+  return sign+r;
+}
+
+/* ══════════════════════════════════════════════════
+   2. VERBINDUNGS-DATENBANK
+══════════════════════════════════════════════════ */
+const COMPOUNDS=[
+  {id:"H2O",     formula:"H<sub>2</sub>O",
+   oxData:[{ox:+1},{ox:-2}]},
+  {id:"CO2",     formula:"CO<sub>2</sub>",
+   oxData:[{ox:+4},{ox:-2}]},
+  {id:"SO2",     formula:"SO<sub>2</sub>",
+   oxData:[{ox:+4},{ox:-2}]},
+  {id:"NO",      formula:"NO",
+   oxData:[{ox:+2},{ox:-2}]},
+  {id:"NO2",     formula:"NO<sub>2</sub>",
+   oxData:[{ox:+4},{ox:-2}]},
+  {id:"MgO",     formula:"MgO",
+   oxData:[{ox:+2},{ox:-2}]},
+  {id:"FeO",     formula:"FeO",
+   oxData:[{ox:+2},{ox:-2}]},
+  {id:"ZnO",     formula:"ZnO",
+   oxData:[{ox:+2},{ox:-2}]},
+  {id:"CuO",     formula:"CuO",
+   oxData:[{ox:+2},{ox:-2}]},
+  {id:"NaCl",    formula:"NaCl",
+   oxData:[{ox:+1},{ox:-1}]},
+  {id:"HCl",     formula:"HCl",
+   oxData:[{ox:+1},{ox:-1}]},
+  {id:"NH3",     formula:"NH<sub>3</sub>",
+   oxData:[{ox:-3},{ox:+1}]},
+  {id:"Na2O",    formula:"Na<sub>2</sub>O",
+   oxData:[{ox:+1},{ox:-2}]},
+  {id:"Cu2O",    formula:"Cu<sub>2</sub>O",
+   oxData:[{ox:+1},{ox:-2}]},
+  {id:"N2O",     formula:"N<sub>2</sub>O",
+   oxData:[{ox:+1},{ox:-2}]},
+  {id:"Fe2O3",   formula:"Fe<sub>2</sub>O<sub>3</sub>",
+   oxData:[{ox:+3},{ox:-2}]},
+  {id:"Al2O3",   formula:"Al<sub>2</sub>O<sub>3</sub>",
+   oxData:[{ox:+3},{ox:-2}]},
+  {id:"N2O5",    formula:"N<sub>2</sub>O<sub>5</sub>",
+   oxData:[{ox:+5},{ox:-2}]},
+  {id:"P4O10",   formula:"P<sub>4</sub>O<sub>10</sub>",
+   oxData:[{ox:+5},{ox:-2}]},
+  {id:"FeCl3",   formula:"FeCl<sub>3</sub>",
+   oxData:[{ox:+3},{ox:-1}]},
+  {id:"PCl3",    formula:"PCl<sub>3</sub>",
+   oxData:[{ox:+3},{ox:-1}]},
+  {id:"SF6",     formula:"SF<sub>6</sub>",
+   oxData:[{ox:+6},{ox:-1}]},
+  {id:"H2O2",    formula:"H<sub>2</sub>O<sub>2</sub>",
+   oxData:[{ox:+1},{ox:-1}]},
+  {id:"KMnO4",   formula:"KMnO<sub>4</sub>",
+   oxData:[{ox:+1},{ox:+7},{ox:-2}]},
+  {id:"H2SO4",   formula:"H<sub>2</sub>SO<sub>4</sub>",
+   oxData:[{ox:+1},{ox:+6},{ox:-2}]},
+  {id:"HNO3",    formula:"HNO<sub>3</sub>",
+   oxData:[{ox:+1},{ox:+5},{ox:-2}]},
+  {id:"H3PO4",   formula:"H<sub>3</sub>PO<sub>4</sub>",
+   oxData:[{ox:+1},{ox:+5},{ox:-2}]},
+  {id:"CaCO3",   formula:"CaCO<sub>3</sub>",
+   oxData:[{ox:+2},{ox:+4},{ox:-2}]},
+  {id:"K2Cr2O7", formula:"K<sub>2</sub>Cr<sub>2</sub>O<sub>7</sub>",
+   oxData:[{ox:+1},{ox:+6},{ox:-2}]},
+  {id:"SO4_2-",  formula:"SO<sub>4</sub><sup>2−</sup>",
+   oxData:[{ox:+6},{ox:-2}]},
+  {id:"NO3_-",   formula:"NO<sub>3</sub><sup>−</sup>",
+   oxData:[{ox:+5},{ox:-2}]},
+  {id:"MnO4_-",  formula:"MnO<sub>4</sub><sup>−</sup>",
+   oxData:[{ox:+7},{ox:-2}]},
+  {id:"CrO4_2-", formula:"CrO<sub>4</sub><sup>2−</sup>",
+   oxData:[{ox:+6},{ox:-2}]},
+  {id:"Cr2O7_2-",formula:"Cr<sub>2</sub>O<sub>7</sub><sup>2−</sup>",
+   oxData:[{ox:+6},{ox:-2}]},
+  {id:"ClO3_-",  formula:"ClO<sub>3</sub><sup>−</sup>",
+   oxData:[{ox:+5},{ox:-2}]},
+];
+
+const CMAP={};
+for(const c of COMPOUNDS) CMAP[c.id]=c;
+
+/* ══════════════════════════════════════════════════
+   3. STEINTYPEN
+   Jeder Stein hat genau einen von drei Typen:
+
+   "FO" – oben: Formel,         unten: Ox.-Zahlen
+   "FF" – oben: Formel,         unten: Formel
+   "OO" – oben: Ox.-Zahlen,     unten: Ox.-Zahlen
+
+   Stein-Objekt:
+   {
+     type:    "FO"|"FF"|"OO"
+     topId:   string   (Verbindungs-ID der oberen Seite)
+     bottomId:string   (Verbindungs-ID der unteren Seite)
+     flipped: boolean  (oben ↔ unten vertauscht)
+   }
+
+   Effektiver Typ nach Drehung:
+     flipped=false: wie type
+     flipped=true:  "FO"↔"OF" (= Ox. oben, Formel unten)
+                    "FF"↔"FF"  (bleibt FF)
+                    "OO"↔"OO"  (bleibt OO)
+
+   Jede Hälfte hat einen "Modus":
+     "formula" = zeigt Summenformel an
+     "ox"      = zeigt Oxidationszahlen an
+
+   Fingerprint einer Seite:
+     mode="formula" → compoundId selbst (exakter ID-Match)
+     mode="ox"      → sortierte Ox.-Zahlen als String
+
+   Verbindungsregel A→B:
+     mode(effectiveBottom(A)) !== mode(effectiveTop(B))   (Formel ↔ Ox)
+     UND fingerprint(effectiveBottom(A)) === fingerprint(effectiveTop(B))
+══════════════════════════════════════════════════ */
+
+function effectiveTop(stone){
+  // Gibt {id, mode} der oberen Seite zurück (nach Drehung)
+  if(!stone.flipped){
+    return {id: stone.topId,    mode: topMode(stone.type)};
+  } else {
+    return {id: stone.bottomId, mode: bottomMode(stone.type)};
+  }
+}
+function effectiveBottom(stone){
+  // Gibt {id, mode} der unteren Seite zurück (nach Drehung)
+  if(!stone.flipped){
+    return {id: stone.bottomId, mode: bottomMode(stone.type)};
+  } else {
+    return {id: stone.topId,    mode: topMode(stone.type)};
+  }
+}
+
+// Modus der oberen Seite je nach Typ (ungedreht)
+function topMode(type){
+  // FO → "formula", FF → "formula", OO → "ox"
+  return type==="OO" ? "ox" : "formula";
+}
+// Modus der unteren Seite je nach Typ (ungedreht)
+function bottomMode(type){
+  // FO → "ox", FF → "formula", OO → "ox"
+  return type==="FF" ? "formula" : "ox";
+}
+
+// Fingerprint einer Seite
+function sideFingerprint(id, mode){
+  if(mode==="formula"){
+    // Formel wird über ihre Oxidationszahlen mit dem Ox-Muster verglichen
+    return oxFingerprint(id);
+  } else {
+    return oxFingerprint(id);
+  }
+}
+
+function oxFingerprint(id){
+  const c=CMAP[id];
+  if(!c) return "";
+  return c.oxData.map(e=>e.ox).slice().sort((a,b)=>a-b).join(",");
+}
+
+function stonesMatch(A, B){
+  const aBot=effectiveBottom(A);
+  const bTop=effectiveTop(B);
+  // Regel: Es muss immer EINE Formel auf Oxidationszahlen treffen.
+  // Formel↔Formel und Ox↔Ox sind nie erlaubt.
+  if(aBot.mode===bTop.mode) return false;
+  return sideFingerprint(aBot.id, aBot.mode) ===
+         sideFingerprint(bTop.id, bTop.mode);
+}
+
+/* ══════════════════════════════════════════════════
+   4. KETTENAUFBAU
+   Baut eine valide Kette von n Steinen.
+   Verbindungsregel per Konstruktion erfüllt:
+     bottomId von Stein i = topId von Stein i+1
+     (bei identischen IDs stimmen Fingerprints immer)
+   Typen werden zufällig gewählt, aber so,
+   dass die Übergänge immer stimmen.
+══════════════════════════════════════════════════ */
+function buildChain(n){
+  const maxN=COMPOUNDS.length-1;
+  if(n>maxN) n=maxN;
+
+  const ids=shuffle(COMPOUNDS.map(c=>c.id)).slice(0,n+1);
+  // ids[i] = topId von Stein i = bottomId von Stein i-1
+
+  /* Modus-Folge: b[k+1] = Modus der UNTEREN Seite von Stein k
+     (b[0] = "virtueller" Modus links vom Startstein).
+     Die obere Seite von Stein k hat immer den GEGENTEIL von b[k]
+     → an jeder Berührungsstelle trifft Formel auf Ox, nie gleich auf gleich.
+     Stein k:  b[k] == b[k+1]  → gemischter Stein (F|O bzw. gedreht O|F)
+               b[k] != b[k+1]  → F|F oder O|O  (selten, da Wechsel unwahrscheinlich) */
+  const opp=m=>m==="formula"?"ox":"formula";
+  const SWITCH_P=0.2;                     // Wahrscheinlichkeit für F|F bzw. O|O
+  const mid=n-2;
+  let best=null;
+
+  for(let attempt=0;attempt<300;attempt++){
+    const b=[Math.random()<0.5?"formula":"ox"];
+    for(let k=0;k<n;k++){
+      b.push(Math.random()<SWITCH_P?opp(b[k]):b[k]);
+    }
+    const stones=[];
+    for(let k=0;k<n;k++){
+      const t=opp(b[k]), bo=b[k+1];
+      let st;
+      if(t==="formula" && bo==="ox")
+        st={type:"FO",topId:ids[k],  bottomId:ids[k+1],flipped:false};
+      else if(t==="formula" && bo==="formula")
+        st={type:"FF",topId:ids[k],  bottomId:ids[k+1],flipped:false};
+      else if(t==="ox" && bo==="ox")
+        st={type:"OO",topId:ids[k],  bottomId:ids[k+1],flipped:false};
+      else // oben Ox, unten Formel = gedrehter F|O-Stein
+        st={type:"FO",topId:ids[k+1],bottomId:ids[k],  flipped:true};
+      stones.push(st);
+    }
+    best=stones;
+
+    // Qualitätskriterien nur für die verschiebbaren Steine
+    const m=stones.slice(1,n-1);
+    const cFF=m.filter(x=>x.type==="FF").length;
+    const cOO=m.filter(x=>x.type==="OO").length;
+    const cFO=m.filter(x=>x.type==="FO"&&!x.flipped).length;
+    const cOF=m.filter(x=>x.type==="FO"&&x.flipped).length;
+    const rare=cFF+cOO;
+    if(rare>Math.ceil(mid/3)) continue;            // F|F und O|O bleiben selten
+    if(mid>=4){
+      if(cFF<1||cOO<1) continue;                   // beide Sondertypen kommen vor
+      if(cFO<1||cOF<1) continue;                   // beide Ausrichtungen von F|O
+    } else if(mid>=2 && rare<1) continue;
+    return stones;
+  }
+  return best;
+}
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function cloneStone(s){
+  return{type:s.type, topId:s.topId, bottomId:s.bottomId, flipped:s.flipped};
+}
+
+/* ══════════════════════════════════════════════════
+   5. SPIELZUSTAND
+══════════════════════════════════════════════════ */
+let correctChain=[];
+let chainSlots  =[];
+let stockStones =[];
+let totalCount  =8;
+
+/* ══════════════════════════════════════════════════
+   6. SPIEL STARTEN / NEU MISCHEN
+══════════════════════════════════════════════════ */
+function newGame(){
+  totalCount=parseInt(document.getElementById("stoneCount").value,10);
+  document.getElementById("stoneCountDisplay").textContent=totalCount;
+  correctChain=buildChain(totalCount);
+  const mid=totalCount-2;
+  chainSlots=new Array(mid).fill(null);
+  stockStones=shuffle(correctChain.slice(1,totalCount-1).map(cloneStone));
+  scrambleOrientation(stockStones);
+  hideFeedback();
+  render();
+}
+
+/* Dreht einen Teil der Steine gegenüber der Lösungsausrichtung,
+   damit man sie für die richtige Lösung drehen muss.
+   Mindestens ein Stein wird gedreht, bei ≥3 Steinen bleibt mindestens einer unverändert. */
+function scrambleOrientation(stones){
+  const n=stones.length;
+  if(n===0) return;
+  const turn=stones.map(()=>Math.random()<0.45);
+  if(!turn.some(Boolean)) turn[Math.floor(Math.random()*n)]=true;
+  if(n>=3 && turn.every(Boolean)) turn[Math.floor(Math.random()*n)]=false;
+  stones.forEach((st,i)=>{ if(turn[i]) st.flipped=!st.flipped; });
+}
+
+function reshuffleGame(){
+  const mid=totalCount-2;
+  const all=[];
+  for(let i=0;i<mid;i++){if(chainSlots[i]) all.push(chainSlots[i]);}
+  for(const s of stockStones) all.push(s);
+  stockStones=shuffle(all);
+  chainSlots=new Array(mid).fill(null);
+  hideFeedback();
+  render();
+}
+
+/* ══════════════════════════════════════════════════
+   7. DOM – Hälfte bauen
+══════════════════════════════════════════════════ */
+function makeHalf(id, mode){
+  const half=document.createElement("div");
+  half.className="domino-half "+(mode==="formula"?"half-formula":"half-ox");
+
+  if(mode==="formula"){
+    const t=document.createElement("div");
+    t.className="form-text";
+    t.innerHTML=CMAP[id].formula;
+    half.appendChild(t);
+  } else {
+    for(const {ox} of CMAP[id].oxData){
+      const d=document.createElement("div");
+      d.className="ox-val";
+      d.textContent=toRoman(ox);
+      half.appendChild(d);
+    }
+  }
+  return half;
+}
+
+/* ══════════════════════════════════════════════════
+   8. DOM – Dominostein bauen
+══════════════════════════════════════════════════ */
+function makeDominoEl(stone, variant, draggable, from, idx, onRotate){
+  const wrap=document.createElement("div");
+  wrap.className="domino"+(variant?" "+variant:"");
+
+  if(draggable){
+    wrap.setAttribute("draggable","true");
+    wrap.dataset.from=from;
+    wrap.dataset.index=String(idx);
+    wrap.addEventListener("dragstart",function(e){
+      e.dataTransfer.setData("text/plain",from+":"+idx);
+      e.dataTransfer.effectAllowed="move";
+
+      // Eigenes Drag-Bild: opaker Hintergrund, kein Schatten/Transform
+      // → keine schwarzen Ränder/Ecken um den gezogenen Stein
+      const PAD=12;
+      const rect=wrap.getBoundingClientRect();
+      const ghost=document.createElement("div");
+      ghost.style.cssText="position:fixed;left:-2000px;top:-2000px;"+
+        "padding:"+PAD+"px;background:#fff;pointer-events:none;";
+      const clone=wrap.cloneNode(true);
+      clone.classList.remove("dragging","correct","wrong");
+      const rb=clone.querySelector(".rotate-btn"); if(rb) rb.remove();
+      clone.style.setProperty("box-shadow","none","important");
+      clone.style.setProperty("transform","none","important");
+      clone.style.setProperty("transition","none","important");
+      clone.style.opacity="1";
+      ghost.appendChild(clone);
+      document.body.appendChild(ghost);
+      e.dataTransfer.setDragImage(ghost,
+        e.clientX-rect.left+PAD, e.clientY-rect.top+PAD);
+      setTimeout(()=>ghost.remove(),0);
+      setTimeout(()=>wrap.classList.add("dragging"),0);
+    });
+    wrap.addEventListener("dragend",function(){
+      wrap.classList.remove("dragging");
+      document.querySelectorAll(".drag-over")
+              .forEach(el=>el.classList.remove("drag-over"));
+    });
+  }
+
+  // Typ-Badge
+  const badge=document.createElement("div");
+  const badgeClass={"FO":"badge-fo","FF":"badge-ff","OO":"badge-oo"}[stone.type];
+  const badgeLabel={"FO":"F|O","FF":"F|F","OO":"O|O"}[stone.type];
+  badge.className="type-badge "+badgeClass;
+  badge.textContent=badgeLabel;
+  wrap.appendChild(badge);
+
+  // Innerer Container (für overflow:hidden)
+  const inner=document.createElement("div");
+  inner.className="domino-inner";
+
+  // Effektive Seiten
+  const top=effectiveTop(stone);
+  const bot=effectiveBottom(stone);
+
+  inner.appendChild(makeHalf(top.id, top.mode));
+
+  const div=document.createElement("div");
+  div.className="domino-divider";
+  inner.appendChild(div);
+
+  inner.appendChild(makeHalf(bot.id, bot.mode));
+  wrap.appendChild(inner);
+
+  // Dreh-Button (nicht für Start/Endstein)
+  if(onRotate){
+    const btn=document.createElement("button");
+    btn.className="rotate-btn";
+    btn.title="Stein drehen (oben ↔ unten)";
+    btn.textContent="⟳";
+    btn.addEventListener("click",function(e){
+      e.stopPropagation();
+      e.preventDefault();
+      onRotate();
+    });
+    wrap.appendChild(btn);
+  }
+
+  return wrap;
+}
+
+/* ══════════════════════════════════════════════════
+   9. RENDER
+══════════════════════════════════════════════════ */
+function render(){renderChain();renderStock();}
+
+function renderChain(){
+  const chainEl=document.getElementById("chain");
+  chainEl.innerHTML="";
+  const mid=totalCount-2;
+
+  // Startstein – kein Dreh-Button, kein Drag
+  chainEl.appendChild(
+    makeDominoEl(correctChain[0],"stone-start",false,"",0,null)
+  );
+
+  for(let i=0;i<mid;i++){
+    const arr=document.createElement("div");
+    arr.className="connector"; arr.textContent="→";
+    chainEl.appendChild(arr);
+
+    const slot=document.createElement("div");
+    slot.className="drop-slot";
+    slot.dataset.slotIdx=String(i);
+
+    if(chainSlots[i]){
+      const stone=chainSlots[i];
+      slot.appendChild(makeDominoEl(
+        stone,"",true,"slot",i,
+        function(){
+          stone.flipped=!stone.flipped;
+          hideFeedback();
+          render();
+        }
+      ));
+    } else {
+      const h=document.createElement("div");
+      h.className="slot-hint"; h.innerHTML="Stein<br>ablegen";
+      slot.appendChild(h);
+    }
+    chainEl.appendChild(slot);
+  }
+
+  const arrE=document.createElement("div");
+  arrE.className="connector"; arrE.textContent="→";
+  chainEl.appendChild(arrE);
+
+  // Endstein
+  chainEl.appendChild(
+    makeDominoEl(correctChain[totalCount-1],"stone-end",false,"",0,null)
+  );
+}
+
+function renderStock(){
+  const sw=document.getElementById("stock-wrap");
+  sw.innerHTML="";
+  if(stockStones.length===0){
+    const h=document.createElement("div");
+    h.className="stock-empty";
+    h.textContent="Alle Steine wurden platziert.";
+    sw.appendChild(h);
+    return;
+  }
+  stockStones.forEach((s,i)=>{
+    sw.appendChild(makeDominoEl(
+      s,"",true,"stock",i,
+      function(){
+        s.flipped=!s.flipped;
+        hideFeedback();
+        render();
+      }
+    ));
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   10. DRAG & DROP
+══════════════════════════════════════════════════ */
+function parseDragData(e){
+  const raw=e.dataTransfer.getData("text/plain");
+  if(!raw||!raw.includes(":")) return null;
+  const p=raw.split(":");
+  return{from:p[0], index:parseInt(p[1],10)};
+}
+
+const chainWrapper=document.getElementById("chain-wrapper");
+
+chainWrapper.addEventListener("dragover",function(e){
+  const slot=e.target.closest(".drop-slot");
+  if(!slot) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect="move";
+  document.querySelectorAll(".drop-slot.drag-over")
+          .forEach(s=>{if(s!==slot)s.classList.remove("drag-over");});
+  slot.classList.add("drag-over");
+},{passive:false});
+
+chainWrapper.addEventListener("dragleave",function(e){
+  const slot=e.target.closest(".drop-slot");
+  if(!slot) return;
+  if(!slot.contains(e.relatedTarget))
+    slot.classList.remove("drag-over");
+});
+
+chainWrapper.addEventListener("drop",function(e){
+  const slot=e.target.closest(".drop-slot");
+  if(!slot) return;
+  e.preventDefault();
+  slot.classList.remove("drag-over");
+
+  const src=parseDragData(e);
+  if(!src) return;
+
+  const ti=parseInt(slot.dataset.slotIdx,10);
+  const stoneInTarget=chainSlots[ti];
+
+  if(src.from==="stock"){
+    const dragged=stockStones[src.index];
+    if(!dragged) return;
+    stockStones.splice(src.index,1);
+    if(stoneInTarget!==null) stockStones.push(stoneInTarget);
+    chainSlots[ti]=dragged;
+  } else if(src.from==="slot"){
+    if(src.index===ti) return;
+    const stoneInSrc=chainSlots[src.index];
+    chainSlots[src.index]=stoneInTarget;
+    chainSlots[ti]=stoneInSrc;
+  }
+
+  hideFeedback();
+  render();
+},{passive:false});
+
+const stockWrap=document.getElementById("stock-wrap");
+
+stockWrap.addEventListener("dragover",function(e){
+  const draggingEl=document.querySelector(".domino.dragging");
+  if(!draggingEl||draggingEl.dataset.from!=="slot") return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect="move";
+  stockWrap.classList.add("drag-over");
+},{passive:false});
+
+stockWrap.addEventListener("dragleave",function(e){
+  if(!stockWrap.contains(e.relatedTarget))
+    stockWrap.classList.remove("drag-over");
+});
+
+stockWrap.addEventListener("drop",function(e){
+  stockWrap.classList.remove("drag-over");
+  const src=parseDragData(e);
+  if(!src||src.from!=="slot") return;
+  e.preventDefault();
+  const stone=chainSlots[src.index];
+  if(stone!==null){
+    stockStones.push(stone);
+    chainSlots[src.index]=null;
+  }
+  hideFeedback();
+  render();
+},{passive:false});
+
+/* ══════════════════════════════════════════════════
+   11. LÖSUNG PRÜFEN
+══════════════════════════════════════════════════ */
+function checkSolution(){
+  const mid=totalCount-2;
+  for(let i=0;i<mid;i++){
+    if(!chainSlots[i]){
+      showFeedback("⚠️ Noch nicht alle Felder belegt!","error");
+      return;
+    }
+  }
+
+  const full=[correctChain[0],...chainSlots,correctChain[totalCount-1]];
+
+  document.querySelectorAll(".domino.correct,.domino.wrong")
+          .forEach(el=>el.classList.remove("correct","wrong"));
+
+  const doms=document.querySelectorAll("#chain .drop-slot .domino");
+  let allOk=true;
+
+  for(let i=0;i<=mid;i++){
+    const ok=stonesMatch(full[i],full[i+1]);
+    if(!ok) allOk=false;
+    if(i<mid && doms[i]) doms[i].classList.add(ok?"correct":"wrong");
+    if(i===mid && !ok && mid>0 && doms[mid-1])
+      doms[mid-1].classList.add("wrong");
+  }
+
+  showFeedback(
+    allOk
+      ?"🎉 Sehr gut! Alle Dominosteine sind richtig angeordnet!"
+      :"❌ Noch nicht ganz richtig. Rot markierte Steine passen nicht.",
+    allOk?"success":"error"
+  );
+}
+
+/* ══════════════════════════════════════════════════
+   12. LÖSUNG ANZEIGEN
+══════════════════════════════════════════════════ */
+function showSolution(){
+  const mid=totalCount-2;
+  for(let i=0;i<mid;i++){
+    chainSlots[i]=cloneStone(correctChain[i+1]); // Drehung der Lösung übernehmen
+  }
+  stockStones=[];
+  hideFeedback();
+  render();
+  showFeedback("💡 Die korrekte Lösung wird angezeigt.","info");
+}
+
+/* ══════════════════════════════════════════════════
+   13. FEEDBACK
+══════════════════════════════════════════════════ */
+function showFeedback(msg,type){
+  const fb=document.getElementById("feedback");
+  fb.textContent=msg; fb.className="show "+type;
+}
+function hideFeedback(){
+  const fb=document.getElementById("feedback");
+  fb.className=""; fb.textContent="";
+}
+
+/* ══════════════════════════════════════════════════
+   14. STEUERUNG
+══════════════════════════════════════════════════ */
+document.getElementById("stoneCount").addEventListener("input",function(){
+  document.getElementById("stoneCountDisplay").textContent=this.value;
+});
+
+newGame();
+</script>
+</body>
+</html>

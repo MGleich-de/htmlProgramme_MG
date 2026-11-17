@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Einteilung der Stoffgemische</title>
+<style>
+:root{--bg:#f1f7fd;--fg:#10263b;--card:#fff;--mut:#5b7083;--ac:#2b7bb9;--bd:#d5e3f0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1b2a;--fg:#e6f0fa;--card:#14283d;--mut:#9fb6cb;--bd:#27415c}}
+:root[data-theme="dark"]{--bg:#0d1b2a;--fg:#e6f0fa;--card:#14283d;--mut:#9fb6cb;--bd:#27415c}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:relative;overflow:hidden;padding:28px 18px 22px;text-align:center;color:#fff;background:linear-gradient(120deg,#1e5f9e,#2b7bb9,#6d3fc4,#1e5f9e);background-size:300% 300%;animation:bg 14s ease infinite}
+@keyframes bg{50%{background-position:100% 50%}}
+header h1{margin:0;font-size:clamp(24px,5vw,38px);position:relative}header p{margin:4px 0 0;opacity:.9;position:relative}
+.au{font-weight:600;letter-spacing:.05em}
+.fl{position:absolute;opacity:.25;animation:up linear infinite}
+@keyframes up{from{transform:translateY(120px) rotate(0)}to{transform:translateY(-140px) rotate(360deg)}}
+nav{display:flex;gap:8px;justify-content:center;padding:14px 12px 4px}
+nav button,.chip,.btn{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:999px;padding:8px 16px;cursor:pointer;transition:.2s}
+nav button.on,.chip.on,.btn.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
+nav button:hover,.chip:hover,.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px #0003}
+main{max-width:1080px;margin:0 auto;padding:10px 12px 40px}
+section{display:none;animation:in .5s}section.on{display:block}@keyframes in{from{opacity:0;transform:translateY(12px)}}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 2px 12px}.chip{flex:none;border-radius:14px;text-align:left;font-size:14px;line-height:1.25}.chip small{display:block;opacity:.75;font-size:11px}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px}@media(max-width:780px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:12px;box-shadow:0 6px 20px #0001}
+canvas{width:100%;display:block;border-radius:14px}
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}.ctl input{flex:1;min-width:120px;accent-color:var(--ac)}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600;color:#fff}.het{background:#d9534f}.hom{background:#2e9e6b}
+h2{margin:6px 0;font-size:20px}h3{margin:10px 0 2px;font-size:14px;color:var(--ac);text-transform:uppercase;letter-spacing:.06em}p{margin:2px 0}
+.lg span{display:inline-block;margin:2px 10px 2px 0;font-size:13px}.lg b{font-size:18px;vertical-align:-2px;margin-right:3px}
+.stage{font-weight:600;color:var(--ac);min-height:24px}
+.ov{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.ov .card{cursor:pointer;transition:.25s}.ov .card:hover{transform:translateY(-5px) scale(1.02)}.ov .card.h{display:none}
+.note{background:var(--card);border-left:5px solid var(--ac);border-radius:10px;padding:10px 14px;margin:8px 0 14px}
+header{display:flex;justify-content:center;align-items:baseline;gap:14px;padding:8px 12px}header h1{font-size:clamp(18px,3vw,24px)}header p:not(.au){display:none}header .au{margin:0}
+nav{padding:6px 12px 0}nav button{padding:4px 14px;font-size:14px}
+.chips{padding:5px 2px 7px;gap:6px}.chip{padding:3px 10px;font-size:13px;border-radius:12px}.chip small{font-size:10px}
+.note{padding:5px 10px;margin:4px 0 6px;font-size:12px;line-height:1.35}
+@media(min-width:781px){
+body{height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;overflow:hidden}
+main{flex:1;min-height:0;display:flex;flex-direction:column;padding:4px 12px 8px;width:100%}
+section.on{display:flex;flex-direction:column;flex:1;min-height:0}
+#a .grid{flex:1;min-height:0;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:10px}
+#a .grid>.card{display:flex;flex-direction:column;min-height:0;padding:8px}
+#cv{flex:1 1 0;min-height:0;width:100%;object-fit:contain}
+.ctl{margin-top:6px}.stage{min-height:0;margin:2px 0;font-size:13px}.lg span{font-size:12px;margin:0 8px 0 0}
+#a .grid>div:last-child{display:flex;flex-direction:column;gap:8px;min-height:0}
+#a .grid>div:last-child>.card{padding:8px}
+#mc{height:34dvh;object-fit:contain}
+#info{flex:1;overflow:auto;margin-top:0!important;font-size:13px;line-height:1.4}#info h2{font-size:17px;margin:0 0 2px}#info h3{font-size:12px;margin:6px 0 1px}
+.ov{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;flex:1;min-height:0;overflow:auto;align-content:start}
+.ov .card{padding:6px}.ov h2{font-size:13px;margin:4px 0}.ov p{font-size:11px;line-height:1.25}.ov .badge{font-size:11px}}
+#tinfo ol{margin:2px 0 0 18px;padding:0}#tinfo li{margin:2px 0;color:var(--mut)}#tinfo li.on{color:var(--ac);font-weight:600}
+@media(min-width:781px){#c .grid{flex:1;min-height:0;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:10px}#c .grid>.card{display:flex;flex-direction:column;min-height:0;padding:8px}#tc{flex:1 1 0;min-height:0;width:100%;object-fit:contain}#tinfo{display:block!important;overflow:auto;font-size:13px;line-height:1.4}#tinfo h2{font-size:17px;margin:0 0 2px}#tinfo h3{font-size:12px;margin:6px 0 1px}}
+nav{flex-wrap:wrap}nav .pdf{background:#7c3aed;color:#fff;border-color:#7c3aed}
+.rsh{font-size:14px;margin:6px 2px 8px;color:var(--mut)}.rs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}@media(max-width:780px){.rs3{grid-template-columns:1fr}}
+.rsc canvas{width:100%}.slot{margin:6px 0;border:2px dashed var(--bd);border-radius:12px;padding:4px 8px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.2;color:var(--mut);height:46px;flex:0 0 auto;transition:.2s;font-size:14px}.slot.over{border-color:var(--ac);background:#2b7bb91a}.slot.ok{border:2px solid #2e9e6b;color:#2e9e6b;font-weight:700}.slot.bad{animation:shk .4s;border-color:#d9534f}
+@keyframes shk{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.exp{font-size:13px;line-height:1.4;min-height:60px;margin:2px 0}.terms{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 2px}
+.term{padding:8px 16px;border-radius:12px;background:linear-gradient(#e3f2fd,#bfe3fa);color:#10263b;cursor:grab;border:1px solid #9bc9e8;font-weight:600;user-select:none;transform:rotate(var(--r,0deg));transition:.2s}.term.sel{outline:3px solid var(--ac)}.term.used{display:none}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:50;padding:12px}.modal.on{display:flex}.mbox,.vbox{background:var(--card);color:var(--fg);border-radius:16px;padding:16px;max-width:560px;width:100%}.mopts{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.vbox{max-width:780px;max-height:94vh;display:flex;flex-direction:column}.vbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;flex-wrap:wrap}#pvc{overflow:auto;flex:1;background:#8886;padding:8px;border-radius:10px}#pvc canvas{width:100%;display:block;margin:0 auto 10px;box-shadow:0 2px 10px #0006;background:#fff}
+.ovt .card{cursor:pointer}.ovt canvas{width:100%}
+@media(min-width:781px){#d.on{display:flex;flex-direction:column;overflow:auto}.rs3{flex:1 0 auto;align-items:start}.rsc{display:flex;flex-direction:column;padding:8px;height:100%}.rsc canvas{flex:0 0 auto;width:100%;height:auto;aspect-ratio:520/460;max-height:34vh;object-fit:contain}.exp{flex:1;min-height:120px}.terms{flex-wrap:nowrap}.term{flex:1 1 0;text-align:center;max-width:300px}.ovt{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))!important}}
+.lv{border-left:5px solid;border-radius:8px;padding:2px 10px 6px;margin:8px 0}.lv h3{margin:4px 0 2px}.lv p{margin:2px 0}.lvS{border-color:#d97706;background:rgba(217,119,6,.12)}.lvS h3,.lvS b{color:#d97706}.lvT{border-color:#2563eb;background:rgba(37,99,235,.12)}.lvT h3,.lvT b{color:#4f8bf5}
+.exp .lv{font-size:12.5px;line-height:1.4;margin:5px 0;padding:4px 8px}
+</style></head><body>
+<header><span class="fl" style="left:8%;font-size:34px;animation-duration:9s">▲</span><span class="fl" style="left:28%;font-size:26px;animation-duration:12s">⬬</span><span class="fl" style="left:52%;font-size:40px;animation-duration:10s">■</span><span class="fl" style="left:72%;font-size:30px;animation-duration:13s">●</span><span class="fl" style="left:90%;font-size:34px;animation-duration:8s">▲</span>
+<h1>Einteilung der Stoffgemische</h1><p class="au">Matthias Gleich</p><p>Entstehung auf Stoff- und Teilchenebene · Übersicht der Gemischtypen</p></header>
+<nav><button class="on" data-t="d">🧫 Reinstoff &amp; Gemisch</button><button data-t="a">🔬 Gemischtypen</button><button data-t="b">📋 Übersicht Gemischtypen</button><button data-t="c">⚗️ Trennmethoden</button><button data-t="e">📋 Übersicht Trennmethoden</button><button id="pdfb" class="pdf">⬇ PDF (A4)</button></nav>
+<main>
+<section id="d" class="on"><div class="rsh"><b>Ordne den Abbildungen die Fachbegriffe zu.</b> Ziehe einen Begriff auf das passende Feld oder tippe zuerst den Begriff und dann das Feld an.</div>
+<div class="rs3"><div class="card rsc"><canvas width="520" height="460"></canvas><div class="slot" data-i="0">Fachbegriff hierher ziehen oder antippen</div><p class="exp"></p></div>
+<div class="card rsc"><canvas width="520" height="460"></canvas><div class="slot" data-i="1">Fachbegriff hierher ziehen oder antippen</div><p class="exp"></p></div>
+<div class="card rsc"><canvas width="520" height="460"></canvas><div class="slot" data-i="2">Fachbegriff hierher ziehen oder antippen</div><p class="exp"></p></div></div>
+<div class="terms" id="terms"></div><p class="stage" id="rsm" style="text-align:center"></p>
+<div class="ctl" style="justify-content:center"><button class="btn" id="rsn">↺ Neu mischen</button><button class="btn" id="rsl">💡 Lösung zeigen</button></div></section>
+<section id="a"><div class="chips" id="chips"></div>
+<div class="grid"><div class="card"><canvas id="cv" width="1040" height="800"></canvas>
+<div class="ctl"><button class="btn pri" id="go">▶ Mischen</button><button class="btn" id="rs">↺ Neu</button><input type="range" id="sl" min="0" max="100" value="0" aria-label="Fortschritt"></div>
+<p class="stage" id="stg"></p><div class="lg" id="lg"></div></div>
+<div><div class="card"><canvas id="mc" width="600" height="460"></canvas><p style="text-align:center;color:var(--mut);font-size:13px">Stoffebene (Becherglas)</p></div>
+<div class="card" style="margin-top:14px" id="info"></div></div></div></section>
+<section id="b"><div class="note"><b>Heterogen:</b> Die Bestandteile sind mit bloßem Auge, Lupe oder Mikroskop zu unterscheiden. <b>Homogen:</b> Das Gemisch sieht einheitlich aus – die Bestandteile sind nicht zu unterscheiden. Tippe auf eine Karte, um die Entstehung zu sehen.</div>
+<div class="chips" id="fl"></div><div class="ov" id="ov"></div></section>
+<section id="c"><div class="chips" id="tchips"></div>
+<div class="grid"><div class="card"><canvas id="tc" width="1040" height="800"></canvas><div class="ctl"><button class="btn pri" id="tgo">▶ Start</button><button class="btn" id="trs">↺ Neu</button><input type="range" id="tsl" min="0" max="100" value="0" aria-label="Fortschritt"></div><p class="stage" id="tstg"></p></div>
+<div class="card" id="tinfo"></div></div></section>
+<section id="e"><div class="ov ovt" id="ovt"></div></section>
+</main>
+<div class="modal" id="pm"><div class="mbox"><h2>PDF erstellen (DIN A4)</h2><p>Welche Übersicht soll als PDF geöffnet werden?</p><div class="mopts"><button class="btn pri" data-o="g">Übersicht Gemischtypen</button><button class="btn pri" data-o="t">Übersicht Trennmethoden</button><button class="btn pri" data-o="b">Beide Übersichten</button></div><button class="btn" id="pmx">Abbrechen</button></div></div>
+<div class="modal" id="pv"><div class="vbox"><div class="vbar"><b id="pvt"></b><span><button class="btn pri" id="pvs">💾 Als PDF speichern</button> <button class="btn" id="pvx">Schließen</button></span></div><div id="pvc"></div></div></div>
+
+<script>
+const W=520,H=400,TOP=104,ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,rnd=(a,b)=>a+Math.random()*(b-a),shf=a=>a.sort(()=>Math.random()-.5),hs=i=>{const x=Math.sin(i*91.7+7.3)*43758.5453;return x-Math.floor(x)};
+const Wt={sh:'tri',c:'#7cc6f2',s:'#2b7bb9',r:10,st:'l'},Gb={sh:'ell',c:'#3b82f6',s:'#1e3a8a',r:5.5,st:'g'},Gr={sh:'ell',c:'#ef4444',s:'#7f1d1d',r:5.5,st:'g'};
+const LW=['▲','#7cc6f2','Wasser-Teilchen'],LG=['⬬','#3b82f6','Gasteilchen'];
+const SP=[
+{k:'s3',nm:'Gemenge',mix:'fest – fest',het:1,ex:'Eisen-Schwefel-Gemenge, Granit',em:'🪨',sp:[{sh:'sq',c:'#9ca3af',s:'#4b5563',r:8,st:'s',v:['#9ca3af','#8d939e','#abb1bb']},{sh:'rho',c:'#fde047',s:'#a16207',r:9,st:'s',v:['#fde047','#f6d02a','#fee972']}],lg:[['■','#9ca3af','Eisen-Teilchen'],['◆','#fde047','Schwefel-Teilchen']],
+S:'Eisenpulver und Schwefelpulver werden vermengt. Mit der Lupe sieht man graue Eisen- und gelbe Schwefelkörner; mit einem Magneten lässt sich das Eisen wieder abtrennen. Auch Granit ist ein Gemenge aus Feldspat, Quarz und Glimmer.',T:'Eisen- und Schwefel-Teilchen bleiben jeweils in ihrem eigenen, eng geordneten Gitter. Es liegen Bereiche aus je einer Teilchensorte nebeneinander – die Teilchen der beiden Stoffe verbinden sich nicht.'},
+{k:'m',nm:'Suspension',mix:'flüssig – fest',het:1,ex:'Orangensaft, Schlamm',em:'🧃',mat:{...Wt,r:7.5,sp:18},dis:{sh:'rho',c:'#fb923c',s:'#b45309',r:7,st:'s',k:7,m:6,lay:'lat',sx:10.3,sy:7.2,off:1,ord:1,cr:1},lg:[LW,['◆','#fb923c','Feststoff-Teilchen']],
+S:'Ein unlöslicher Feststoff wird in einer Flüssigkeit aufgeschwemmt. Das Gemisch ist trüb, die Feststoffteilchen setzen sich mit der Zeit ab.',T:'Der Feststoff liegt zunächst als eng geordnetes Gitter vor. Beim Aufschwemmen entstehen kleine Cluster aus geordneten Feststoff-Teilchen, die zwischen den vielen beweglichen Wasser-Teilchen schweben. Sie lösen sich nicht auf.',
+mc:{bg:'#fcd34d',top:'#fb923c',dots:{n:50,r:3,c:['#ea580c','#f97316']}}},
+{k:'m',nm:'Rauch',mix:'gasförmig – fest',het:1,ex:'Rauch, Staub',em:'💨',mat:Gb,dis:{sh:'rho',c:'#9ca3af',s:'#4b5563',r:9,st:'s',k:3,m:9,lay:'lat',sx:13.2,sy:9.2,off:1,ord:1,from:'bot',dr:1},lg:[LG,['◆','#9ca3af','Feststoff-Teilchen']],
+S:'Feste Staubteilchen sind in einem Gas verteilt. Man sieht die Rauchwolke – das Gemisch ist heterogen.',T:'Kleine Cluster aus geordneten Feststoff-Teilchen (Rauten) werden von den schnellen Gasteilchen ständig angestoßen und taumeln durch den Raum.',
+mc:{top:'#4b5563',bot:1,dots:{n:90,r:2.4,c:['#6b7280','#9ca3af']},tint:['#6b7280',.35]}},
+{k:'m',nm:'Emulsion',mix:'flüssig – flüssig',het:1,ex:'Milch, Mayonnaise',em:'🥛',mat:Wt,dis:{sh:'rect',c:'#facc15',s:'#a16207',r:5.5,st:'l',k:4,m:12,lay:'disc',rd:32,sx:18},lg:[LW,['▬','#facc15','Fett-Teilchen']],
+S:'Zwei nicht mischbare Flüssigkeiten (Wasser und Fett/Öl) werden kräftig geschüttelt. Es entstehen feine Tröpfchen – das Gemisch ist milchig trüb.',T:'Fett-Teilchen (gelbe Rechtecke) lagern sich zu kleinen Tröpfchen zusammen, die zwischen den Wasser-Teilchen verteilt sind. Ohne Emulgator trennen sie sich wieder.',
+mc:{bg:'#bae6fd',top:'#fde047',dots:{n:80,r:2.6,c:['#fff7cc']},tint:['#fffbe8',.7]}},
+{k:'m',nm:'Schaum',mix:'flüssig – gasförmig',het:1,ex:'Schlagsahne, Seifenschaum',em:'🫧',mat:{...Wt,r:6.8,sp:14},dis:{...Gb,k:12,m:5,lay:'foam'},lg:[LW,LG],
+S:'Ein Gas wird in eine Flüssigkeit eingeschlagen oder eingeblasen. Es entstehen viele Gasblasen, getrennt durch dünne Flüssigkeitshäutchen.',T:'Die Wasser-Teilchen bilden nur dünne Schichten (Lamellen) zwischen den Blasen. Die Blasen selbst sind große Bereiche, in denen die Gasteilchen frei umherfliegen.',
+mc:{bg:'#bae6fd',dots:{n:46,r:6,c:['rgba(255,255,255,.7)'],ring:1}}},
+{k:'m',nm:'Nebel',mix:'gasförmig – flüssig',het:1,ex:'Nebel, Wolken',em:'🌫️',mat:Gb,dis:{...Wt,k:3,m:7,lay:'ring',from:'bot',dr:1},lg:[LG,LW],
+S:'Winzige Flüssigkeitströpfchen schweben in einem Gas, zum Beispiel Wasser in Luft. Man sieht eine Trübung.',T:'Wasser-Teilchen schließen sich zu kleinen Tröpfchen zusammen. Die schnellen Gasteilchen stoßen sie umher – sie schweben.',
+mc:{top:'#7dd3fc',bot:1,dots:{n:100,r:2.3,c:['#e0f2fe']},tint:['#e2e8f0',.55]}},
+{k:'m',nm:'Lösung',mix:'flüssig – fest',het:0,ex:'Zuckerwasser, Salzwasser',em:'🧂',mat:Wt,dis:{sh:'sq',c:'#e5e7eb',s:'#6b7280',r:7,st:'s',k:26,m:1,lay:'one',cr:1,ord:1,sx:10.5,sy:10.5},lg:[LW,['■','#d1d5db','Feststoff-Teilchen']],
+S:'Ein Feststoff (z. B. Zucker) löst sich vollständig in Wasser. Die Lösung ist klar, die Bestandteile sind nicht mehr zu unterscheiden.',T:'Das Kristallgitter zerfällt. Einzelne Feststoff-Teilchen werden von Wasser-Teilchen umgeben und gleichmäßig zwischen ihnen verteilt.',
+mc:{bg:'#bae6fd',top:'#f3f4f6',bot:1,dots:{n:0}}},
+{k:'gg',nm:'Gasgemisch',mix:'gasförmig – gasförmig',het:0,ex:'Luft',em:'🎈',lg:[['⬬','#3b82f6','Gas A'],['⬬','#ef4444','Gas B']],
+S:'Gase vermischen sich beliebig und vollständig – auch ohne Rühren. Das Gemisch (z. B. Luft) ist einheitlich.',T:'Die Teilchen beider Gase bewegen sich schnell und ungeordnet (Diffusion). Nach kurzer Zeit sind blaue und rote Teilchen gleichmäßig verteilt.',
+mc:{bands:['#bfdbfe','#fecaca'],tint:['#c4b5fd',.9],dots:{n:0}}},
+{k:'m',nm:'Lösung',mix:'flüssig – flüssig',het:0,ex:'Branntwein (Ethanol–Wasser)',em:'🥃',mat:Wt,dis:{sh:'pen',c:'#c4b5fd',s:'#6d28d9',r:9,st:'l',k:24,m:1,lay:'one',sx:20},lg:[LW,['⬟','#c4b5fd','Ethanol-Teilchen']],
+S:'Zwei mischbare Flüssigkeiten (z. B. Ethanol und Wasser) bilden eine klare, einheitliche Lösung.',T:'Die Teilchen beider Flüssigkeiten bewegen sich gegeneinander und durchmischen sich gleichmäßig.',
+mc:{bg:'#bae6fd',top:'#ddd6fe',dots:{n:0},tint:['#cdeaf0',.9]}},
+{k:'al',nm:'Legierung',mix:'fest – fest',het:0,ex:'Messing (Kupfer + Zink), Bronze (Kupfer + Zinn)',em:'🔩',lg:[['●','#e8a070','Kupfer-Atome'],['●','#cbd5e1','Zink- bzw. Zinn-Atome']],
+S:'Metalle werden zusammengeschmolzen und erstarren zu einem einheitlichen Werkstoff, z. B. Messing (Kupfer + Zink) oder Bronze (Kupfer + Zinn).',T:'In der Schmelze mischen sich die Metallatome. Beim Erstarren sitzen die grauen Atome des zweiten Metalls (Zink bzw. Zinn) einzeln und gleichmäßig verteilt zwischen den roten Kupfer-Atomen im gemeinsamen Gitter.',
+mc:{bands:['#e8a070','#cbd5e1'],so:1,tint:['#d9a441',.95],dots:{n:0}}},
+{k:'m',nm:'Schaum',mix:'fest – gasförmig',het:1,ex:'Schwamm, Styropor',em:'🧽',mat:{sh:'hex',c:'#e6d3a3',s:'#b59a5b',r:10,st:'s',hx:1},dis:{...Gb,k:3,m:5,lay:'conf',R:36},lg:[['⬢','#e6d3a3','Feststoff-Teilchen'],LG],
+S:'Ein Gas ist in einem festen Stoff eingeschlossen (z. B. Schwamm, Styropor). Man sieht die Poren.',T:'Die Feststoff-Teilchen bilden ein Gerüst mit Hohlräumen. In den Poren fliegen Gasteilchen frei umher.',
+mc:{bg:'#ecd9a0',so:1,dots:{n:34,r:6,c:['#fffbe6'],ring:1}}},
+{k:'m',nm:'Gel',mix:'fest – flüssig',het:1,ex:'Fruchtgelee',em:'🍮',mat:Wt,dis:{sh:'rho',c:'#f9a8d4',s:'#be185d',r:8,st:'s',k:17,m:8,lay:'net',cr:1,ord:1,sx:11.7,sy:8.2,off:1},lg:[LW,['◆','#f9a8d4','Gelbildner (Feststoff-Netz)']],
+S:'Ein Gelbildner (z. B. Gelatine oder Pektin) wird in heißer Fruchtflüssigkeit gelöst. Beim Abkühlen entsteht ein Netzwerk, das die Flüssigkeit festhält: Das Gelee ist formstabil, wackelt aber und besteht überwiegend aus Wasser.',T:'Zu Beginn liegt der Gelbildner als ganz eng geordnetes Gitter vor. Beim Gelieren entfaltet sich das Gitter zu einem weitmaschigen Netz aus Ketten, und Wasser-Teilchen lagern sich in die Maschen ein. Sie können nicht abfließen.'},
+{k:'m',nm:'Lösung',mix:'flüssig – gasförmig',het:0,ex:'Sauerstoff in Wasser gelöst',em:'🐟',mat:Wt,dis:{...Gb,k:16,m:1,lay:'one',gf:1},lg:[LW,['⬬','#3b82f6','Sauerstoff-Teilchen']],
+S:'Ein Gas (z. B. Sauerstoff) löst sich in Wasser. Das Wasser bleibt klar, die Gasbläschen verschwinden. Der gelöste Sauerstoff ist unsichtbar, aber lebenswichtig für Fische.',T:'Einzelne Sauerstoff-Teilchen (blaue Ellipsen) verlassen den Gasraum und verteilen sich gleichmäßig zwischen den Wasser-Teilchen. Auf Teilchenebene ist das Gemisch einheitlich.'}];
+const ORD=[0,1,3,2,5,4,10,11,6,8,12,7,9];
+function cells(x0,y0,x1,y1,sp,j=.26){const o=[];for(let y=y0+sp/2;y<y1;y+=sp)for(let x=x0+sp/2;x<x1;x+=sp)o.push({x:x+rnd(-sp*j,sp*j),y:y+rnd(-sp*j,sp*j)});return o}
+function lat(n,cx,cy,sx,sy,off){const k=Math.ceil(Math.sqrt(n)),R=Math.ceil(n/k),o=[];for(let i=0;i<n;i++){const r=Math.floor(i/k),c=i%k;o.push({x:cx+(c-(k-1)/2)*sx+(off&&r%2?sx/2:0)-(off?sx/4:0),y:cy+(r-(R-1)/2)*sy})}return o}
+function fill(x0,y0,x1,y1,M,hex){let sp=Math.sqrt((x1-x0)*(y1-y0)/M)*1.05,o;for(;;){o=[];if(hex){for(let y=y0+sp*.43,r=0;y<y1;y+=sp*.866,r++)for(let x=x0+sp/2+(r%2?sp/2:0);x<x1;x+=sp)o.push({x,y})}else{for(let y=y0+sp/2;y<y1;y+=sp)for(let x=x0+sp/2;x<x1;x+=sp)o.push({x:x+rnd(-.2,.2)*sp,y:y+rnd(-.2,.2)*sp})}if(o.length>=M||sp<6)break;sp*=.98}return shf(o).slice(0,M)}
+const srt=a=>a.sort((p,q)=>(p.y+p.x*.02)-(q.y+q.x*.02));
+function build(s){const ps=[],gs=[];let fh=0,y0=30;
+const add=(q,sx,sy,tx,ty,o)=>{const p=Object.assign({sh:q.sh,c:q.c,s:q.s,r:q.r,st:q.st,sx,sy,tx,ty,x:sx,y:sy,rot:rnd(0,6.28),a:0,ph:rnd(0,9)},o);ps.push(p);return p};
+const fr=(q,x,y)=>{const an=rnd(0,6.28),v=rnd(40,75);return add(q,x,y,x,y,{fl:1,vx:Math.cos(an)*v,vy:Math.sin(an)*v,w:rnd(-2,2)})};
+if(s.k==='s3'){const cl=[];for(let y=38,r=0;y<372;y+=16.5,r++)for(let x=34+(r%2?9.5:0);x<486;x+=19)cl.push({x,y});
+const NB=cl.map((p,i)=>{const o=[];cl.forEach((q,j)=>{if(j!==i&&Math.hypot(p.x-q.x,p.y-q.y)<21)o.push(j)});return o}),cid=new Array(cl.length).fill(-1),csp=[],cvr=[],by=[[],[]];
+shf(cl.map((_,i)=>i)).forEach(i0=>{if(cid[i0]>=0)return;const id=csp.length,size=5+Math.floor(Math.random()*6),mem=[i0];cid[i0]=id;
+while(mem.length<size){const fr=[];mem.forEach(m=>NB[m].forEach(n=>{if(cid[n]<0&&!fr.includes(n))fr.push(n)}));if(!fr.length)break;const n=fr[Math.floor(Math.random()*fr.length)];cid[n]=id;mem.push(n)}
+const cnt=[0,0];mem.forEach(m=>NB[m].forEach(n=>{if(cid[n]>=0&&cid[n]!==id)cnt[csp[cid[n]]]++}));const sp=cnt[0]===cnt[1]?(Math.random()<.5?0:1):(cnt[0]<cnt[1]?0:1);csp[id]=sp;
+const used=new Set();mem.forEach(m=>NB[m].forEach(n=>{if(cid[n]>=0&&cid[n]!==id&&csp[cid[n]]===sp)used.add(cvr[cid[n]])}));let cv=[0,1,2].filter(v=>!used.has(v));cv=cv.length?cv[Math.floor(Math.random()*cv.length)]:Math.floor(Math.random()*3);cvr[id]=cv;
+const th=rnd(0,6.28);mem.forEach(m=>{cl[m].th=th;cl[m].cv=cv;by[sp].push(cl[m])})});
+const sx=cl.slice().sort((a,b)=>a.x-b.x||a.y-b.y);let o=0;by.forEach((tg,q)=>{const st=srt(sx.slice(o,o+tg.length));o+=tg.length;srt(tg);tg.forEach((t,i)=>add(s.sp[q],st[i].x,st[i].y,t.x,t.y,{rot:t.th,c:s.sp[q].v[t.cv]}))})}
+else if(s.k==='al'){const cl=[];for(let y=44,r=0;y<376;y+=22.5,r++)for(let x=46+(r%2?13:0);x<480;x+=26)cl.push({x,y});
+const nZ=Math.round(cl.length*.2),zT=[];shf(cl.slice()).forEach(q=>{if(zT.length<nZ&&!zT.some(z=>Math.hypot(z.x-q.x,z.y-q.y)<30))zT.push(q)});const zset=new Set(zT),cT=cl.filter(q=>!zset.has(q)),sr=cl.slice().sort((a,b)=>a.x-b.x||a.y-b.y),cS=sr.slice(0,cT.length),zS=sr.slice(cT.length);
+const Cu={sh:'cir',c:'#e8a070',s:'#a0522d',r:12.5,st:'s'},Zn={sh:'cir',c:'#cbd5e1',s:'#64748b',r:12.5,st:'s'};
+cT.forEach((t,i)=>add(Cu,cS[i].x,cS[i].y,t.x,t.y,{rot:0}));zT.forEach((t,i)=>add(Zn,zS[i].x,zS[i].y,t.x,t.y,{rot:0}))}
+else if(s.k==='gg'){for(let i=0;i<22;i++){fr(Gb,rnd(40,245),rnd(40,360)).sd=-1;fr(Gr,rnd(275,480),rnd(40,360)).sd=1}}
+else{const gasM=s.mat.st==='g',d=s.dis,hx=s.mat.hx,spots=gasM?[[130,150],[270,250],[390,140]]:[[120,190],[255,290],[385,185],[410,320],[125,320],[250,110],[390,95]];
+let n=d.k*d.m,A=[];if(!gasM){if(hx){for(let y=38,r=0;y<378;y+=16,r++)for(let x=34+(r%2?9.2:0);x<490;x+=18.4)A.push({x,y})}else A=cells(30,28,490,376,s.mat.sp||24)}
+let cen,NE=null,FS=null,FR=null;if(d.lay==='net'){const nd=[];for(let r=0;r<5;r++)for(let c=0;c<5;c++)nd.push({x:c*130-10+rnd(-22,22),y:r*115-15+rnd(-22,22)});const ed=[];for(let r=0;r<5;r++)for(let c=0;c<5;c++){const i=r*5+c;if(c<4)ed.push([i,i+1,1]);if(r<4)ed.push([i,i+5,0])}
+NE=ed.map(([a,b,h])=>{const P=nd[a],Q=nd[b],m=Math.max(2,Math.round(Math.hypot(Q.x-P.x,Q.y-P.y)/15)),mx=(P.x+Q.x)/2,my=(P.y+Q.y)/2;return{x:mx,y:my,o:Array.from({length:m-(h?0:1)},(_,i)=>{i+=h?0:1;return{x:P.x+(Q.x-P.x)*i/m-mx,y:P.y+(Q.y-P.y)*i/m-my}}).filter(q=>q.x+mx>34&&q.x+mx<486&&q.y+my>32&&q.y+my<372)}}).filter(e=>e.o.length);cen=NE.map(e=>({x:e.x,y:e.y}))}else if(d.lay==='one'){const pk=shf(A.map((c,i)=>i)).slice(0,n);cen=pk.map(i=>A[i]);A=A.filter((c,i)=>!pk.includes(i))}else if(d.lay==='foam'){FS=[];for(let r=0;r<3;r++)for(let c2=0;c2<4;c2++)FS.push({x:30+115*(c2+.5)+rnd(-22,22),y:28+116*(r+.5)+rnd(-22,22)});FR=FS.map((s0,i)=>{let dm=1e9;FS.forEach((q,j)=>{if(j!==i)dm=Math.min(dm,Math.hypot(s0.x-q.x,s0.y-q.y))});return Math.max(22,Math.min(dm/2-12,s0.x-32,488-s0.x,s0.y-30,374-s0.y))});A=A.filter(p=>{let d1=1e9,d2=1e9;FS.forEach(q=>{const dd=Math.hypot(p.x-q.x,p.y-q.y);if(dd<d1){d2=d1;d1=dd}else if(dd<d2)d2=dd});return d2-d1<17});cen=FS.map(s0=>({x:s0.x,y:s0.y}))}else cen=spots.slice(0,d.k).map(a=>({x:a[0],y:a[1]}));
+const offs=[];cen.forEach((c,ci)=>{let o;if(NE)o=NE[ci].o;else if(d.lay==='lat')o=lat(d.m,0,0,d.sx,d.sy,d.off);else if(d.lay==='ring')o=[{x:0,y:0},...Array.from({length:6},(_,i)=>({x:Math.cos(i*1.047)*15,y:Math.sin(i*1.047)*15}))];
+else if(d.lay==='conf'||d.lay==='disc'||d.lay==='foam'){const R=(FR&&FR[ci])||d.R||d.rd;o=Array.from({length:d.m},()=>{const a=rnd(0,6.28),r=(R-10)*Math.sqrt(Math.random());return{x:Math.cos(a)*r,y:Math.sin(a)*r}})}else o=[{x:0,y:0}];
+const mo=Math.max(...o.map(q=>Math.hypot(q.x,q.y))),rad=d.lay==='one'||NE||FS?0:d.R?d.R+10:mo+17;gs.push({x:c.x,y:c.y,R:(FR&&FR[ci])||d.R||0,rad,vx:rnd(-28,28),vy:rnd(-28,28),dr:d.dr});offs.push(o)});
+gs.forEach(G=>{if(G.rad)A=A.filter(c=>Math.hypot(c.x-G.x,c.y-G.y)>G.rad)});
+if(NE){n=offs.reduce((a,o)=>a+o.length,0);A=A.filter(c=>!gs.some((G,gi)=>offs[gi].some(q=>Math.hypot(c.x-G.x-q.x,c.y-G.y-q.y)<16)))}
+let stp,cr0=null;
+if(gasM){const R=Math.ceil(n/Math.ceil(Math.sqrt(n))),sy=d.ord?d.sy:19;fh=R*sy+24;stp=lat(n,260,366-(R-1)*sy/2,d.ord?d.sx:19,sy,d.off);if(!d.ord)stp.forEach(z=>{z.x+=rnd(-3,3);z.y+=rnd(-3,3)})}
+else if(d.lay==='foam'){const yy=Math.max(200,Math.min(330,Math.round(380-A.length*185/460)));stp=Array.from({length:n},()=>({x:rnd(40,480),y:rnd(40,yy-30)}));y0=yy}
+else if(d.lay==='conf'||d.gf){stp=Array.from({length:n},()=>({x:rnd(40,480),y:rnd(32,70)}));y0=84}
+else if(d.cr){const k2=Math.ceil(Math.sqrt(n)),r2=Math.ceil(n/k2),cy=Math.min(340,378-r2*d.sy/2);stp=lat(n,260,cy,d.sx,d.sy,d.off);y0=30;cr0=[260-k2*d.sx/2-12,cy-r2*d.sy/2-12,260+k2*d.sx/2+12,cy+r2*d.sy/2+12]}
+else{const rows=Math.max(1,Math.round(n*(d.sx||17)*1.2/440)),cols=Math.ceil(n/rows),dy=d.ord?(d.sy||18)+5:18;stp=[];for(let i=0;i<n;i++){const r=Math.floor(i/cols),c=i%cols;stp.push({x:40+(c+.5)*440/cols+(d.ord?0:rnd(-2,2))+(d.off&&r%2?4:0),y:44+r*dy+(d.ord?0:rnd(-2,2))})}y0=44+rows*dy+6}
+if(!gasM){const MT=srt(A);let MS;if(cr0){let ex=Math.ceil((cr0[2]-cr0[0])*(cr0[3]-cr0[1])*MT.length/(460*350))+4,o;for(;;){o=fill(30,y0,490,380,MT.length+ex,hx).filter(p=>!(p.x>cr0[0]&&p.x<cr0[2]&&p.y>cr0[1]&&p.y<cr0[3]));if(o.length>=MT.length){MS=srt(o.slice(0,MT.length));break}ex+=4}}else MS=srt(fill(30,y0,490,380,MT.length,hx));MT.forEach((t,i)=>add(s.mat,MS[i].x,MS[i].y,t.x,t.y,hx?{rot:0}:{}))}
+else for(let i=0;i<34;i++)fr(s.mat,rnd(40,480),rnd(36,374-fh-14));
+let j=0;gs.forEach((G,gi)=>offs[gi].forEach(o=>{const z=stp[j++];add(d,z.x,z.y,G.x+o.x,G.y+o.y,{g:gi,ox:o.x,oy:o.y,rot:d.ord||d.cr?0:rnd(0,6.28),cf:d.lay==='conf'||d.lay==='foam'?1:0,w:rnd(-2,2),gd:d.st==='g'?1:0,fa:rnd(0,6.28),fs:rnd(70,100)})}))}
+return{ps,gs,fh,y0}}
+function drawP(c,p){c.save();c.translate(p.x,p.y);c.rotate(p.a);c.beginPath();const r=p.r;
+if(p.sh==='ell')c.ellipse(0,0,r*1.7,r,0,0,7);else if(p.sh==='cir')c.arc(0,0,r,0,7);else if(p.sh==='rect')c.rect(-r*1.5,-r*.8,r*3,r*1.6);
+else{const n={tri:3,sq:4,rho:4,pen:5,hex:6}[p.sh],sx=p.sh==='rho'?.72:1,off=p.sh==='sq'?Math.PI/4:-Math.PI/2;for(let i=0;i<n;i++){const a=off+i*6.2832/n;i?c.lineTo(Math.cos(a)*r*sx,Math.sin(a)*r):c.moveTo(Math.cos(a)*r*sx,Math.sin(a)*r)}c.closePath()}
+c.fillStyle=p.c;c.fill();c.strokeStyle=p.s;c.lineWidth=1.3;c.stroke();if(r>3.5){c.globalAlpha=.4;c.fillStyle='#fff';c.beginPath();c.ellipse(-r*.28,-r*.32,r*.3,r*.16,-.6,0,7);c.fill();c.globalAlpha=1}c.restore()}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+class Sim{constructor(cv,i,mini){this.cv=cv;this.c=cv.getContext('2d');this.mini=mini;this.set(i)}
+set(i){this.i=i;this.s=SP[i];const b=build(this.s);this.ps=b.ps;this.gs=b.gs;this.fh=b.fh;this.y0=b.y0;this.t=0;this.play=0;this.time=0;this.dur=4.5;this.wall=0;if(this.mini){this.t=1;for(let k=0;k<150;k++)this.step(.05)}else this.step(0)}
+step(dt){this.time+=dt;if(this.play){this.t=Math.min(1,this.t+dt/this.dur);if(this.t>=1)this.play=0}
+const t=this.t,e=ease(t),T=this.time,ym=this.fh?374-(1-e)*this.fh:374,wall=this.wall=this.s.k==='gg'?1-Math.min(1,t*4):0,trl=p=>{p.hc=(p.hc||0)+dt;if(p.hc>.03){p.hc=0;(p.hs=p.hs||[]).push([p.x,p.y]);if(p.hs.length>4)p.hs.shift()}};
+for(const G of this.gs)if(G.dr&&t>=1){G.x+=G.vx*dt;G.y+=G.vy*dt;if(G.x<70||G.x>450)G.vx*=-1;if(G.y<70||G.y>340)G.vy*=-1}
+for(const p of this.ps){
+if(p.fl){trl(p);const ox=p.x;p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.x<26||p.x>494){p.vx*=-1;p.x=Math.max(26,Math.min(494,p.x))}if(p.y<26||p.y>ym){p.vy*=-1;p.y=Math.max(26,Math.min(ym,p.y))}
+if(wall>0&&p.sd&&p.y<30+(H-60)*wall+6){const rx=p.r*1.7+1;if(p.sd<0&&p.x>258-rx){p.x=258-rx;p.vx=-Math.abs(p.vx)}else if(p.sd>0&&p.x<263+rx){p.x=263+rx;p.vx=Math.abs(p.vx)}}p.a=Math.atan2(p.vy,p.vx);continue}
+let tx=p.tx,ty=p.ty,G=null;if(p.g!=null){G=this.gs[p.g];tx=G.x+p.ox;ty=G.y+p.oy}
+if(p.cf){if(t>=.999){if(!p.on){p.on=1;p.x=tx;p.y=ty;const an=rnd(0,6.28);p.vx=Math.cos(an)*45;p.vy=Math.sin(an)*45}
+trl(p);p.x+=p.vx*dt;p.y+=p.vy*dt;const dx=p.x-G.x,dy=p.y-G.y,r=G.R-9;if(dx*dx+dy*dy>r*r){const d=Math.hypot(dx,dy),nx=dx/d,ny=dy/d,dp=p.vx*nx+p.vy*ny;if(dp>0){p.vx-=2*dp*nx;p.vy-=2*dp*ny}p.x=G.x+nx*r;p.y=G.y+ny*r}p.a=Math.atan2(p.vy,p.vx);continue}p.on=0}
+const am=p.st==='s'?.1:p.st==='l'?3:1.5;
+if(p.gd){if(p.fvx==null){p.fvx=Math.cos(p.fa)*p.fs;p.fvy=Math.sin(p.fa)*p.fs;p.fx=p.sx;p.fy=p.sy}p.fx+=p.fvx*dt;p.fy+=p.fvy*dt;const yb=this.y0-8;if(p.fx<30||p.fx>490){p.fvx*=-1;p.fx=Math.max(30,Math.min(490,p.fx))}if(p.fy<30||p.fy>yb){p.fvy*=-1;p.fy=Math.max(30,Math.min(yb,p.fy))}}
+const bx=p.gd?p.fx:p.sx,by=p.gd?p.fy:p.sy;p.x=bx+(tx-bx)*e+Math.sin(T*2.1+p.ph)*am;p.y=by+(ty-by)*e+Math.cos(T*1.7+p.ph*1.3)*am;p.a=p.rot+(p.st==='l'?Math.sin(T*1.3+p.ph)*.35:0)}}
+draw(){const c=this.c,k=this.cv.width/W,s=this.s,e=ease(this.t);c.setTransform(k,0,0,k,0,0);c.clearRect(0,0,W,H);
+const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#f8fbff');g.addColorStop(1,'#dcecfa');c.fillStyle=g;rr(c,5,5,W-10,H-10,20);c.fill();c.strokeStyle='#9bb7d0';c.lineWidth=3;c.stroke();
+if(s.mat&&s.mat.st==='l'&&s.dis.lay!=='foam'){const y1=this.y0-8,y0=y1+(24-y1)*e;c.fillStyle='rgba(125,200,245,.2)';c.beginPath();c.moveTo(8,y0);for(let x=8;x<=W-8;x+=8)c.lineTo(x,y0+Math.sin(x/22+this.time*2)*2);c.lineTo(W-8,H-8);c.lineTo(8,H-8);c.closePath();c.fill()}
+if(this.wall>0){c.fillStyle='#64748b';c.fillRect(258,30,5,(H-60)*this.wall)}
+for(const p of this.ps){if(p.hs&&(p.fl||p.on)){for(let k=0;k<p.hs.length;k++){const h=p.hs[k];c.globalAlpha=.07+k*.04;drawP(c,{sh:p.sh,x:h[0],y:h[1],a:p.a,r:p.r*(.6+.1*k),c:p.c,s:p.s})}c.globalAlpha=1}drawP(c,p)}}}
+const sm=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)},lh=(a,b,t)=>{const A=[1,3,5].map(i=>parseInt(a.slice(i,i+2),16)),B=[1,3,5].map(i=>parseInt(b.slice(i,i+2),16));return'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join()+')'};
+const PERM=Array.from({length:300},(_,i)=>i).sort((a,b)=>hs(a+500)-hs(b+500));
+function packed(n,x0,x1,y0,sp){const cols=Math.floor((x1-x0)/sp),o=[];for(let i=0;i<n;i++){const r=Math.floor(i/cols);o.push({x:x0+sp/2+(i%cols)*sp+(r%2?sp/2:0)+(hs(i+3)-.5),y:y0-r*sp+(hs(i+9)-.5)})}return o}
+function macro(c,t,ty,T){const e=ease(t),R=(i,k)=>hs(i*7+k),L=(i,n,sp)=>sm(e*(1+sp)-i/n*sp),post=[],lid=()=>{c.fillStyle='#94a3b8';c.strokeStyle='#64748b';c.lineWidth=1.5;rr(c,66,24,168,12,4);c.fill();c.stroke();c.fillStyle='#cbd5e1';rr(c,142,15,16,10,3);c.fill();c.stroke()};
+c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,600,460);c.save();c.scale(2,2);
+const gr=c.createLinearGradient(0,0,0,230);gr.addColorStop(0,'#f8fbff');gr.addColorStop(1,'#e2eefa');c.fillStyle=gr;c.fillRect(0,0,300,230);
+if(ty===3&&e>.03&&e<.92)c.translate(Math.sin(T*28)*2,0);
+const rc=(col,x,y,w,h,a)=>{c.globalAlpha=a==null?1:a;c.fillStyle=col;c.fillRect(x,y,w,h);c.globalAlpha=1},dot=(x,y,r,col,sq,st)=>{c.fillStyle=col;c.beginPath();if(sq)c.rect(x-r,y-r,2*r,2*r);else c.arc(x,y,r,0,7);c.fill();if(st){c.strokeStyle=st;c.lineWidth=.8;c.stroke()}};
+c.save();rr(c,70,36,160,160,12);c.clip();let sti=0;
+if(ty===0){rc('#575c66',70,118,160,80);const n=300,cols=25,pos=i=>({x:74+(i%cols)*6.1+(Math.floor(i/cols)%2)*2,y:192-Math.floor(i/cols)*6.2});
+for(let i=0;i<n;i++){const s=pos(i),d=pos(PERM[i]),Lg=L(Math.floor(R(i,2)*n),n,.6),sw=Math.sin(Math.PI*Lg)*5;
+const x=Math.max(75,Math.min(225,s.x+(d.x-s.x)*Lg+Math.sin(T*5+i)*sw*.6)),y=Math.max(120,Math.min(194,s.y+(d.y-s.y)*Lg+Math.cos(T*4+i)*sw*.4));
+if(i%cols<13)dot(x,y,2.5,'#9aa0aa',1,'#3f4650');else dot(x,y,2.6,'#facc15',0,'#a16207')}sti=172}
+else if(ty===1){rc('#fcd34d',70,96,160,100,.92);const P=packed(72,76,224,192,6.2);
+P.forEach((s,i)=>{const Lg=L(i,72,.6),x=s.x+(80+R(i,1)*140-s.x)*Lg,y=s.y+(104+R(i,2)*84-s.y)*Lg+Math.sin(T*2+i)*1.2*Lg;dot(x,y,2.5,'#ea580c')});rc('#f59e0b',70,96,160,100,e*.22);sti=150}
+else if(ty===2){rc('#bae6fd',70,36,160,160,.12);let i=0;for(let r=0;r<5;r++){const cnt=20-2*r;for(let k=0;k<cnt;k++,i++){const sx=150+(k-(cnt-1)/2)*6.4,sy=192-r*6,Lg=L(79-i,80,.7),
+x=sx+(78+R(i,1)*144-sx)*Lg+Math.sin(T*1.5+i)*3*Lg,y=sy+(46+R(i,2)*140-sy)*Lg+Math.cos(T*1.1+i*1.7)*3*Lg;dot(x,Math.min(y,194),1.8,'#4b5563')}}rc('#9ca3af',70,36,160,160,e*.28)}
+else if(ty===3){rc('#bae6fd',70,96,160,100);rc('#fde047',70,96,160,40,1-e);const P=packed(96,76,224,130,6.2).map(p=>({x:p.x,y:p.y-34+(130-p.y)*0+Math.min(0,0)}));
+const Q=[];for(let i=0;i<96;i++){const r=Math.floor(i/23);Q.push({x:76+3.1+(i%23)*6.4+(r%2?3:0),y:100+r*6.4})}
+Q.forEach((s,i)=>{const Lg=L(i,96,.6),x=s.x+(80+R(i,1)*140-s.x)*Lg+Math.sin(T*9+i)*2*Math.sin(Math.PI*Lg),y=s.y+(104+R(i,2)*84-s.y)*Lg;if(Lg<=.03)return;c.globalAlpha=Math.min(1,Lg*3);dot(x,y,2.6*(.35+.65*Math.min(1,Lg*3)),'#facc15',0,'#ca8a04');c.globalAlpha=1});rc('#fffbe8',70,96,160,100,e*.55)}
+else if(ty===4){rc('#bae6fd',70,130,160,66);const yF=124-64*e;rc('#dff1fb',70,yF,160,130-yF,e);
+for(let i=0;i<60;i++){const r=5+R(i,1)*4,row=Math.floor(i/12),tx=84+(i%12)*12.4+(row%2)*6+(R(i,2)-.5)*3,ty2=122-row*11.5,Lg=L(i,60,.8);if(Lg<=0)continue;
+const x=150+(tx-150)*Lg+Math.sin(T*6+i)*1.5*(1-Lg),y=Math.max(188+(ty2-188)*Lg,yF+r),rr2=r*(.4+.6*Lg);c.fillStyle='rgba(255,255,255,.55)';c.beginPath();c.arc(x,y,rr2,0,7);c.fill();c.strokeStyle='rgba(70,120,170,.8)';c.lineWidth=.9;c.stroke()}
+post.push(()=>{c.strokeStyle='rgba(120,150,180,.85)';c.lineWidth=5;c.beginPath();c.moveTo(150,10);c.lineTo(150,188);c.stroke()})}
+else if(ty===5){const top=170+6*e;rc('#e6f1f9',70,36,160,160,.5);rc('#7dd3fc',70,top,160,196-top);
+for(let i=0;i<260;i++){const Lg=L(i,260,.9);if(Lg<=0)continue;const sx=76+R(i,3)*148,x=sx+(76+R(i,1)*148-sx)*Lg+Math.sin(T*1.3+i)*3*Lg,y=top+(44+R(i,2)*(top-56)-top)*Lg+Math.cos(T+i)*2*Lg;c.globalAlpha=Math.min(1,Lg*4)*.95;dot(x,y,2.3,'#f4f8fb',0,'#a9bccf');c.globalAlpha=1}
+rc('#e2e8f0',70,36,160,top-36,e*.8);rc('#cbd5e1',70,36,160,top-36,e*.22);post.push(lid)}
+else if(ty===6){rc('#bae6fd',70,96,160,100);{const sc=1-sm(ph(t,.05,.88)),S=26*sc;if(sc>.02){c.save();c.translate(150,194);c.lineJoin='round';c.strokeStyle='#8ea2b8';c.lineWidth=1.2;
+c.fillStyle='rgba(255,255,255,.96)';c.beginPath();c.moveTo(-S,0);c.lineTo(S*.4,0);c.lineTo(S*.4,-S*1.3);c.lineTo(-S,-S*1.3);c.closePath();c.fill();c.stroke();
+c.fillStyle='#ffffff';c.beginPath();c.moveTo(-S,-S*1.3);c.lineTo(S*.4,-S*1.3);c.lineTo(S,-S*1.65);c.lineTo(-S*.4,-S*1.65);c.closePath();c.fill();c.stroke();
+c.fillStyle='#dbe4ee';c.beginPath();c.moveTo(S*.4,0);c.lineTo(S,-S*.35);c.lineTo(S,-S*1.65);c.lineTo(S*.4,-S*1.3);c.closePath();c.fill();c.stroke();
+c.strokeStyle='rgba(148,163,184,.6)';c.beginPath();c.moveTo(-S*.3,-S*.1);c.lineTo(-S*.3,-S*1.2);c.moveTo(S*.1,-S*.1);c.lineTo(S*.1,-S*1.2);c.stroke();c.restore()}}
+for(let k=0;k<4;k++){c.strokeStyle='rgba(255,255,255,'+Math.sin(Math.PI*e)*.4+')';c.lineWidth=1.5;c.beginPath();for(let x=74;x<=226;x+=4){const y=160-k*16+Math.sin(x/9+T*3+k)*3;x===74?c.moveTo(x,y):c.lineTo(x,y)}c.stroke()}sti=150}
+else if(ty===7){const w=.02+e*.5,g=c.createLinearGradient(70,0,230,0);g.addColorStop(0,'#93c5fd');g.addColorStop(Math.max(0,.5-w),'#93c5fd');g.addColorStop(.5,'#c4b5fd');g.addColorStop(Math.min(1,.5+w),'#fca5a5');g.addColorStop(1,'#fca5a5');
+c.globalAlpha=.75;c.fillStyle=g;c.fillRect(70,36,160,160);c.globalAlpha=1;rc('#c4b5fd',70,36,160,160,e*e*.9);if(e<.25)rc('#64748b',148,36,4,160*(1-e*4));post.push(lid)}
+else if(ty===8){const w=(2+e*60)/100,g=c.createLinearGradient(0,96,0,196);g.addColorStop(0,'#ddd6fe');g.addColorStop(Math.max(0,.22-w),'#ddd6fe');g.addColorStop(.22,'#c9dcf7');g.addColorStop(Math.min(1,.22+w),'#bae6fd');g.addColorStop(1,'#bae6fd');
+c.fillStyle=g;c.fillRect(70,96,160,100);rc('#cfe3f3',70,96,160,100,e*e);for(let k=0;k<3;k++){c.strokeStyle='rgba(255,255,255,'+Math.sin(Math.PI*e)*.4+')';c.lineWidth=1.5;c.beginPath();for(let x=74;x<=226;x+=4){const y=118+k*8+Math.sin(x/8+T*2.5+k)*3;x===74?c.moveTo(x,y):c.lineTo(x,y)}c.stroke()}}
+else if(ty===9){const col=e<.5?lh('#b45309','#fb923c',sm(e/.35)):lh('#fb923c','#d9a441',sm((e-.5)/.4));rc(col,70,120,160,76);const a=1-sm(e/.3);
+if(a>0){c.globalAlpha=a;const g1=c.createLinearGradient(70,0,150,0);g1.addColorStop(0,'#c97a45');g1.addColorStop(.5,'#eab08a');g1.addColorStop(1,'#c97a45');c.fillStyle=g1;c.fillRect(70,120,80,76);const g2=c.createLinearGradient(150,0,230,0);g2.addColorStop(0,'#94a3b8');g2.addColorStop(.5,'#e2e8f0');g2.addColorStop(1,'#94a3b8');c.fillStyle=g2;c.fillRect(150,120,80,76);c.fillStyle='rgba(255,255,255,.28)';c.fillRect(70,122,160,5);c.globalAlpha=1}
+if(e>.3&&e<.7)for(let k=0;k<4;k++){c.strokeStyle='rgba(254,243,199,.5)';c.lineWidth=2;c.beginPath();for(let x=74;x<=226;x+=4){const y=135+k*14+Math.sin(x/10+T*3+k)*4;x===74?c.moveTo(x,y):c.lineTo(x,y)}c.stroke()}
+if(e>.7){const g=c.createLinearGradient(70,120,230,196);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.4,'rgba(255,255,255,.55)');g.addColorStop(.6,'rgba(255,255,255,0)');c.globalAlpha=sm((e-.7)/.3)*.7;c.fillStyle=g;c.fillRect(70,120,160,76);c.globalAlpha=1}
+if(e>.02&&e<.62)post.push(()=>{for(let k=0;k<5;k++){const fx=95+k*28,h=16+Math.sin(T*14+k*2)*5;c.fillStyle=k%2?'#fb923c':'#60a5fa';c.beginPath();c.moveTo(fx-7,226);c.quadraticCurveTo(fx-4,226-h,fx,200+(16-h)*.3);c.quadraticCurveTo(fx+4,226-h,fx+7,226);c.fill()}})}
+else if(ty===12){rc('#bae6fd',70,96,160,100);if(e>.03&&e<.97)for(let i=0;i<14;i++){const u=(T*.45+i/14)%1,x=150+Math.sin(u*9+i)*8+(R(i,1)-.5)*20,y=186-u*84;c.globalAlpha=1-u*.9;c.fillStyle='rgba(255,255,255,.6)';c.beginPath();c.arc(x,y,3.4-2.6*u,0,7);c.fill();c.strokeStyle='rgba(60,120,170,.8)';c.lineWidth=.8;c.stroke();c.globalAlpha=1}
+post.push(()=>{c.strokeStyle='rgba(120,150,180,.85)';c.lineWidth=5;c.beginPath();c.moveTo(150,10);c.lineTo(150,186);c.stroke()})}
+else if(ty===11){const amp=(1-sm(e*1.6))*4,tp=100;c.fillStyle=lh('#fb7185','#e11d48',e);c.beginPath();c.moveTo(70,tp);for(let x=70;x<=230;x+=4)c.lineTo(x,tp+Math.sin(x/12+T*5)*amp);c.lineTo(230,196);c.lineTo(70,196);c.closePath();c.fill();
+for(let k=0;k<4;k++){c.strokeStyle='rgba(255,255,255,'+(1-sm(e*2))*.55+')';c.lineWidth=2;c.beginPath();for(let y=96;y>=48;y-=3){const x=92+k*34+Math.sin(y/7+T*3+k)*4;y===96?c.moveTo(x,y):c.lineTo(x,y)}c.stroke()}
+const g=c.createLinearGradient(70,0,230,0);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(.2,'rgba(255,255,255,.5)');g.addColorStop(.3,'rgba(255,255,255,0)');c.globalAlpha=sm((e-.6)/.4);c.fillStyle=g;c.fillRect(70,100,160,96);c.globalAlpha=1}
+else{const yM=150-92*e;rc(lh('#fde68a','#e2cf95',e),70,yM,160,196-yM);
+for(let i=0;i<50;i++){const Lg=L(i,50,.8);if(Lg<=0)continue;const r=(2.5+R(i,1)*4)*(.3+.7*Lg),sx=80+R(i,4)*140,x=sx+(80+R(i,2)*140-sx)*Lg,y=Math.max(194+(84+R(i,3)*100-194)*Lg,yM+r+2);dot(x,y,r,'#fffbe9',0,'#b79b5b')}}
+{const sg2=c.createLinearGradient(70,0,230,0);sg2.addColorStop(0,'rgba(0,0,0,.10)');sg2.addColorStop(.25,'rgba(255,255,255,0)');sg2.addColorStop(.8,'rgba(255,255,255,0)');sg2.addColorStop(1,'rgba(0,0,0,.12)');c.fillStyle=sg2;c.fillRect(70,36,160,160)}
+c.restore();c.fillStyle='rgba(255,255,255,.3)';rr(c,76,44,5,140,2.5);c.fill();c.fillStyle='rgba(255,255,255,.16)';rr(c,218,48,3,120,1.5);c.fill();post.forEach(f=>f());
+if(sti&&e>.04&&e<.96){const x=150+Math.sin(T*3)*38;c.strokeStyle='rgba(203,213,225,.95)';c.lineWidth=4;c.lineCap='round';c.beginPath();c.moveTo(x+24,6);c.lineTo(x,sti);c.stroke();if(ty===0){c.fillStyle='#94a3b8';c.fillRect(x-9,sti-3,18,5)}}
+c.strokeStyle='#7ea0bf';c.lineWidth=3;c.beginPath();c.moveTo(66,28);c.lineTo(70,190);c.quadraticCurveTo(70,196,78,196);c.lineTo(222,196);c.quadraticCurveTo(230,196,230,190);c.lineTo(234,28);c.stroke();c.restore()}
+/* ===== Trennmethoden ===== */
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),ph=(t,a,b)=>clamp((t-a)/(b-a),0,1),Rn=(i,k)=>hs(i*7+k),GL='#7ea0bf';
+function frm(c){const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#f8fbff');g.addColorStop(1,'#e3effa');c.fillStyle=g;rr(c,5,5,W-10,H-10,20);c.fill();c.strokeStyle='#9bb7d0';c.lineWidth=3;c.stroke()}
+function bkp(c,x,y,w,h){c.beginPath();c.moveTo(x,y);c.lineTo(x,y+h-8);c.quadraticCurveTo(x,y+h,x+8,y+h);c.lineTo(x+w-8,y+h);c.quadraticCurveTo(x+w,y+h,x+w,y+h-8);c.lineTo(x+w,y)}
+function bk(c,x,y,w,h,L){c.fillStyle='rgba(60,90,120,.13)';c.beginPath();c.ellipse(x+w/2,y+h+3,w*.55,4,0,0,7);c.fill();c.save();bkp(c,x,y,w,h);c.closePath();c.clip();const gg=c.createLinearGradient(x,0,x+w,0);gg.addColorStop(0,'rgba(0,0,0,.09)');gg.addColorStop(.3,'rgba(255,255,255,.12)');gg.addColorStop(1,'rgba(0,0,0,.1)');L.forEach(l=>{c.globalAlpha=l[3]==null?1:l[3];c.fillStyle=l[2];c.fillRect(x,l[0],w,l[1]-l[0]);c.globalAlpha=1;c.fillStyle=gg;c.fillRect(x,l[0],w,l[1]-l[0])});c.restore();bkp(c,x,y,w,h);c.strokeStyle=GL;c.lineWidth=2.5;c.stroke();c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=2;c.beginPath();c.moveTo(x+5,y+8);c.lineTo(x+5,y+h-16);c.stroke()}
+const txt=(c,s,x,y,col,sz,al,b)=>{c.fillStyle=col||'#334e68';c.font=(b?'600 ':'')+(sz||12)+'px system-ui,sans-serif';c.textAlign=al||'left';c.fillText(s,x,y)};
+const dt2=(c,x,y,r,col,sq,st)=>{c.fillStyle=col;c.beginPath();if(sq)c.rect(x-r,y-r,2*r,2*r);else c.arc(x,y,r,0,7);c.fill();if(st){c.strokeStyle=st;c.lineWidth=.8;c.stroke()}};
+const shp=(c,s,x,y,r,col,st,a)=>drawP(c,{sh:s,x,y,a:a||0,r,c:col,s:st});
+function flame(c,x,y,T){for(let k=0;k<2;k++){const h=(k?18:32)+Math.sin(T*18+k)*4;c.fillStyle=k?'#60a5fa':'#fb923c';c.globalAlpha=k?.9:.75;c.beginPath();c.moveTo(x-9+k*3,y);c.quadraticCurveTo(x-9+k*3,y-h*.6,x,y-h);c.quadraticCurveTo(x+9-k*3,y-h*.6,x+9-k*3,y);c.closePath();c.fill();c.globalAlpha=1}}
+function pour(c,x,y,rot,col){c.save();c.translate(x,y);c.rotate(rot);bk(c,-22,-34,44,52,[[-16,18,col,.9]]);c.restore()}
+function arrow(c,x,y0,y1,col){c.strokeStyle=col;c.lineWidth=2;c.beginPath();c.moveTo(x,y0);c.lineTo(x,y1);c.moveTo(x-4,y0+(y1>y0?-6:6));c.lineTo(x,y0);c.lineTo(x+4,y0+(y1>y0?-6:6));c.moveTo(x-4,y1+(y1>y0?6:-6));c.lineTo(x,y1);c.lineTo(x+4,y1+(y1>y0?6:-6));c.stroke()}
+function filt(c,t,T){frm(c);const pf=ph(t,.25,.9),sN=ph(t,0,.2);
+if(t<.22){c.save();c.translate(95,72);c.rotate(.75*Math.min(1,t*12));bk(c,-25,-40,50,60,[[-20,20,'#c8a165',.9]]);c.restore();if(t>.04){c.strokeStyle='#c8a165';c.lineWidth=4;c.beginPath();c.moveTo(143,62);c.quadraticCurveTo(175,72,225,138);c.stroke()}}
+const cone=()=>{c.beginPath();c.moveTo(176,122);c.lineTo(344,122);c.lineTo(266,214);c.lineTo(254,214);c.closePath()};
+c.fillStyle='rgba(255,253,240,.7)';c.beginPath();c.moveTo(170,120);c.lineTo(350,120);c.lineTo(274,215);c.lineTo(246,215);c.closePath();c.fill();
+const surf=sN<1?250-110*sN:140+ph(t,.3,.85)*82;
+c.save();cone();c.clip();c.globalAlpha=.9;c.fillStyle='#c8a165';c.fillRect(160,surf,200,100);c.globalAlpha=1;
+for(let i=0;i<55;i++){const sp=ph(t,.3+.4*Rn(i,3),.95),x0=190+Rn(i,1)*140,y0=135+Rn(i,2)*70,x=x0+(254+Rn(i,4)*12-x0)*sp,y0b=y0+(200+Rn(i,5)*12-y0)*sp,y=sp<1?Math.max(y0b,surf+2):y0b;dt2(c,x,y,2.3,'#7c5a2e')}
+c.restore();
+c.fillStyle='#7c5a2e';c.beginPath();c.ellipse(260,211,14*pf,5*pf,0,0,7);c.fill();
+if(t>.3){c.fillStyle='rgba(205,234,245,.7)';c.fillRect(247,216,26,Math.min(38,(t-.3)*80))}
+c.beginPath();c.moveTo(170,120);c.lineTo(246,215);c.lineTo(246,255);c.moveTo(350,120);c.lineTo(274,215);c.lineTo(274,255);c.strokeStyle=GL;c.lineWidth=2.5;c.stroke();
+c.beginPath();c.moveTo(176,122);c.lineTo(254,214);c.moveTo(344,122);c.lineTo(266,214);c.strokeStyle='#cbd5e1';c.lineWidth=1.5;c.stroke();
+const lv=385-62*pf;bk(c,200,300,120,85,[[lv,385,'#cdeaf5',.9]]);
+if(t>.28&&t<.95){const yD=256+((T*2.2)%1)*(lv-258);dt2(c,260,yD,2.6,'#9ed8ee')}
+txt(c,'Filterpapier',70,196);c.strokeStyle='#64748b';c.lineWidth=1;c.beginPath();c.moveTo(148,193);c.lineTo(221,177);c.stroke();txt(c,'Rückstand',284,214,'#7c5a2e',12,'left',1);txt(c,'Filtrat',330,355,'#2b7bb9',12,'left',1);txt(c,'Suspension',30,150);{const ix=358,iy=28,iw=140,ih=162,bt=iy+88,D=ph(t,.2,.95)*340,pc=k=>ix+20+k*20;
+rr(c,ix,iy,iw,ih,10);c.fillStyle='rgba(255,255,255,.88)';c.fill();c.strokeStyle='#9bb7d0';c.lineWidth=2;c.stroke();txt(c,'Teilchenebene',ix+2,iy-5,'#2b7bb9',11,'left',1);
+c.save();rr(c,ix,iy,iw,ih,10);c.clip();c.fillStyle='rgba(170,120,60,.10)';c.fillRect(ix,iy,iw,bt-iy);
+for(let i=0;i<70;i++){const sp=.9+Rn(i,1)*.2,y=iy-210+Rn(i,2)*298+D*sp,x0=ix+10+Rn(i,3)*(iw-20),px=pc(Math.floor(Rn(i,4)*6)),x1=ix+10+Rn(i,5)*(iw-20);let x;if(y<bt-40)x=x0;else if(y<bt)x=x0+(px-x0)*ph(y,bt-40,bt);else if(y<bt+14)x=px;else x=px+(x1-px)*ph(y,bt+14,bt+60);
+if(y>iy-6&&y<iy+ih+6)shp(c,'tri',x+Math.sin(T*3+i)*1.2,y,4.5,'#7cc6f2','#2b7bb9',Rn(i,6)*6)}
+c.fillStyle='#a8a29e';c.strokeStyle='#57534e';c.lineWidth=1;for(let k=-1;k<6;k++){c.beginPath();c.rect(pc(k)+5,bt,10,14);c.fill();c.stroke();c.beginPath();c.moveTo(pc(k)+6,bt+4);c.lineTo(pc(k)+14,bt+10);c.moveTo(pc(k)+6,bt+10);c.lineTo(pc(k)+14,bt+4);c.stroke()}
+for(let j=0;j<14;j++){const cl=j%5,rw=Math.floor(j/5),xs=ix+22+cl*24+(rw%2)*8,ys=bt-8-rw*13,sp=.9+Rn(j,7)*.2,x0=ix+12+Rn(j,8)*(iw-24),y0=iy+12+Rn(j,9)*50,yy=Math.min(y0+D*sp*.8,ys),k=ph(yy,y0,ys);shp(c,'sq',x0+(xs-x0)*k+(yy>=ys?0:Math.sin(T*2+j)*.3),yy,8,'#a1763a','#6b4a1f',0)}
+c.restore();rr(c,ix,iy,iw,ih,10);c.strokeStyle='#9bb7d0';c.lineWidth=2;c.stroke();
+c.fillStyle='rgba(255,255,255,.88)';rr(c,ix+4,iy+4,66,16,5);c.fill();txt(c,'Suspension',ix+8,iy+16,'#7c5a2e',11,'left',1);rr(c,ix+4,iy+ih-20,44,16,5);c.fill();txt(c,'Filtrat',ix+8,iy+ih-8,'#ffffff',11,'left',1);
+txt(c,'Filterpapier mit Poren',ix+2,iy+ih+16,'#57534e',11);shp(c,'tri',ix+8,iy+ih+30,4.5,'#7cc6f2','#2b7bb9',0);txt(c,'Wasser-Teilchen',ix+20,iy+ih+34,'#334e68',11);shp(c,'sq',ix+8,iy+ih+46,6,'#a1763a','#6b4a1f',0);txt(c,'Feststoff-Teilchen',ix+20,iy+ih+50,'#334e68',11)}}
+function abd(c,t,T){frm(c);const bo=ph(t,.05,.85),lev=1-ph(t,.08,.8),yL=262-lev*40;
+c.strokeStyle='#64748b';c.lineWidth=4;[[170,255,150,350],[350,255,370,350],[260,255,260,350]].forEach(l=>{c.beginPath();c.moveTo(l[0],l[1]);c.lineTo(l[2],l[3]);c.stroke()});c.beginPath();c.moveTo(150,255);c.lineTo(370,255);c.stroke();
+c.fillStyle='#9ca3af';c.fillRect(250,352,20,34);if(t>.02)flame(c,260,350,T);
+const bowl=cl=>{c.beginPath();c.moveTo(165,215);c.quadraticCurveTo(170,262,260,262);c.quadraticCurveTo(350,262,355,215);if(cl!==0)c.closePath()};
+c.save();bowl();c.clip();c.fillStyle='rgba(255,255,255,.7)';c.fillRect(150,200,220,70);if(lev>.01){c.fillStyle='#bfe3f5';c.fillRect(150,yL,220,270-yL)}
+for(let i=0;i<8;i++){if(bo>0&&lev>.05){const x=195+Rn(i,1)*130,y=yL+((T*1.5+Rn(i,2))%1)*(262-yL);dt2(c,x,y,2,'rgba(255,255,255,.9)',0,'#7bb')}}
+const nC=Math.floor(46*ph(t,.25,.95));for(let i=0;i<nC;i++){const x=205+Rn(i,3)*100,y=255-Rn(i,4)*7;dt2(c,x,y,3,'#fff',1,'#6b7280')}c.restore();
+bowl(0);c.strokeStyle='#94a3b8';c.lineWidth=3;c.stroke();
+for(let i=0;i<14;i++){const u=(T*.5+i/14)%1,a=(1-u)*.5*bo*(lev>.02?1:Math.max(0,1-ph(t,.8,.9)));c.globalAlpha=a;dt2(c,200+i*8+Math.sin(u*6+i)*8,205-u*120,6+u*8,'#e5e7eb');c.globalAlpha=1}
+const ix=345,iy=36,iw=150,ih=125;rr(c,ix,iy,iw,ih,10);c.fillStyle='rgba(255,255,255,.85)';c.fill();c.strokeStyle='#9bb7d0';c.lineWidth=2;c.stroke();txt(c,'Teilchenebene',ix+8,iy+14,'#2b7bb9',11,'left',1);
+c.save();rr(c,ix,iy,iw,ih,10);c.clip();const cl=Array.from({length:32},(_,i)=>i).sort((a,b)=>hs(a+77)-hs(b+77)),isS=new Set(cl.slice(0,10)),cp=i=>({x:ix+16+(i%8)*17.5,y:iy+ih-14-Math.floor(i/8)*20});let wk=0,sk=0;
+for(let i=0;i<32;i++){const p=cp(i);if(isS.has(i)){const o={x:ix+50+(sk%5)*9.6,y:iy+ih-12-Math.floor(sk/5)*9.6},u=sm(ph(t,.55,.9)),jj=1.2-1.1*u;sk++;shp(c,'sq',p.x+(o.x-p.x)*u+Math.sin(T*2+i)*jj,p.y+(o.y-p.y)*u+Math.cos(T*2+i)*jj,4.7,'#e5e7eb','#6b7280',0)}else{const tl=.1+.5*wk/22;wk++;const pr=ph(t,tl,tl+.12);if(pr>=1)continue;c.globalAlpha=1-pr;shp(c,'tri',p.x+Math.sin(T*3+i)*1.5,p.y-pr*90+Math.cos(T*2+i)*1.5,6,'#7cc6f2','#2b7bb9',Rn(i,2)*6);c.globalAlpha=1}}
+c.restore();
+txt(c,'Salzlösung → Salz',40,120);txt(c,t<.3?'Lösung':t>.75?'Salz kristallisiert':'Wasser verdampft',ix+8,iy+28,'#475569',11);txt(c,'Wasserdampf',205,56,'#64748b',12,'left',1)}
+function sieb(c,t,T){frm(c);const act=ph(t,.08,.88),ox=act>0&&act<1?Math.sin(T*16)*7:0,N=260;
+bk(c,150,340,220,40,[]);
+c.strokeStyle='#475569';c.lineWidth=4;c.beginPath();c.moveTo(150+ox,106);c.lineTo(150+ox,153);c.moveTo(370+ox,106);c.lineTo(370+ox,153);c.stroke();c.fillStyle='#475569';for(let x=150;x<372;x+=9)c.fillRect(x+ox-2,150,5,5);
+const bg=[{x:182,y:136,xe:170},{x:197,y:121,xe:192},{x:212,y:131,xe:214},{x:240,y:138,xe:236},{x:254,y:119,xe:258},{x:268,y:133,xe:280},{x:296,y:135,xe:302},{x:310,y:122,xe:324},{x:324,y:130,xe:346}],bsk=sm(ph(ph(t,.1,.8),.25,1));
+const slots=[];for(let k=0;k<9;k++)for(let x=160;x<=360;x+=4)slots.push({x:x+(k%2)*2,y:148-k*3.7});
+const free=slots.filter(s=>!bg.some(b=>Math.hypot(s.x-b.x,s.y-b.y)<9.4)).sort((a,b)=>b.y-a.y||a.x-b.x).slice(0,N),n2=free.length;
+const tfa=[];for(let s=0;s<n2;s++)tfa.push(.1+.7*clamp((s+40*Rn(s,1))/(n2+40),0,1));
+const eff=(s,tt)=>{let e=s;for(let j=0;j<s;j++)e-=sm((tt-tfa[j])/.04);return e},spos=e=>{const f=clamp(Math.floor(e),0,n2-1),g=Math.min(n2-1,f+1),u=clamp(e-f,0,1);return{x:free[f].x+(free[g].x-free[f].x)*u,y:free[f].y+(free[g].y-free[f].y)*u}};
+const hp=[];for(let r=0;hp.length<n2;r++){const wd=Math.max(2,48-4*r);for(let k=0;k<wd;k++)hp.push({x:260+(k-(wd-1)/2)*4.1+(r%2?1.5:0),y:377.5-r*3.6,r,sk:Rn(k+r*50,1)})}
+hp.length=n2;hp.sort((a,b)=>(a.r+a.sk*.9)-(b.r+b.sk*.9));
+const rk=Array.from({length:n2},(_,i)=>i).sort((a,b)=>tfa[a]-tfa[b]),rank=[];rk.forEach((i,j)=>rank[i]=j);
+for(let s=0;s<n2;s++){const u=ph(t,tfa[s],tfa[s]+.12),h=hp[rank[s]];
+if(u<=0){const p=spos(eff(s,t));dt2(c,p.x+ox,p.y,1.9,'#e7c76a',0,'#b8942e')}
+else{const S=spos(eff(s,tfa[s]));dt2(c,S.x+ox*(1-u)+(h.x-S.x)*u,S.y+(h.y-S.y)*u*u,1.9,'#e7c76a',0,'#b8942e')}}
+bg.forEach((b,i)=>shp(c,'hex',b.x+(b.xe-b.x)*bsk+ox,b.y+(143-b.y)*bsk,7.5,'#8d867f','#44403c',Rn(i,7)*3));
+txt(c,'Siebrückstand: grobe Körner',260,92,'#44403c',12,'center');txt(c,'Durchgang: Sand',380,362,'#a16207',12,'left',1);txt(c,'Sieb',80,140,'#475569',12,'left',1)}
+function dest(c,t,T){frm(c);const bo=ph(t,.08,.9),f=ph(t,.2,.95),tmp=sm(ph(t,.05,.45));
+c.fillStyle='#9ca3af';c.fillRect(100,358,20,28);if(t>.02)flame(c,110,356,T);
+bk(c,340,322,90,63,[[385-45*f,385,'#e2d9fb',.95]]);
+const fl=()=>{c.beginPath();c.moveTo(96,198);c.lineTo(96,226.18);c.arc(110,270,46,-1.8777,-1.2639,true);c.lineTo(124,198)};
+c.save();fl();c.closePath();c.clip();const ly=262+10*ph(t,.1,.95);c.fillStyle='#e6defb';c.fillRect(50,ly,120,120);
+if(bo>0)for(let i=0;i<8;i++)dt2(c,84+Rn(i,1)*52,310-((T*1.3+Rn(i,2))%1)*(310-ly),2,'rgba(255,255,255,.9)',0,'#a78bfa');c.restore();
+fl();c.strokeStyle=GL;c.lineWidth=3;c.stroke();
+c.beginPath();c.moveTo(169,167);c.lineTo(364,261);c.lineTo(356,279);c.lineTo(161,185);c.closePath();c.fillStyle='rgba(165,215,245,.55)';c.fill();c.strokeStyle=GL;c.lineWidth=2.5;c.stroke();
+c.fillStyle='#a16207';c.beginPath();c.moveTo(93,184);c.lineTo(127,184);c.lineTo(122,200);c.lineTo(98,200);c.closePath();c.fill();
+rr(c,101.5,126,5,92,2.5);c.fillStyle='#f8fafc';c.fill();c.strokeStyle='#64748b';c.lineWidth=1.2;c.stroke();
+const top=216-80*tmp;c.fillStyle='#ef4444';c.fillRect(103,top,2,216-top);dt2(c,104,219,4.5,'#ef4444',0,'#991b1b');
+c.strokeStyle='#64748b';c.lineWidth=1;for(let k=0;k<8;k++){c.beginPath();c.moveTo(107,130+k*6);c.lineTo(k%4===0?113:110,130+k*6);c.stroke()}
+const P=[[117,214],[117,176],[165,176],[360,270],[384,282],[384,342]];
+c.lineJoin='round';c.lineCap='butt';c.beginPath();P.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.strokeStyle=GL;c.lineWidth=9;c.stroke();c.strokeStyle='#f4f8fc';c.lineWidth=5.5;c.stroke();
+const V=[[108,252],[112,232],[117,214],[117,176],[165,176],[360,270],[384,282],[384,338]],cum=[0];for(let k=1;k<V.length;k++)cum.push(cum[k-1]+Math.hypot(V[k][0]-V[k-1][0],V[k][1]-V[k-1][1]));const tot=cum[cum.length-1];
+if(bo>.03)for(let i=0;i<16;i++){const d=(T*70+i*tot/16)%tot;let k=0;while(cum[k+1]<d)k++;const u=(d-cum[k])/(cum[k+1]-cum[k]),x=V[k][0]+(V[k+1][0]-V[k][0])*u,y=V[k][1]+(V[k+1][1]-V[k][1])*u,cond=d>cum[4]+(cum[5]-cum[4])*.35;dt2(c,x,y,cond?2:2.8,cond?'#8ac7ee':'#f5f3ff',0,cond?'#2b7bb9':'#8b5cf6')}
+if(bo>.1){const sf=Math.max(385-45*f,348),y=344+((T*2)%1)*(sf-344);dt2(c,384,y,2.4,'#a5d8f5')}
+txt(c,'Thermometer',14,138);c.strokeStyle='#64748b';c.lineWidth=1;c.beginPath();c.moveTo(84,134);c.lineTo(100,140);c.stroke();
+txt(c,'Siedekolben',162,316);txt(c,'Liebig-Kühler',215,160,'#2b7bb9',12,'left',1);txt(c,'Kühlwasser',190,252,'#2b7bb9',11);txt(c,'Vorstoß',394,300,'#475569',12,'left',1);txt(c,'Destillat',436,364,'#6d28d9',12,'left',1);
+rr(c,95,22,330,36,10);c.fillStyle='rgba(43,123,185,.12)';c.fill();txt(c,'Ausführlich: siehe Destillations-Programm',260,45,'#1e5f9e',14,'center',1)}
+const DY=[{c:'#facc15',s:'#a16207',rf:.88,sh:'rho',n:'Gelb'},{c:'#ef4444',s:'#991b1b',rf:.58,sh:'cir',n:'Rot'},{c:'#3b82f6',s:'#1e3a8a',rf:.32,sh:'sq',n:'Blau'}];
+function chrom(c,t,T){frm(c);const low=sm(ph(t,.12,.24)),oy=-(1-low)*115,fr=ph(t,.24,.82),SL=290,LS=312,fy=LS-(LS-70)*fr,trav=Math.max(0,(SL-fy-70)*220/150),sy=d=>SL-d.rf*trav;
+bk(c,15,288,220,102,[[LS,390,'#cfe8fb',.85]]);txt(c,'Laufmittel',60,380,'#2b7bb9',11);
+const px=85,pw=90,pt=40+oy,pb=330+oy;c.fillStyle='#fffdf4';c.fillRect(px,pt,pw,pb-pt);
+if(low>.99){c.fillStyle='rgba(120,190,240,.38)';c.fillRect(px,fy,pw,pb-fy)}
+c.strokeStyle='#cbd5e1';c.lineWidth=1.5;c.strokeRect(px,pt,pw,pb-pt);
+c.setLineDash([4,3]);c.strokeStyle='#475569';c.lineWidth=1.2;c.beginPath();c.moveTo(px+4,SL+oy);c.lineTo(px+pw-4,SL+oy);c.stroke();
+if(t>.84){c.globalAlpha=ph(t,.82,.86);c.strokeStyle='#dc2626';c.beginPath();c.moveTo(px+4,fy);c.lineTo(px+pw-4,fy);c.stroke();c.globalAlpha=1}c.setLineDash([]);
+const ap=ph(t,.02,.1);c.save();c.globalCompositeOperation='multiply';
+DY.forEach(d=>{const cy=sy(d)+oy,rx=(6+trav*.025)*ap,ry=(5+trav*.06)*ap;if(ap>0){const g=c.createRadialGradient(130,cy,0,130,cy,Math.max(rx,ry));g.addColorStop(0,d.c);g.addColorStop(.7,d.c);g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.beginPath();c.ellipse(130,cy,rx,ry,0,0,7);c.fill()}});c.restore();
+if(t<.13){const by=SL+oy-8-Math.abs(Math.sin(T*9))*6*(ap<1?1:0);c.strokeStyle='#334155';c.lineWidth=3;c.beginPath();c.moveTo(168,by-46);c.lineTo(131,by);c.stroke()}
+txt(c,'Startlinie',px-4,SL+oy+4,'#475569',11,'right');txt(c,'Chromatographiepapier',px,Math.max(pt-8,24),'#475569',11);
+if(t>.84){const a=ph(t,.84,.9);c.globalAlpha=a;arrow(c,210,SL,fy,'#0f766e');txt(c,'b',217,(SL+fy)/2,'#0f766e',13,'left',1);arrow(c,196,SL,sy(DY[1]),'#dc2626');txt(c,'a',182,(SL+sy(DY[1]))/2+4,'#dc2626',13,'left',1);txt(c,'Front',px-4,fy-3,'#dc2626',11,'right');c.globalAlpha=1}
+const ix=285,iy=48,iw=220,ih=205,mp=y=>iy+8+(y-70)/230*(ih-16),fi=mp(fy);
+txt(c,'Teilchenebene (Papier-Ausschnitt)',ix,iy-8,'#2b7bb9',11,'left',1);rr(c,ix,iy,iw,ih,10);c.fillStyle='#f6efdc';c.fill();c.strokeStyle='#b9a77c';c.lineWidth=2;c.stroke();
+c.save();rr(c,ix,iy,iw,ih,10);c.clip();
+for(let i=0;i<16;i++){c.save();c.translate(ix+15+Rn(i,1)*190,iy+15+Rn(i,2)*175);c.rotate(Rn(i,3)*3.1);c.fillStyle='#cfc7b0';rr(c,-22,-3,44,6,3);c.fill();c.restore()}
+if(low>.99)for(let i=0;i<100;i++){const x=ix+12+Rn(i,4)*196,d=3+Rn(i,5)*(ih+2),sA=Math.max(0,t-.82)*28,sp=ih+16,y=fr<1?fi+d:iy-8+((((d+16)-22*sA)%sp)+sp)%sp;shp(c,'tri',x+Math.sin(T*2+i)*2,y,5.5,'#7cc6f2','#2b7bb9',Rn(i,7)*6)}
+DY.forEach((d,k)=>{for(let j=0;j<9;j++){const q=k*20+j,jf=Math.min(1,trav/8),y=mp(sy(d))+(Rn(q,8)-.5)*(10+trav*.18)+Math.sin(T*3+q*2)*2.2*jf,x=ix+16+Rn(q,9)*188+Math.sin(T*2.3+q)*2*jf;shp(c,d.sh,x,y,5.2,d.c,d.s,0)}});c.restore();
+[['rho',0,'Gelb: haftet schwach → weit'],['cir',1,'Rot: haftet mittelstark → mittel'],['sq',2,'Blau: haftet stark → kaum weg']].forEach((l,i)=>{shp(c,l[0],ix+8,iy+ih+22+i*18,5,DY[l[1]].c,DY[l[1]].s,0);txt(c,l[2],ix+20,iy+ih+26+i*18,'#334e68',11)});
+shp(c,'tri',ix+8,iy+ih+76,5,'#7cc6f2','#2b7bb9',0);txt(c,'Laufmittel-Teilchen (mobile Phase)',ix+20,iy+ih+80,'#334e68',11);
+if(t>.9){c.globalAlpha=ph(t,.9,.95);txt(c,'Rf = a / b',ix,iy+ih+104,'#0f766e',13,'left',1);txt(c,'Gelb 0,88 · Rot 0,58 · Blau 0,32',ix,iy+ih+121,'#334e68',12);c.globalAlpha=1}}
+function dek(c,t,T){frm(c);const base=c.getTransform(),V0=11000,sg=u=>sm(ph(u,.15,.6)),thf=u=>1.25*sg(u)*(1-sm(ph(u,.9,1))),th=thf(t),set=sm(ph(t,0,.15));
+const cap=(a,s)=>{const cs=Math.cos(a),sn=Math.sin(a);let r=0;for(let x=95.5;x<205;x++){const y=130+(s-130-(x-205)*sn)/cs;r+=260-Math.max(130,Math.min(260,y))}return r};
+const Vof=u=>Math.min(V0,cap(1.25*sg(u),130)),Vt=Vof(t),poured=V0-Vt,flow=Math.max(0,(Vof(t-.01)-Vt)/.01),fN=Math.min(1,flow/9000),dth=(thf(t)-thf(t-.01))/.01,amp=.8+Math.min(3,Math.abs(dth)*1.6);
+let sY=130;if(cap(th,130)>Vt+1){let lo=130,hi=420;for(let i=0;i<22;i++){const m=(lo+hi)/2;if(cap(th,m)>Vt)lo=m;else hi=m}sY=lo}
+const recTop=330-poured/110;
+bk(c,225,215,110,115,[[recTop,330,'#cfe8f5',.92]]);
+c.save();c.translate(205,130);c.rotate(th);c.translate(-205,-130);c.save();bkp(c,95,130,110,130);c.closePath();c.clip();const tr=c.getTransform();c.setTransform(base);
+c.globalAlpha=.92;c.fillStyle=lh('#d6b97c','#cfe8f5',set);c.beginPath();c.moveTo(0,H);c.lineTo(0,sY);for(let x=0;x<=W;x+=6)c.lineTo(x,sY+Math.sin(x/9+T*6)*amp);c.lineTo(W,H);c.closePath();c.fill();c.globalAlpha=1;c.setTransform(tr);
+if(set<1)for(let i=0;i<45;i++){const s=clamp(set*1.4-Rn(i,3)*.4,0,1);dt2(c,100+Rn(i,1)*100,(168+Rn(i,2)*80)*(1-s)+(244-Rn(i,4)*6)*s,2,'#a98a4e')}
+c.fillStyle='#c2a15f';c.fillRect(95,246,110,14);for(let i=0;i<24;i++)dt2(c,99+i*4.4,248+Rn(i,5)*8,2.3,i%2?'#a98a4e':'#d1b36f');
+c.restore();bkp(c,95,130,110,130);c.strokeStyle=GL;c.lineWidth=2.5;c.stroke();c.restore();
+if(flow>60&&th>.4){const w=1.2+fN*4.5,vx=40+30*fN,landY=Math.max(recTop,232),X=y=>205+vx*Math.sqrt(2*(y-130)/300);
+c.beginPath();for(let k=0;k<=24;k++){const y=130+(landY-130)*k/24;k?c.lineTo(X(y),y):c.moveTo(X(y),y)}c.strokeStyle='rgba(190,222,242,.95)';c.lineWidth=w;c.stroke();
+c.strokeStyle='rgba(255,255,255,.75)';c.lineWidth=Math.max(.8,w*.35);c.setLineDash([5,7]);c.lineDashOffset=-T*60;c.stroke();c.setLineDash([]);
+for(let k=0;k<3;k++){const u=(T*2.2+k/3)%1;c.strokeStyle='rgba(120,175,215,'+(1-u)*.6+')';c.lineWidth=1.2;c.beginPath();c.ellipse(X(landY),landY,4+u*14,1.5+u*3,0,0,7);c.stroke()}}
+txt(c,'Sediment',26,256,'#7c5a2e',12,'left',1);txt(c,'Dekantat',342,322,'#2b7bb9',12,'left',1)}
+function sepPath(c){c.beginPath();c.moveTo(-12,-124);c.lineTo(-12,-102);c.bezierCurveTo(-70,-70,-80,-10,-62,30);c.bezierCurveTo(-48,56,-14,80,-8,104);c.lineTo(-8,126);c.lineTo(8,126);c.lineTo(8,104);c.bezierCurveTo(14,80,48,56,62,30);c.bezierCurveTo(80,-10,70,-70,12,-102);c.lineTo(12,-124);c.closePath()}
+function sepOutline(c){c.beginPath();c.moveTo(-17,-124);c.lineTo(-12,-124);c.lineTo(-12,-102);c.bezierCurveTo(-70,-70,-80,-10,-62,30);c.bezierCurveTo(-48,56,-14,80,-8,104);c.lineTo(-8,126);c.moveTo(8,126);c.lineTo(8,104);c.bezierCurveTo(14,80,48,56,62,30);c.bezierCurveTo(80,-10,70,-70,12,-102);c.lineTo(12,-124);c.lineTo(17,-124)}
+function sepDraw(c,cx,cy,sc,rot,fill,tap,so){c.save();c.translate(cx,cy);c.rotate(rot);c.scale(sc,sc);c.save();sepPath(c);c.clip();fill(c);c.restore();sepOutline(c);c.strokeStyle=GL;c.lineWidth=2.5/sc;c.lineJoin='round';c.stroke();
+c.fillStyle='#94a3b8';c.strokeStyle='#475569';c.lineWidth=1/sc;c.beginPath();c.rect(-13,105,26,13);c.fill();c.stroke();if(tap){c.fillStyle='#e8f1f8';c.fillRect(-3,105.5,6,12)}
+c.save();c.translate(13,111.5);c.rotate(tap?-1.2:0);c.fillStyle='#475569';c.fillRect(0,-2,22,4);c.restore();
+c.fillStyle='#cbd5e1';c.strokeStyle='#64748b';c.beginPath();c.moveTo(-15,-132-so);c.lineTo(15,-132-so);c.lineTo(11,-114-so);c.lineTo(-11,-114-so);c.closePath();c.fill();c.stroke();c.restore()}
+function sch(c,t,T){frm(c);const sep=ph(t,.12,.5),dr=ph(t,.62,.86),so=ph(t,.55,.6)*40,yI=-4+dr*116,oT=yI-42;
+const fill=g=>{g.fillStyle='#bfe3f5';if(dr<1){g.fillRect(-90,yI,180,(dr>0?112:126)-yI);g.globalAlpha=1-dr;g.fillRect(-90,oT,180,yI-oT)}g.globalAlpha=.85*sm(sep);g.fillStyle='#fde047';g.fillRect(-90,oT,180,yI-oT);g.globalAlpha=1;
+for(let i=0;i<70;i++){const u=sm(ph(t,.12+.3*Rn(i,3),.32+.3*Rn(i,3))),x=-60+Rn(i,1)*120,y=(-30+Rn(i,2)*140)*(1-u)+(oT+6+Rn(i,4)*(yI-oT-12))*u;if(u<1||sep<1)dt2(g,x+Math.sin(T*2+i)*1.5,y,3+Rn(i,5)*3,'#facc15',0,'#ca8a04')}};
+sepDraw(c,150,175,.8,0,fill,dr>0&&dr<1,so);
+bk(c,100,292,100,93,[[385-62*dr,385,'#bfe3f5',.95]]);if(dr>0&&dr<1){c.strokeStyle='rgba(150,205,235,.95)';c.lineWidth=3;c.beginPath();c.moveTo(150,278);c.lineTo(150,385-62*dr);c.stroke()}
+rr(c,250,60,240,150,12);c.fillStyle='rgba(255,255,255,.7)';c.fill();txt(c,'Gemisch: Emulsion (Öl in Wasser)',262,84,'#1e5f9e',13,'left',1);txt(c,'Nicht mischbar, andere Dichte:',262,108);txt(c,'Öl ≈ 0,9 g/cm³ (oben)',262,128,'#a16207',12,'left',1);txt(c,'Wasser = 1,0 g/cm³ (unten)',262,148,'#2b7bb9',12,'left',1);txt(c,'→ Dichtere Phase läuft zuerst ab.',262,176);txt(c,'Scheidetrichter',14,215,'#334e68',11,'left',1);c.strokeStyle='#64748b';c.lineWidth=1;c.beginPath();c.moveTo(102,211);c.lineTo(107,206);c.stroke()}
+function ext(c,t,T){frm(c);const fW=ph(t,0,.1),aH=ph(t,.1,.2),stk=ph(t,.2,.28),sk=ph(t,.28,.58),sp=ph(t,.58,.72),stp=ph(t,.72,.78),dr=ph(t,.78,.92),f=sm(ph(t,.3,.62)),mix=sm(ph(t,.28,.34))*(1-sm(ph(t,.58,.7)));
+const yI=-8+dr*120,oT=yI-46*aH,wT=126-134*fW,cx=135,cy=172,sc=.78,rot=sk>0&&sk<1?Math.sin(T*8)*.35:0,sx=sk>0&&sk<1?Math.sin(T*16)*3:0;
+const wc=lh('#fff1d6','#b8791f',1-.9*f),hc=lh('#fdf6dc','#6d28d9',f*.95);
+const fill=g=>{const wy0=aH>0?yI:wT,wy1=dr>0?112:126;g.globalAlpha=.92;g.fillStyle=wc;if(wy1>wy0)g.fillRect(-90,wy0,180,wy1-wy0);
+if(aH>0){g.globalAlpha=.92*(1-mix);g.fillStyle=hc;g.fillRect(-90,oT,180,yI-oT);g.globalAlpha=.92*mix;g.fillStyle=wc;g.fillRect(-90,oT,180,yI-oT);g.globalAlpha=1}
+if(mix>0)for(let i=0;i<60;i++){const x=-62+Rn(i,1)*124+Math.sin(T*(5+Rn(i,2)*5)+i)*14,y=oT+8+Rn(i,3)*(110-oT)+Math.cos(T*(5+Rn(i,4)*5)+i)*14;g.globalAlpha=.85*mix;dt2(g,x,y,3.5+Rn(i,5)*4,hc,0,'rgba(109,40,217,.4)');g.globalAlpha=1}};
+if(fW>0&&fW<1){pour(c,40,66,.85,'#d9a441');c.strokeStyle='#d9a441';c.lineWidth=4;c.beginPath();c.moveTo(70,56);c.quadraticCurveTo(110,60,cx,88);c.stroke()}
+if(aH>0&&aH<1){pour(c,235,60,-.85,'#fdf3c4');c.strokeStyle='#fdf3c4';c.lineWidth=4;c.beginPath();c.moveTo(208,52);c.quadraticCurveTo(170,58,cx,86);c.stroke()}
+c.save();c.translate(sx,0);sepDraw(c,cx,cy,sc,rot,fill,dr>0&&dr<1,t<.28?(1-stk)*30:stp*40+(t>=.28&&t<.72?0:0));c.restore();
+const cl=385-50*dr;bk(c,85,295,100,90,[[cl,385,wc,.95]]);if(dr>0&&dr<1){c.strokeStyle='rgba(200,170,110,.9)';c.lineWidth=3;c.beginPath();c.moveTo(cx,cy+126*sc+4);c.lineTo(cx,cl);c.stroke()}
+if(sp>0&&t<.72){txt(c,'Heptan + Iod',205,100,'#6d28d9',12,'left',1);txt(c,'Iod-Wasser',205,cy+54,'#a16207',12,'left',1)}
+if(t>.92){txt(c,'Extrakt',175,cy+72,'#6d28d9',12,'left',1);txt(c,'entfärbtes Wasser',20,289,'#a16207',11)}
+const ix=285,iy=34,iw=220,ih=196;txt(c,'Teilchenebene an der Grenzfläche',ix,iy-6,'#2b7bb9',11,'left',1);
+if(t>.2&&t<.78){const ry=cy+yI*sc-8;c.setLineDash([3,3]);c.strokeStyle='#64748b';c.lineWidth=1;c.strokeRect(cx-30,ry,60,16);c.beginPath();c.moveTo(cx+30,ry);c.lineTo(ix,iy+90);c.moveTo(cx+30,ry+16);c.lineTo(ix,iy+106);c.stroke();c.setLineDash([])}
+c.save();rr(c,ix,iy,iw,ih,10);c.clip();const yg=iy+98+dr*(ih-98);c.fillStyle=lh('#fdf6dc','#e9ddfb',f);c.fillRect(ix,iy,iw,yg-iy);c.fillStyle=lh('#cfe8fb','#eadfbf',1-f);c.fillRect(ix,yg,iw,iy+ih-yg+2);if(dr<1){c.fillStyle='rgba(120,100,60,.5)';c.fillRect(ix,yg-1,iw,2)}
+if(aH>0)for(let i=0;i<26;i++)shp(c,'rect',ix+14+(i%7)*31+Math.sin(T*2+i)*3,iy+14+Math.floor(i/7)*22+Math.cos(T*1.8+i)*3,5,'#f7c98b','#b45309',Rn(i,2)*3);
+if(dr>0){c.globalAlpha=sm(dr);for(let i=0;i<21;i++)shp(c,'rect',ix+14+(i%7)*31+Math.sin(T*2+i)*3,iy+112+Math.floor(i/7)*26+Math.cos(T*1.8+i)*3,5,'#f7c98b','#b45309',Rn(i,2)*3);c.globalAlpha=1}
+for(let i=0;i<46;i++)shp(c,'tri',ix+12+(i%10)*21+Math.sin(T*2.2+i)*3,iy+112+Math.floor(i/10)*18+Math.cos(T*1.7+i)*3+dr*170,6,'#7cc6f2','#2b7bb9',Rn(i,3)*6);
+for(let i=0;i<20;i++){const m=i<17,tm=.3+.28*(i/17),u=m?sm(ph(t,tm,tm+.12)):0,wx=ix+18+Rn(i,4)*184,wy=iy+110+Rn(i,5)*78,hx=ix+18+Rn(i,6)*184,hy=iy+14+Rn(i,7)*(yg-iy-28),x=wx+(hx-wx)*u+Math.sin(u*Math.PI)*16+Math.sin(T*4+i)*2.5,y=wy+(hy-wy)*u+Math.cos(T*3.4+i)*2.5+(m?0:dr*170);shp(c,'rho',x,y,6,'#8b5cf6','#4c1d95',0)}
+c.restore();rr(c,ix,iy,iw,ih,10);c.strokeStyle='#9bb7d0';c.lineWidth=2;c.stroke();
+c.fillStyle='rgba(255,255,255,.85)';rr(c,ix+4,iy+4,46,16,5);c.fill();txt(c,'Heptan',ix+8,iy+16,'#6d28d9',11,'left',1);if(dr<.6){c.fillStyle='rgba(255,255,255,.85)';rr(c,ix+4,iy+ih-20,46,16,5);c.fill();txt(c,'Wasser',ix+8,iy+ih-8,'#2b7bb9',11,'left',1)}
+shp(c,'tri',ix+8,iy+ih+20,5,'#7cc6f2','#2b7bb9',0);txt(c,'Wasser-Teilchen',ix+24,iy+ih+24,'#334e68',11);shp(c,'rect',ix+8,iy+ih+36,4,'#f7c98b','#b45309',0);txt(c,'Heptan-Teilchen',ix+24,iy+ih+40,'#334e68',11);shp(c,'rho',ix+8,iy+ih+52,5,'#8b5cf6','#4c1d95',0);txt(c,'Iod-Teilchen (löslicher in Heptan)',ix+24,iy+ih+56,'#334e68',11);
+if(t>.6){c.globalAlpha=ph(t,.6,.68);txt(c,'Verteilung: ≈ 90 % Iod im Heptan,',ix,iy+ih+74,'#6d28d9',12,'left',1);txt(c,'≈ 10 % im Wasser',ix,iy+ih+90,'#6d28d9',12,'left',1);c.globalAlpha=1}
+if(t>.93){txt(c,'Mehrfaches Ausschütteln mit frischem',ix,iy+ih+110,'#334e68',11);txt(c,'Heptan erhöht die Ausbeute.',ix,iy+ih+124,'#334e68',11)};txt(c,'Scheidetrichter',14,240,'#334e68',11,'left',1);c.strokeStyle='#64748b';c.lineWidth=1;c.beginPath();c.moveTo(102,236);c.lineTo(108,229);c.stroke()}
+function bedSlots(xc,n){const o=[];for(let j=0;j<7;j++)for(let k=-13;k<13;k++){const x=xc+(k+.5)*6.2+(j%2)*3.1,u=(x-xc)/95;if(Math.abs(u)>.86)continue;o.push({x,y:336+36*(1-Math.pow(u,4))-2.6-j*5.2,j})}o.sort((a,b)=>a.j-b.j||a.x-b.x);return o.slice(0,n)}
+function dish(c,x,w){const xc=x+w/2,P=()=>{c.beginPath();c.moveTo(x,336);c.bezierCurveTo(x+8,384,x+w-8,384,x+w,336)};c.fillStyle='rgba(60,90,120,.13)';c.beginPath();c.ellipse(xc,378,w*.42,4,0,0,7);c.fill();P();c.closePath();const g=c.createLinearGradient(0,336,0,374);g.addColorStop(0,'#f8fafc');g.addColorStop(1,'#d9e2ea');c.fillStyle=g;c.fill();P();c.strokeStyle=GL;c.lineWidth=2.5;c.stroke()}
+function magn(c,t,T){frm(c);const NS=140,SL=bedSlots(135,NS),isI=SL.map((s,i)=>Rn(i,3)<.5),ir=[],qOf=[];SL.forEach((s,i)=>{if(isI[i]){qOf[i]=ir.length;ir.push(i)}});const nI=ir.length;
+const ta=ir.map((si,q)=>.3+.22*Rn(q,5)+.08*clamp(Math.abs(SL[si].x-135)/95,0,1)),tf=ir.map((si,q)=>.86+.1*Rn(q,6)),rk=(A)=>{const o=A.map((_,q)=>q).sort((a,b)=>A[a]-A[b]),r=[];o.forEach((q,k)=>r[q]=k);return r},rA=rk(ta),rF=rk(tf),SR=bedSlots(385,nI);
+const ST=[];[10,9,8,7,6,5,4,3].forEach((wd,r)=>{for(let k=0;k<wd;k++)ST.push({x:(k-(wd-1)/2)*2.6+(Rn(k+r*20,2)-.5)*.6,y:35.5+r*2.5})});for(let k=0;k<6;k++){ST.push({x:-16.5,y:6+k*4.6});ST.push({x:16.5,y:6+k*4.6})}for(let r=8;ST.length<nI;r++)for(let k=0;k<3&&ST.length<nI;k++)ST.push({x:(k-1)*2.6,y:35.5+r*2.5});
+const a=sm(ph(t,.12,.30)),b=sm(ph(t,.62,.82)),u2=sm(ph(t,.83,.93)),mx=135+250*b,my=60+208*a-40*Math.sin(Math.PI*b);
+dish(c,40,190);dish(c,290,190);
+const fa=Math.sin(Math.PI*ph(t,.28,.64))*.4;if(fa>.02){c.save();c.globalAlpha=fa;c.setLineDash([3,4]);c.strokeStyle='#dc2626';c.lineWidth=1.2;for(const d of[-60,-30,30,60]){c.beginPath();c.moveTo(mx+d*.2,my+38);c.quadraticCurveTo(mx+d*1.3,my+62,mx+d,344);c.stroke()}c.restore()}
+const dep=ir.map((_,q)=>sm((t-ta[q]-.02)/.05));let acc=0;const below=[];for(let s=0;s<NS;s++){if(isI[s])acc+=dep[qOf[s]];else below[s]=acc}
+const spos=e=>{const f=clamp(Math.floor(e),0,NS-1),g=Math.min(NS-1,f+1),u=clamp(e-f,0,1);return{x:SL[f].x+(SL[g].x-SL[f].x)*u,y:SL[f].y+(SL[g].y-SL[f].y)*u}};
+for(let s=0;s<NS;s++)if(!isI[s]){const p=spos(s-below[s]);dt2(c,p.x,p.y,2.5,'#e7c76a',0,'#b8942e')}
+c.save();c.translate(mx,my);const mo=-92*u2;c.fillStyle='#dc2626';c.fillRect(-12,-30+mo,24,30);c.fillStyle='#2563eb';c.fillRect(-12,mo,24,30);c.strokeStyle='#334155';c.lineWidth=1;c.strokeRect(-12,-30+mo,24,60);txt(c,'N',0,-10+mo,'#fff',12,'center',1);txt(c,'S',0,24+mo,'#fff',12,'center',1);
+rr(c,-14.5,-33,29,66,6);c.fillStyle='rgba(190,220,240,.28)';c.fill();c.strokeStyle='rgba(120,160,190,.9)';c.lineWidth=1.5;c.stroke();c.restore();
+for(let q=0;q<nI;q++){const si=ir[q],bp=SL[si],f=ph(t,ta[q],ta[q]+.12),sx=mx+ST[rA[q]].x,sy=my+ST[rA[q]].y;let x,y;
+if(t<ta[q]){x=bp.x;y=bp.y}else if(t<tf[q]){const e=f*f*(3-2*f);x=bp.x+(sx-bp.x)*e;y=bp.y+(sy-bp.y)*Math.pow(e,1.4)}else{const g=ph(t,tf[q],tf[q]+.04),h=SR[rF[q]];x=sx+(h.x-sx)*g;y=sy+(h.y-sy)*g*g}
+dt2(c,x,y,2.3,'#6b7280',0,'#374151')}
+txt(c,t<.62?'Eisenpulver + Sand':'Sand',44,386,'#334e68',12,'left',1);txt(c,'Eisenpulver',294,386,'#334e68',12,'left',1);txt(c,'Magnet (in Folie)',14,28,'#334e68',11);
+const ix=345,iy=28,iw=150,ih=122;txt(c,'Teilchenebene (Schale)',ix+2,iy-5,'#2b7bb9',11,'left',1);rr(c,ix,iy,iw,ih,10);c.fillStyle='rgba(255,255,255,.88)';c.fill();c.strokeStyle='#9bb7d0';c.lineWidth=2;c.stroke();c.save();rr(c,ix,iy,iw,ih,10);c.clip();
+const ty=[[0,1,0,1],[1,0,1,0],[0,1,1,0]],dk=(r,k)=>sm((t-(.32+.2*Rn(r*4+k,8))-.02)/.06);
+for(let r=0;r<3;r++)for(let k=0;k<4;k++){const X=ix+25+k*33;if(ty[r][k]){const ts=.32+.2*Rn(r*4+k,8),Y=iy+ih-18-r*30-sm(ph(t,ts,ts+.14))*230;for(let i=0;i<9;i++)shp(c,'sq',X+(i%3-1)*8,Y+(Math.floor(i/3)-1)*8,3.6,'#9ca3af','#4b5563',0)}
+else{let dd=0;for(let r2=0;r2<r;r2++)if(ty[r2][k])dd+=dk(r2,k);const Y=iy+ih-18-(r-dd)*30;for(let i=0;i<9;i++){const rr2=Math.floor(i/3);shp(c,'hex',X+(i%3-1)*8.6+(rr2%2?4.3:-2.1),Y+(rr2-1)*7.4,4.4,'#e6d3a3','#b59a5b',0)}}}
+c.restore();shp(c,'sq',ix+8,iy+ih+16,3.6,'#9ca3af','#4b5563',0);txt(c,'Eisen-Teilchen',ix+20,iy+ih+20,'#334e68',11);shp(c,'hex',ix+8,iy+ih+32,4.4,'#e6d3a3','#b59a5b',0);txt(c,'Sand-Teilchen',ix+20,iy+ih+36,'#334e68',11)}
+const TM=[
+{nm:'Filtrieren',em:'🧪',d:filt,dur:9,gm:'Suspension (fest – flüssig), z. B. Sand in Wasser, Kaffee',eig:'Teilchengröße: Die Feststoff-Teilchen liegen in Clustern vor, die größer als die Poren des Filterpapiers sind; die Flüssigkeitsteilchen passen hindurch.',bsp:'Kaffee filtern; Sand-Wasser-Gemisch → Rückstand (Sand) und Filtrat (Wasser)',st:[[0,'Das trübe Gemisch (Suspension) wird auf den Filter gegossen.'],[.25,'Die Flüssigkeit tropft durch die feinen Poren des Filterpapiers.'],[.8,'Die Feststoffteilchen sind zu groß für die Poren und bleiben als Rückstand zurück.']]},
+{nm:'Abdampfen',em:'♨️',d:abd,dur:11,gm:'Lösung (fest in flüssig), z. B. Salzwasser',eig:'Siedetemperatur: Das Lösemittel verdampft beim Erhitzen, der gelöste Feststoff ist nicht flüchtig und bleibt zurück.',bsp:'Kochsalz aus Salzwasser (Meersalzgewinnung)',st:[[0,'Die Salzlösung wird in der Abdampfschale erhitzt.'],[.2,'Das Wasser siedet und verdampft, das Salz ist nicht flüchtig und bleibt zurück.'],[.7,'Am Ende bleiben die Salzkristalle in der Schale.']]},
+{nm:'Sieben',em:'🪣',d:sieb,dur:9,gm:'Gemenge (fest – fest), z. B. Sand und Kies',eig:'Korngröße: Feine Körner passen durch die Maschen des Siebs, grobe nicht.',bsp:'Sand von Kies trennen, Mehl sieben',st:[[0,'Das Gemenge aus groben und feinen Körnern liegt im Sieb.'],[.1,'Beim Schütteln fallen die feinen Körner durch die Maschen.'],[.85,'Die groben Körner bleiben als Siebrückstand im Sieb.']]},
+{nm:'Magnetscheiden',em:'🧲',d:magn,dur:20,gm:'Gemenge (fest – fest), z. B. Eisenpulver und Sand',eig:'Magnetisches Verhalten: Eisen wird von einem Magneten angezogen, Sand nicht.',bsp:'Eisenpulver von Sand trennen; Eisenschrott aus dem Müll aussortieren',st:[[0,'Das Gemenge aus Eisenpulver und Sand liegt in einer Schale.'],[.12,'Ein Magnet (in Folie verpackt) wird über das Gemenge geführt.'],[.3,'Die Eisenteilchen werden vom Magneten angezogen und haften an der Folie. Der Sand wird nicht angezogen und bleibt liegen.'],[.62,'Der Magnet mit dem Eisenpulver wird über eine zweite Schale geführt.'],[.83,'Zieht man den Magneten aus der Folie, fällt das Eisenpulver in die Schale. Eisen und Sand sind getrennt.']]},
+{nm:'Destillieren',em:'⚗️',d:dest,dur:10,gm:'Lösungen und Flüssigkeitsgemische, z. B. Ethanol–Wasser',eig:'Siedetemperatur: Der Stoff mit der niedrigeren Siedetemperatur verdampft zuerst und wird im Kühler wieder verflüssigt.',bsp:'Ethanol aus Wein, Trinkwasser aus Meerwasser. Ausführliche Simulation: Destillations-Programm.',st:[[0,'Das Flüssigkeitsgemisch wird im Kolben erhitzt.'],[.25,'Der Stoff mit der niedrigeren Siedetemperatur verdampft zuerst.'],[.55,'Im Kühler kondensiert der Dampf und tropft als Destillat in die Vorlage.']]},
+{nm:'Chromatographie',em:'🖍️',d:chrom,dur:28,gm:'Gemische gelöster Stoffe, z. B. Farbstoffgemisch in Filzstifttinte oder Blattfarbstoffe',eig:'Unterschiedliche Haftung am Papier (stationäre Phase) und unterschiedliche Löslichkeit im Laufmittel (mobile Phase): Gut lösliche, schwach haftende Stoffe wandern weit, stark haftende bleiben nahe der Startlinie.',bsp:'Schwarze Filzstifttinte → Gelb, Rot, Blau; Rf-Wert = a : b',st:[[0,'Mit dem Stift wird ein Farbpunkt des Gemischs auf die Startlinie getüpfelt.'],[.12,'Das Papier wird so in die Kammer gestellt, dass das Laufmittel unter der Startlinie bleibt.'],[.24,'Das Laufmittel steigt durch Kapillarkräfte im Papier auf und nimmt die Farbstoffe mit.'],[.5,'Auf Teilchenebene wechseln die Farbstoff-Teilchen ständig zwischen Papier und Laufmittel: Schwach haftende wandern schnell, stark haftende langsam.'],[.82,'Die Laufmittelfront wird markiert, das Chromatogramm getrocknet.'],[.9,'Auswertung: Rf-Wert = Laufstrecke des Stoffes a : Laufstrecke der Front b.']]},
+{nm:'Dekantieren',em:'🫗',d:dek,dur:14,gm:'Suspension mit absetzendem Feststoff (Sediment)',eig:'Dichte: Der schwerere Feststoff sinkt zu Boden (Sedimentation), die klare Flüssigkeit wird vorsichtig abgegossen.',bsp:'Sand-Wasser-Gemisch, Wein vom Bodensatz trennen',st:[[0,'Der Feststoff setzt sich ab (Sedimentation, Dichteunterschied).'],[.15,'Das Gefäß wird langsam gekippt.'],[.3,'Die klare Flüssigkeit (Dekantat) läuft über den Rand in das zweite Gefäß.'],[.5,'Das Sediment bleibt im Gefäß zurück und wird nicht mit ausgegossen.'],[.9,'Das Gefäß wird wieder aufgerichtet.']]},
+{nm:'Abscheiden',em:'🧴',d:sch,dur:15,gm:'Emulsion (flüssig – flüssig, nicht mischbar), z. B. Öl und Wasser',eig:'Dichte und Nichtmischbarkeit: Die Flüssigkeiten bilden zwei Schichten, die dichtere liegt unten und wird zuerst abgelassen.',bsp:'Speiseöl von Wasser trennen',st:[[0,'Die Emulsion aus Öl und Wasser wird in den Scheidetrichter gefüllt.'],[.12,'Beim Stehen steigen die leichteren Öltröpfchen auf und bilden eine obere Schicht.'],[.55,'Der Stopfen wird abgenommen.'],[.62,'Hahn öffnen: Die untere, dichtere Wasserschicht läuft ab.'],[.86,'Hahn schließen, bevor das Öl ausläuft.']]},
+{nm:'Extrahieren',em:'🧬',d:ext,dur:32,gm:'Gemisch, aus dem ein gelöster Stoff mit einem Extraktionsmittel herausgelöst wird, z. B. Iod aus Iod-Wasser',eig:'Unterschiedliche Löslichkeit eines Stoffes in zwei nicht mischbaren Lösemitteln: Iod löst sich in Heptan viel besser als in Wasser und wechselt beim Schütteln in die Heptan-Phase.',bsp:'Iod aus Iod-Wasser mit Heptan; Koffein aus Tee; Aromastoffe aus Kräutern',st:[[0,'Iod-Wasser (braun) wird in den Scheidetrichter gefüllt.'],[.1,'Heptan (leichter, nicht mit Wasser mischbar) wird zugegeben.'],[.2,'Der Stopfen wird aufgesetzt.'],[.28,'Kräftig schütteln: Die Phasen durchmischen sich, die Iod-Teilchen wandern aus dem Wasser ins Heptan, in dem sie besser löslich sind.'],[.58,'Die Phasen trennen sich wieder: oben violettes Heptan mit Iod, unten fast farbloses Wasser.'],[.72,'Der Stopfen wird abgenommen.'],[.78,'Hahn öffnen und die untere Wasserphase ablassen.'],[.92,'Das Iod ist nun überwiegend im Heptan (Extrakt). Mehrmaliges Ausschütteln erhöht die Ausbeute.']]}];
+const $=id=>document.getElementById(id);let cur=0,main,minis=[];
+ORD.forEach(i=>{const s=SP[i],b=document.createElement('button');b.className='chip';b.dataset.i=i;b.innerHTML=s.em+' '+s.nm+'<small>'+s.mix+'</small>';b.onclick=()=>pick(i);$('chips').appendChild(b)});
+function pick(i){cur=i;[...$('chips').children].forEach(b=>b.classList.toggle('on',+b.dataset.i===i));main.set(i);$('sl').value=0;$('go').textContent='▶ Mischen';const s=SP[i];
+$('lg').innerHTML=s.lg.map(l=>'<span><b style="color:'+l[1]+'">'+l[0]+'</b>'+l[2]+'</span>').join('');
+$('info').innerHTML='<h2>'+s.em+' '+s.nm+'</h2><span class="badge '+(s.het?'het':'hom')+'">'+(s.het?'heterogen':'homogen')+'</span><p style="margin-top:6px"><b>Gemischtyp:</b> '+s.mix+'<br><b>Beispiel:</b> '+s.ex+'</p><div class="lv lvS"><h3>Stoffebene</h3><p>'+s.S+'</p></div><div class="lv lvT"><h3>Teilchenebene</h3><p>'+s.T+'</p></div>';
+{const ce=[...$('chips').children].find(b=>+b.dataset.i===i);if(ce)ce.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'})}}
+main=new Sim($('cv'),0,0);const mc=$('mc').getContext('2d');
+$('go').onclick=()=>{if(main.t>=1){main.set(cur)}main.play=!main.play;$('go').textContent=main.play?'⏸ Pause':'▶ Mischen'};
+$('rs').onclick=()=>{pick(cur)};
+$('sl').oninput=e=>{main.play=0;$('go').textContent='▶ Mischen';const v=e.target.value/100;if(v===0&&SP[cur].k==='gg'){main.set(cur)}main.t=v};
+document.querySelectorAll('nav button[data-t]').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button[data-t]').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('section').forEach(x=>x.classList.toggle('on',x.id===b.dataset.t))});
+['Alle','heterogen','homogen'].forEach((f,i)=>{const b=document.createElement('button');b.className='chip'+(i?'':' on');b.textContent=f;b.onclick=()=>{[...$('fl').children].forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('#ov .card').forEach(cd=>cd.classList.toggle('h',i>0&&(i===1)!==(cd.dataset.h==='1')))};$('fl').appendChild(b)});
+ORD.forEach(i=>{const s=SP[i];if(s.nm==='Lösung'&&i!==8)return;const LS=SP.filter(z=>z.nm==='Lösung'),mx=i===8?LS.map(z=>z.mix).join('<br>'):s.mix,exs=i===8?LS.map(z=>z.ex).join(', '):s.ex;const d=document.createElement('div');d.className='card';d.dataset.h=s.het;d.innerHTML='<canvas width="260" height="200"></canvas><h2 style="font-size:17px">'+s.em+' '+s.nm+'</h2><span class="badge '+(s.het?'het':'hom')+'">'+(s.het?'heterogen':'homogen')+'</span><p style="margin-top:4px;font-size:14px"><b>'+mx+'</b><br>'+exs+'</p>';
+d.onclick=()=>{document.querySelector('nav button[data-t="a"]').click();pick(i);scrollTo({top:0,behavior:'smooth'})};$('ov').appendChild(d);minis.push(new Sim(d.querySelector('canvas'),i,1))});
+let ti=0;const tt={t:0,play:0,time:0},tcx=$('tc').getContext('2d');
+TM.forEach((m,i)=>{const b=document.createElement('button');b.className='chip';b.innerHTML=m.em+' '+m.nm;b.onclick=()=>tpick(i);$('tchips').appendChild(b)});
+function tpick(i){ti=i;tt.t=0;tt.play=0;tt.time=0;$('tsl').value=0;$('tgo').textContent='▶ Start';[...$('tchips').children].forEach((b,j)=>b.classList.toggle('on',j===i));const m=TM[i];
+$('tinfo').innerHTML='<h2>'+m.em+' '+m.nm+'</h2><h3>Stoffgemisch</h3><p>'+m.gm+'</p><h3>Genutzter Eigenschaftsunterschied</h3><p>'+m.eig+'</p><h3>Beispiel</h3><p>'+m.bsp+'</p><h3>Ablauf</h3><ol>'+m.st.map((s,k)=>'<li id="tl'+k+'">'+s[1]+'</li>').join('')+'</ol>'}
+$('tgo').onclick=()=>{if(tt.t>=1){tt.t=0;tt.time=0}tt.play=!tt.play;$('tgo').textContent=tt.play?'⏸ Pause':'▶ Start'};
+$('trs').onclick=()=>tpick(ti);$('tsl').oninput=e=>{tt.play=0;$('tgo').textContent='▶ Start';tt.t=e.target.value/100};
+let tsg=-1;function tmStep(dt){const m=TM[ti];tt.time+=dt;if(tt.play){tt.t=Math.min(1,tt.t+dt/m.dur);if(tt.t>=1){tt.play=0;$('tgo').textContent='▶ Start'}}
+tcx.setTransform(2,0,0,2,0,0);tcx.clearRect(0,0,W,H);m.d(tcx,tt.t,tt.time);$('tsl').value=Math.round(tt.t*100);
+let k=0;m.st.forEach((s,j)=>{if(tt.t>=s[0])k=j});if(k!==tsg){tsg=k;$('tstg').textContent=m.st[k][1];m.st.forEach((s,j)=>{const l=$('tl'+j);if(l)l.classList.toggle('on',j===k)})}}
+tpick(0);
+
+/* ===== Reinstoff und Gemisch ===== */
+const RSd=[{t:'Reinstoff',p:'Auf Stoffteilchen-Ebene besteht ein Reinstoff aus der gleichen Sorte von Stoffteilchen. Die Stoffteilchen verschiedener Reinstoffe unterscheiden sich in ihrer Größe, Masse und Form.',x:'Ein Reinstoff hat typische, unveränderliche Stoffeigenschaften (z. B. Schmelz- und Siedetemperatur, Dichte) und kann durch physikalische Trennverfahren nicht in Bestandteile zerlegt werden.'},
+{t:'Heterogenes Gemisch',p:'Auf Stoffteilchenebene bilden die Stoffteilchen der vermischten Reinstoffe Ansammlungen (Cluster) der gleichen Stoffteilchen.',x:'Ein heterogenes Gemisch besteht aus mindestens zwei verschiedenen Bestandteilen in variabler Zusammensetzung, die (spätestens unter dem Mikroskop) unterscheidbar sind. Es kann durch (physikalische) Trennverfahren in seine Bestandteile zerlegt werden.'},
+{t:'Homogenes Gemisch',p:'Auf Stoffteilchenebene sind die Stoffteilchen der vermischten Reinstoffe vollständig miteinander vermischt.',x:'Ein homogenes Gemisch besteht aus mindestens zwei verschiedenen Bestandteilen in variabler Zusammensetzung, die (auch unter dem Mikroskop) nicht unterscheidbar sind. Es kann durch (physikalische) Trennverfahren in seine Bestandteile zerlegt werden.'}];
+let RSP=[];
+function rsBuild(){RSP=[];for(let p=0;p<3;p++){let cs=cells(48,66,214,208,15,.22);const Wl=[],Sl=[],mk=(L,sh,x,y,r,c,s,amp,rot)=>L.push({sh,bx:x,by:y,r,c,s,amp,a:rot||0,ph:rnd(0,9)});
+if(p===1){const cen=[[88,112],[172,104],[120,174],[188,176],[62,150]];cen.forEach(q=>cs=cs.filter(c=>Math.hypot(c.x-q[0],c.y-q[1])>24));cen.forEach(q=>lat(6,q[0],q[1],9.1,6.4,1).forEach(z=>mk(Sl,'rho',z.x,z.y,6.3,'#fb923c','#b45309',.12,0)))}
+if(p===2){const pk=[];shf(cs.slice()).forEach(q=>{if(pk.length<12&&!pk.some(z=>Math.hypot(z.x-q.x,z.y-q.y)<26))pk.push(q)});const st=new Set(pk);cs=cs.filter(q=>!st.has(q));pk.forEach(q=>mk(Sl,'sq',q.x,q.y,4.6,'#e5e7eb','#6b7280',1.4,0))}
+cs.forEach(q=>mk(Wl,'tri',q.x,q.y,6.2,'#7cc6f2','#2b7bb9',2.2,rnd(0,6.28)));RSP.push(Wl.concat(Sl))}}
+const rsc=[...document.querySelectorAll('#d canvas')],rsx=rsc.map(c=>c.getContext('2d'));let rsT=0,rsSel=null,rsOk=[0,0,0];
+function rsDraw(){rsx.forEach((c,p)=>{c.setTransform(2,0,0,2,0,0);c.clearRect(0,0,260,230);const g=c.createLinearGradient(0,0,0,230);g.addColorStop(0,'#f8fbff');g.addColorStop(1,'#dcecfa');c.fillStyle=g;rr(c,3,3,254,224,16);c.fill();c.strokeStyle='#9bb7d0';c.lineWidth=2;c.stroke();
+bk(c,40,40,180,172,[[58,212,'rgba(176,218,246,.5)']]);
+RSP[p].forEach(q=>drawP(c,{sh:q.sh,x:q.bx+Math.sin(rsT*2.1+q.ph)*q.amp,y:q.by+Math.cos(rsT*1.7+q.ph*1.3)*q.amp,a:q.a+(q.sh==='tri'?Math.sin(rsT*1.3+q.ph)*.35:0),r:q.r,c:q.c,s:q.s}));
+txt(c,'Abbildung '+(p+1)+' (Teilchenebene)',12,22,'#334e68',11,'left',1)})}
+function rsStep(dt){rsT+=dt;rsDraw()}
+function rsTerms(){const box=$('terms');box.innerHTML='';shf(RSd.map(d=>d.t)).forEach((t,k)=>{const b=document.createElement('div');b.className='term';b.textContent=t;b.draggable=true;b.dataset.t=t;b.style.setProperty('--r','0deg');b.ondragstart=e=>{e.dataTransfer.setData('text/plain',t);rsSel=t};b.onclick=()=>{rsSel=rsSel===t?null:t;[...box.children].forEach(x=>x.classList.toggle('sel',!!rsSel&&x===b))};box.appendChild(b)})}
+const rsSlots=[...document.querySelectorAll('#d .slot')],rsExp=[...document.querySelectorAll('#d .exp')];
+function rsPlace(i,t){if(!t||rsOk[i])return;const s=rsSlots[i];if(t===RSd[i].t){rsOk[i]=1;s.textContent='✔ '+t;s.className='slot ok';rsExp[i].innerHTML='<div class="lv lvS"><b>Stoffebene:</b> '+RSd[i].x+'</div><div class="lv lvT"><b>Teilchenebene:</b> '+RSd[i].p+'</div>';[...$('terms').children].forEach(x=>{if(x.dataset.t===t)x.classList.add('used')});rsSel=null;$('rsm').textContent=rsOk.every(Boolean)?'✔ Alles richtig zugeordnet!':'Richtig!'}
+else{s.classList.add('bad');setTimeout(()=>s.classList.remove('bad'),450);$('rsm').textContent='Das passt noch nicht – überlege: Besteht die Abbildung aus einem Stoff oder aus mehreren? Sind die Bestandteile unterscheidbar?'}}
+rsSlots.forEach((s,i)=>{s.onclick=()=>rsPlace(i,rsSel);s.ondragover=e=>{e.preventDefault();s.classList.add('over')};s.ondragleave=()=>s.classList.remove('over');s.ondrop=e=>{e.preventDefault();s.classList.remove('over');rsPlace(i,e.dataTransfer.getData('text/plain')||rsSel)}});
+function rsReset(){rsOk=[0,0,0];rsSel=null;rsSlots.forEach(s=>{s.textContent='Fachbegriff hierher ziehen oder antippen';s.className='slot'});rsExp.forEach(e=>e.innerHTML='');$('rsm').textContent='';rsTerms();rsBuild()}
+$('rsn').onclick=rsReset;$('rsl').onclick=()=>{RSd.forEach((d,i)=>{rsOk[i]=0;rsPlace(i,d.t)})};rsReset();
+/* ===== Übersicht Trennmethoden ===== */
+const tmRep=[.6,.5,.45,.5,.6,.82,.5,.75,.6],ovtC=[];let ovk=0,ovT=0;
+TM.forEach((m,i)=>{const d=document.createElement('div');d.className='card';d.innerHTML='<canvas width="520" height="400"></canvas><h2 style="font-size:16px">'+m.em+' '+m.nm+'</h2><p style="font-size:12px"><b>Stoffgemisch:</b> '+m.gm+'</p><p style="font-size:12px"><b>Unterschied:</b> '+m.eig+'</p><p style="font-size:12px"><b>Beispiel:</b> '+m.bsp+'</p>';d.onclick=()=>{document.querySelector('nav button[data-t="c"]').click();tpick(i);scrollTo({top:0,behavior:'smooth'})};$('ovt').appendChild(d);ovtC.push(d.querySelector('canvas').getContext('2d'))});
+function ovtStep(dt){ovT+=dt;ovk=(ovk+1)%TM.length;const c=ovtC[ovk];c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,520,400);TM[ovk].d(c,tmRep[ovk],ovT)}
+/* ===== PDF (DIN A4) ===== */
+const A4H=842,mctx=document.createElement('canvas').getContext('2d'),WM={'–':'\x96','—':'\x97','‘':'\x91','’':'\x92','“':'\x93','”':'\x94','•':'\x95','…':'\x85','≈':'~','→':'->','·':'\xB7','€':'\x80'};
+const lat1=s=>Uint8Array.from(s,ch=>ch.charCodeAt(0)&255),pdfE=s=>Array.from(s).map(ch=>WM[ch]!==undefined?WM[ch]:ch.charCodeAt(0)<256?ch:'?').join('').replace(/[\\()]/g,m=>'\\'+m),rgbf=h=>[1,3,5].map(i=>(parseInt(h.slice(i,i+2),16)/255).toFixed(3)).join(' ');
+function wrapT(s,w,z,b){mctx.font=(b?'bold ':'')+z+'px Arial';const o=[];let l='';String(s).split(' ').forEach(wd=>{const t2=l?l+' '+wd:wd;if(mctx.measureText(t2).width>w&&l){o.push(l);l=wd}else l=t2});if(l)o.push(l);return o}
+const tx=(P,x,y,s,z,b,c)=>P.push({k:'t',x,y,s,z,b,c:c||'#1f2937'});
+function jpgC(cv){const o=document.createElement('canvas');o.width=cv.width;o.height=cv.height;const g=o.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,o.width,o.height);g.drawImage(cv,0,0);o.u=o.toDataURL('image/jpeg',.9);return o}
+function head(P,title,sub){tx(P,40,52,title,20,1,'#1e5f9e');tx(P,40,70,sub,10,0,'#475569');P.push({k:'l',x1:40,y1:78,x2:555,y2:78,c:'#2b7bb9',w:1.5});tx(P,40,826,'Einteilung der Stoffgemische · Matthias Gleich',8,0,'#94a3b8')}
+function grid(P,x0,y,cw,h,f){P.push({k:'r',x:x0,y,w:515,h,f,s:'#7ea0bf'});let x=x0;cw.slice(0,-1).forEach(w=>{x+=w;P.push({k:'l',x1:x,y1:y,x2:x,y2:y+h,c:'#9bb7d0',w:.5})})}
+function pageGem(im){const P=[];head(P,'Übersicht der Gemischtypen','Aggregatzustände, Gemischtyp, Fachbegriff und Beispiele – mit Teilchenbild');const cw=[74,96,70,100,175],x0=40,hh=24;let y=92;grid(P,x0,y,cw,hh,'#d6ecfa');let x=x0;['Teilchenbild','Aggregatzustände','Gemischtyp','Fachbegriff','Beispiel'].forEach((h,i)=>{tx(P,x+4,y+15,h,9,1,'#10263b');x+=cw[i]});y+=hh;
+ORD.forEach((i,r)=>{const s=SP[i],h=47;grid(P,x0,y,cw,h,r%2?'#f1f5f9':'#ffffff');P.push({k:'i',x:x0+9,y:y+3.5,w:55,h:42.3,im:im[i]});let xx=x0+cw[0];tx(P,xx+4,y+27,s.mix,8.5);xx+=cw[1];tx(P,xx+4,y+27,s.het?'heterogen':'homogen',8.5,1,s.het?'#b91c1c':'#15803d');xx+=cw[2];tx(P,xx+4,y+27,s.nm,9,1,'#1e5f9e');xx+=cw[3];const ls=wrapT(s.ex,cw[4]-8,8.5);ls.forEach((l,k)=>tx(P,xx+4,y+27-(ls.length-1)*5+k*10,l,8.5));y+=h});return P}
+function pageTm(im){const P=[];head(P,'Übersicht der Trennmethoden','Stoffgemisch, genutzter Eigenschaftsunterschied und Beispiele');const cw=[90,86,104,146,89],x0=40,hh=24;let y=92;grid(P,x0,y,cw,hh,'#d6ecfa');let x=x0;['Abbildung','Trennmethode','Stoffgemisch','Eigenschaftsunterschied','Beispiel'].forEach((h,i)=>{tx(P,x+4,y+15,h,9,1,'#10263b');x+=cw[i]});y+=hh;
+TM.forEach((m,i)=>{const g1=wrapT(m.gm,cw[2]-10,8),g2=wrapT(m.eig,cw[3]-10,8),g3=wrapT(m.bsp,cw[4]-12,8),h=Math.max(70,Math.max(g1.length,g2.length,g3.length)*10+14);grid(P,x0,y,cw,h,i%2?'#f1f5f9':'#ffffff');P.push({k:'i',x:x0+3,y:y+3,w:84,h:64.6,im:im[i]});let xx=x0+cw[0];tx(P,xx+4,y+15,m.nm,9,1,'#1e5f9e');xx+=cw[1];g1.forEach((l,k)=>tx(P,xx+4,y+15+k*10,l,8));xx+=cw[2];g2.forEach((l,k)=>tx(P,xx+4,y+15+k*10,l,8));xx+=cw[3];g3.forEach((l,k)=>tx(P,xx+4,y+15+k*10,l,8));y+=h});return P}
+function renderPg(P,sc){const cv=document.createElement('canvas');cv.width=595*sc;cv.height=A4H*sc;const g=cv.getContext('2d');g.scale(sc,sc);g.fillStyle='#fff';g.fillRect(0,0,595,A4H);
+P.forEach(p=>{if(p.k==='r'){if(p.f){g.fillStyle=p.f;g.fillRect(p.x,p.y,p.w,p.h)}if(p.s){g.strokeStyle=p.s;g.lineWidth=.5;g.strokeRect(p.x,p.y,p.w,p.h)}}else if(p.k==='l'){g.strokeStyle=p.c;g.lineWidth=p.w||.5;g.beginPath();g.moveTo(p.x1,p.y1);g.lineTo(p.x2,p.y2);g.stroke()}else if(p.k==='t'){g.font=(p.b?'bold ':'')+p.z+'px Arial';g.fillStyle=p.c;g.textAlign='left';g.fillText(p.s,p.x,p.y)}else if(p.k==='i')g.drawImage(p.im,p.x,p.y,p.w,p.h)});return cv}
+function mkPDF(pages){const parts=[];let len=0,nid=4;const offs={},put=x=>{const b=typeof x==='string'?lat1(x):x;parts.push(b);len+=b.length},obj=(id,b)=>{offs[id]=len;put(id+' 0 obj\n'+b+'\nendobj\n')};
+put('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');obj(3,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');obj(4,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');const kids=[];
+pages.forEach(P=>{let cs='';const xo=[];P.forEach(p=>{
+if(p.k==='i'){const d=Uint8Array.from(atob(p.im.u.split(',')[1]),ch=>ch.charCodeAt(0)),id=++nid;offs[id]=len;put(id+' 0 obj\n<< /Type /XObject /Subtype /Image /Width '+p.im.width+' /Height '+p.im.height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+d.length+' >>\nstream\n');put(d);put('\nendstream\nendobj\n');xo.push(id);cs+='q '+p.w+' 0 0 '+p.h+' '+p.x+' '+(A4H-p.y-p.h)+' cm /Im'+(xo.length-1)+' Do Q\n'}
+else if(p.k==='r'){if(p.f)cs+=rgbf(p.f)+' rg '+p.x+' '+(A4H-p.y-p.h)+' '+p.w+' '+p.h+' re f\n';if(p.s)cs+=rgbf(p.s)+' RG .5 w '+p.x+' '+(A4H-p.y-p.h)+' '+p.w+' '+p.h+' re S\n'}
+else if(p.k==='l')cs+=rgbf(p.c)+' RG '+(p.w||.5)+' w '+p.x1+' '+(A4H-p.y1)+' m '+p.x2+' '+(A4H-p.y2)+' l S\n';
+else if(p.k==='t')cs+='BT /'+(p.b?'F2':'F1')+' '+p.z+' Tf '+rgbf(p.c)+' rg '+p.x+' '+(A4H-p.y)+' Td ('+pdfE(p.s)+') Tj ET\n'});
+const cid=++nid;offs[cid]=len;put(cid+' 0 obj\n<< /Length '+cs.length+' >>\nstream\n'+cs+'endstream\nendobj\n');const pid=++nid;
+obj(pid,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> /XObject << '+xo.map((id,k)=>'/Im'+k+' '+id+' 0 R').join(' ')+' >> >> /Contents '+cid+' 0 R >>');kids.push(pid)});
+obj(1,'<< /Type /Catalog /Pages 2 0 R >>');obj(2,'<< /Type /Pages /Kids ['+kids.map(k=>k+' 0 R').join(' ')+'] /Count '+kids.length+' >>');
+const xr=len;let x='xref\n0 '+(nid+1)+'\n0000000000 65535 f \n';for(let i=1;i<=nid;i++)x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';put(x+'trailer\n<< /Size '+(nid+1)+' /Root 1 0 R >>\nstartxref\n'+xr+'\n%%EOF');
+const out=new Uint8Array(len);let o=0;parts.forEach(b=>{out.set(b,o);o+=b.length});return out}
+const imgGem=()=>SP.map((s,i)=>{const cv=document.createElement('canvas');cv.width=520;cv.height=400;new Sim(cv,i,1).draw();return jpgC(cv)}),imgTm=()=>TM.map((m,i)=>{const cv=document.createElement('canvas');cv.width=520;cv.height=400;const g=cv.getContext('2d');g.setTransform(1,0,0,1,0,0);m.d(g,tmRep[i],3.2);return jpgC(cv)});
+let pvBlob=null,pvName='';
+function pdfGo(o){$('pm').classList.remove('on');const pages=[],nm={g:'Uebersicht_Gemischtypen',t:'Uebersicht_Trennmethoden',b:'Uebersichten_Gemischtypen_Trennmethoden'};if(o!=='t')pages.push(pageGem(imgGem()));if(o!=='g')pages.push(pageTm(imgTm()));
+pvBlob=new Blob([mkPDF(pages)],{type:'application/pdf'});pvName=nm[o]+'.pdf';const box=$('pvc');box.innerHTML='';pages.forEach(P=>box.appendChild(renderPg(P,1.7)));$('pvt').textContent='Vorschau (DIN A4): '+pvName;$('pv').classList.add('on')}
+$('pdfb').onclick=()=>$('pm').classList.add('on');$('pmx').onclick=()=>$('pm').classList.remove('on');$('pvx').onclick=()=>$('pv').classList.remove('on');document.querySelectorAll('#pm [data-o]').forEach(b=>b.onclick=()=>pdfGo(b.dataset.o));
+$('pvs').onclick=async()=>{try{const dl=window.claude&&await window.claude.use('downloads');if(dl)await dl.save({filename:pvName,data:pvBlob});else window.open(URL.createObjectURL(pvBlob),'_blank')}catch(e){}};
+
+pick(0);let last=performance.now(),sg='';
+function loop(n){const dt=Math.min(.05,(n-last)/1000);last=n;
+if($('a').classList.contains('on')){main.step(dt);main.draw();macro(mc,main.t,cur,main.time);$('sl').value=Math.round(main.t*100);
+const s=main.t<.02?'Ausgangszustand: Die Stoffe liegen getrennt vor.':main.t<1?'Es wird vermischt …':'Ergebnis: '+(SP[cur].het?'heterogenes':'homogenes')+' Stoffgemisch ('+SP[cur].nm+')';if(s!==sg){sg=s;$('stg').textContent=s}}
+else if($('b').classList.contains('on')){minis.forEach(m=>{m.step(dt);m.draw()})}else if($('c').classList.contains('on'))tmStep(dt);else if($('d').classList.contains('on'))rsStep(dt);else if($('e').classList.contains('on'))ovtStep(dt)
+requestAnimationFrame(loop)}requestAnimationFrame(loop);
+</script></body></html>

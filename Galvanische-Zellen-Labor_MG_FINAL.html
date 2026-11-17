@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Galvanische-Zellen-Labor</title><style>
+:root{--bg:#eef3f9;--fg:#17202e;--card:#fff;--mut:#5b6b82;--ac:#0e7490;--onac:#fff;--bd:#d5deea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1220;--fg:#e6edf7;--card:#131d31;--mut:#8fa3bf;--ac:#22d3ee;--onac:#04222b;--bd:#24334d}}
+:root[data-theme="dark"]{--bg:#0b1220;--fg:#e6edf7;--card:#131d31;--mut:#8fa3bf;--ac:#22d3ee;--onac:#04222b;--bd:#24334d}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1400px;margin:auto;padding:14px}
+h1{margin:4px 0 0;font-size:clamp(24px,5vw,36px);background:linear-gradient(90deg,#06b6d4,#6366f1,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent}
+.by{color:var(--mut);font-size:13px}h3{margin:0 0 6px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px;margin:12px 0;box-shadow:0 6px 24px rgba(0,0,0,.08)}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:3px}
+select,button{font:inherit;font-size:14px;padding:7px 10px;border-radius:9px;border:1px solid var(--bd);background:var(--card);color:var(--fg);cursor:pointer}
+.seg{display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--bd)}.seg button{border:0;border-radius:0}
+button.on,button.pri{background:var(--ac);color:var(--onac);border-color:var(--ac)}
+canvas{width:100%;height:auto;display:block;border-radius:12px;background:linear-gradient(#ffffff,#e4edf8)}
+.eq{font-family:ui-monospace,Menlo,monospace;background:rgba(99,102,241,.12);padding:4px 8px;border-radius:8px;display:block;margin:3px 0;overflow-x:auto}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+.cv{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start}@media(max-width:800px){.cv{grid-template-columns:1fr!important}}.row3{display:flex;gap:6px;flex-wrap:nowrap}.row3 select{flex:1;min-width:0}label.chk{flex-direction:row;align-items:center;gap:6px;font-size:13px;color:var(--fg)}canvas{cursor:default}.chip{display:inline-block;padding:2px 8px;margin:2px;border:1px solid var(--bd);border-radius:999px;font-size:13px}.hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px}h1{font-size:clamp(20px,3vw,28px)!important}.card{padding:10px!important;margin:8px 0!important}.ctl{gap:8px!important}.cv canvas{max-height:42vh;width:auto;max-width:100%;justify-self:center}.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}.g2>.card{margin:0!important}#dl,#mw{grid-column:1/-1}@media(max-width:900px){.g2{grid-template-columns:1fr}}.fs{position:fixed!important;inset:2vh 2vw;z-index:60;overflow:auto;margin:0!important;animation:zin .32s ease-out;box-shadow:0 0 0 100vmax rgba(10,18,32,.82)}.fs #ld{max-width:1000px;margin:0 auto}@keyframes zin{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}.fsout{animation:zout .22s ease-in forwards}@keyframes zout{to{transform:scale(.5);opacity:0}}</style></head><body><div class="wrap">
+<div class="hd"><h1>Galvanische-Zellen-Labor</h1><div class="by">Autor: Matthias Gleich · Standardbedingungen (25 °C, c = 1 mol/L, 1013 hPa)</div></div>
+<div class="card ctl"><button id="go" class="pri">Versuch starten</button><label>Linke Halbzelle<select id="sl"></select></label><label>Rechte Halbzelle<select id="sr"></select></label>
+<div class="seg" id="mode"><button data-v="0" class="on">Unbelastet (Voltmeter)</button><button data-v="1">Belastet (Verbraucher)</button></div>
+<div class="seg" id="view"><button data-v="macro">Stoffebene</button><button data-v="part">Teilchenebene</button><button data-v="both" class="on">Beides</button></div>
+<label>Tempo<input type="range" id="spd" min=".2" max="3" step=".1" value="1"></label><button id="pa">Pause</button><button id="rs">Neu ansetzen</button><button id="sv" class="pri">Messwert festhalten</button><label class="chk"><input type="checkbox" id="cdl"> Doppelschicht erläutern</label><label class="chk"><input type="checkbox" id="cmw"> Messwerttabelle zeigen</label><span id="msg" style="color:var(--mut);font-size:13px;flex-basis:100%"></span></div>
+<div class="card"><div id="cv" class="cv"><canvas id="mc" width="900" height="470"></canvas><canvas id="pc" width="900" height="470"></canvas></div><div style="font-size:11px;color:var(--mut);margin-top:2px">Tipp: In der Teilchenebene eine Elektrode antippen, dann öffnet sich eine vergrößerte Detailansicht.</div></div>
+<div class="g2"><div class="card" id="info"></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">Additivität der Potentialdifferenzen → Tabelle der Standardpotentiale</h3><button id="fsb" style="padding:3px 8px;font-size:12px;flex:none">⤢ Vollbild</button></div><p style="color:var(--mut);margin:2px 0;font-size:13px">Die Messwerte werden nach ihrem Potential geordnet; jede Differenz ist die Summe der Nachbardifferenzen: ΔE(A,C) = ΔE(A,B) + ΔE(B,C). Standardpotentiale und Tabelle erscheinen erst, wenn gegen die Standardwasserstoffelektrode (Bezug, 0 V) gemessen wurde.</p>
+<div class="ctl"><button id="m1" class="pri">Alle Halbzellen gegen die SHE messen</button><button id="m3">Messwerte zurücksetzen</button>
+</div><div style="font-size:12px;color:var(--mut);margin:8px 0 2px">Additivität prüfen (drei Halbzellen):</div><div class="row3"><select id="a1"></select><select id="a2"></select><select id="a3"></select></div>
+<div id="ml" style="margin:8px 0"></div><p id="ad" style="font-weight:600"></p><canvas id="ld" width="900" height="560"></canvas><div class="tw" style="margin-top:8px"><table id="tp"></table></div></div>
+<div class="card" id="dl"><h3>Elektrochemische Doppelschicht</h3><p id="dt"></p><button id="pv">‹ Zurück</button> <span id="sn"></span> <button id="nx">Weiter ›</button></div>
+<div class="card" id="mw" style="display:none"><h3>Messwerte</h3><button id="so">Nach ΔE sortieren</button> <button id="cl">Tabelle leeren</button><div class="tw"><table id="tb"></table></div><canvas id="ch" width="900" height="220" style="margin-top:10px"></canvas></div></div></div>
+<div id="zm" style="display:none;position:fixed;inset:0;z-index:50;background:rgba(10,18,32,.78);align-items:center;justify-content:center;padding:12px;box-sizing:border-box"><div style="background:var(--card);color:var(--fg);border-radius:14px;padding:10px;max-width:1000px;width:100%;max-height:96vh;overflow:auto"><div style="display:flex;justify-content:space-between;align-items:center"><b>Detailansicht der Elektrode</b><button id="zx">✕ Schließen</button></div><canvas id="zc" width="900" height="560" style="margin-top:6px"></canvas><p id="zt" style="margin:8px 0 0"></p></div></div>
+<script>
+const $=s=>document.querySelector(s),sup=n=>['','⁺','²⁺','³⁺'][n],T=(c,f)=>(c>1?c+' ':'')+f,R=(a,b)=>a+Math.random()*(b-a);
+const M=(s,E,n,ac,ic,t)=>({k:s+'/'+s+sup(n),E,n,t,red:{f:s,c:1,col:ac,met:1},ox:{f:s+sup(n),c:1,col:ic},mix:[0,11]});
+const H=[M('Mg',-2.36,2,'#cbd5e1','#a78bfa'),M('Al',-1.66,3,'#d1d5db','#f9a8d4'),M('Zn',-.76,2,'#9fb3c8','#60a5fa'),M('Fe',-.41,2,'#8b8f98','#a3e635','rgba(163,230,53,.2)'),M('Ni',-.23,2,'#86a8a0','#4ade80','rgba(74,222,128,.25)'),M('Sn',-.14,2,'#c0c4c9','#fcd34d'),M('Pb',-.13,2,'#6b7280','#94a3b8'),
+{k:'H₂/H⁺',E:0,n:2,pt:1,gas:1,red:{f:'H₂',c:1,col:'#fda4af',mol:1,sym:'H'},ox:{f:'H⁺',c:2,col:'#fb7185'},mix:[2,12]},
+M('Cu',.34,2,'#d9822b','#38bdf8','rgba(56,189,248,.38)'),
+{k:'I₂/I⁻',E:.54,n:2,pt:1,t:'rgba(180,83,9,.28)',red:{f:'I⁻',c:2,col:'#c084fc'},ox:{f:'I₂',c:1,col:'#9333ea',mol:1,sym:'I'},mix:[12,3]},
+{k:'Fe³⁺/Fe²⁺',E:.77,n:1,pt:1,t:'rgba(245,158,11,.3)',red:{f:'Fe²⁺',c:1,col:'#a3e635'},ox:{f:'Fe³⁺',c:1,col:'#f59e0b'},mix:[6,6]},
+M('Ag',.8,1,'#e5e7eb','#f1f5f9'),
+{k:'Br₂/Br⁻',E:1.07,n:2,pt:1,t:'rgba(234,88,12,.3)',red:{f:'Br⁻',c:2,col:'#fb923c'},ox:{f:'Br₂',c:1,col:'#b45309',mol:1,sym:'Br'},mix:[12,3]},
+{k:'Cl₂/Cl⁻',E:1.36,n:2,pt:1,gas:1,red:{f:'Cl⁻',c:2,col:'#86efac'},ox:{f:'Cl₂',c:1,col:'#a3b81a',mol:1,sym:'Cl'},mix:[12,3]}];
+const idx=k=>H.findIndex(h=>h.k==k);
+const st={L:H[idx('Zn/Zn²⁺')],R:H[idx('Cu/Cu²⁺')],load:0,sw:0,el:[],view:'both',run:1,sp:1,step:0,prog:0,disp:0,ev:0,t:0,rows:[]};
+const cells=[{},{}],mc=$('#mc'),pc=$('#pc'),chc=$('#ch');
+const roles=()=>st.L.E<=st.R.E?{a:0,c:1}:{a:1,c:0},U=()=>Math.round(Math.abs(st.R.E-st.L.E)*100)/100;
+const f2=v=>v.toFixed(2).replace('.',',').replace('-','−'),gcd=(a,b)=>b?gcd(b,a%b):a;
+const dg=(h,s)=>h.pt?(s=='a'?'Pt | '+h.red.f+' | '+h.ox.f:h.ox.f+' | '+h.red.f+' | Pt'):(s=='a'?h.red.f+' | '+h.ox.f:h.ox.f+' | '+h.red.f);
+const side=l=>{const o={};l.forEach(([c,f])=>o[f]=(o[f]||0)+c);return Object.entries(o).map(([f,c])=>T(c,f)).join(' + ')};
+function calc(){const r=roles(),A=cells[r.a].h,C=cells[r.c].h,m=A.n*C.n/gcd(A.n,C.n),ma=m/A.n,mc2=m/C.n;
+return{A,C,ox:`${T(ma*A.red.c,A.red.f)} → ${T(ma*A.ox.c,A.ox.f)} + ${T(m,'e⁻')}`,red:`${T(mc2*C.ox.c,C.ox.f)} + ${T(m,'e⁻')} → ${T(mc2*C.red.c,C.red.f)}`,
+all:side([[ma*A.red.c,A.red.f],[mc2*C.ox.c,C.ox.f]])+' → '+side([[ma*A.ox.c,A.ox.f],[mc2*C.red.c,C.red.f]]),d:dg(A,'a')+' ‖ '+dg(C,'c')}}
+const eq1=h=>`${T(h.red.c,h.red.f)} ⇌ ${T(h.ox.c,h.ox.f)} + ${T(h.n,'e⁻')}`;
+function mk(c,sp){let x;do{x=R(c.x0+25,c.x1-25)}while(Math.abs(x-c.ex)<80);return{sp,x,y:R(100,385),vx:R(-40,40),vy:R(-40,40)}}
+function build(){cells.forEach((c,i)=>{const h=i?st.R:st.L;Object.assign(c,{h,ex:i?670:230,x0:i?465:60,x1:i?840:435,ps:[],ctrA:!h.red.f.endsWith('⁻'),flash:0,rho:1,oc:[]});for(let q=-2;q<=2;q++)for(let w=0;w<18;w++)c.oc.push({q,y:78+w*18+(q%2?0:9),on:Math.abs(q)<=1});
+for(let k=0;k<h.mix[0]*1.7;k++)c.ps.push(mk(c,h.red));for(let k=0;k<h.mix[1]*1.7;k++)c.ps.push(mk(c,h.ox));
+const s={f:c.ctrA?'SO₄²⁻':'K⁺',col:'#94a3b8',ctr:1,an:c.ctrA};for(let k=0;k<5;k++)c.ps.push(mk(c,s));if(h.gas){const gs=h.red.mol?h.red:h.ox;for(let k=0;k<7;k++)c.ps.push({sp:gs,gas:1,x:c.ex,y:95+k*42,ph:k,vx:0,vy:0})}});st.prog=0;st.ev=0;st.el=[];upd()}
+function sim(dt){st.el=(st.load&&st.sw)?st.el.filter(e=>(e.s+=dt*.3)<=1):[];cells.forEach(c=>{const s=c.ex<450?1:-1;for(let i=c.ps.length-1;i>=0;i--){const p=c.ps[i];
+if(p.dead){p.a=(p.a===undefined?1:p.a)-dt*.8;if(p.a<=0){c.ps.splice(i,1);continue}}else if(p.a<1)p.a=Math.min(1,p.a+dt*.8);if(p.gas&&!p.tgt){p.y-=45*dt;if(p.y<95)p.y=395;p.x=c.ex-s*52+Math.sin(p.y/22+p.ph)*8;continue}if(p.out){p.x+=s*70*dt;p.y+=p.vy*dt;if(Math.abs(p.x-c.ex)>=72)p.out=0;continue}if(p.tgt){const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy);if(d<4){c.flash=1;c.ps.splice(i,1);if(p.gas)c.ps.push({sp:p.sp,gas:1,x:c.ex,y:395,ph:R(0,6),vx:0,vy:0});if(p.slot){p.slot.on=true;p.slot.res=0;c.rho=c.oc.filter(q=>q.on).length/54}const v=p.ev;if(v&&--v.left==0&&v.to)for(let k=0;k<v.m;k++)c.ps.push({sp:v.to,x:c.ex+s*40,y:R(110,380),vx:0,vy:R(-15,15),out:1,a:1})}else{p.x+=dx/d*110*dt;p.y+=dy/d*110*dt}continue}
+p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.x<c.x0)p.vx=Math.abs(p.vx);if(p.x>c.x1)p.vx=-Math.abs(p.vx);if(p.y<95)p.vy=Math.abs(p.vy);if(p.y>395)p.vy=-Math.abs(p.vy);
+if(Math.abs(p.x-c.ex)<72){const q=p.x<c.ex?-1:1;p.x=c.ex+q*72;p.vx=q*Math.abs(p.vx)}
+p.vx+=R(-60,60)*dt;p.vy+=R(-60,60)*dt;const m=Math.hypot(p.vx,p.vy);if(m>50){p.vx*=50/m;p.vy*=50/m}}
+c.flash=Math.max(0,c.flash-dt*2)});react(dt)}
+function react(dt){if(!st.load||!st.sw||!U())return;st.ev+=dt;if(st.ev<.8)return;st.ev=0;st.prog=Math.min(1,st.prog+.02);const r=roles(),A=cells[r.a],C=cells[r.c],sd=c=>c.ex<450?1:-1;
+const conv=(c,from,n,to,m)=>{const s=sd(c),l=c.ps.filter(p=>p.sp===from&&!p.tgt&&!p.out&&!p.dead);if(l.length<n)return;const ev={left:n,to,m};
+for(let k=0;k<n;k++){const p=l.splice(Math.floor(Math.random()*l.length),1)[0];p.tgt=1;p.ev=ev;p.tx=c.ex+s*34;p.ty=Math.min(382,Math.max(100,p.y));
+if(!to&&c.h.red.met){const e=c.oc.filter(o=>!o.on&&!o.res);if(e.length){const mx=Math.max(...e.map(o=>o.q*s)),cd=e.filter(o=>o.q*s==mx),o=cd[Math.floor(Math.random()*cd.length)];o.res=1;p.slot=o;p.tx=c.ex+o.q*18;p.ty=o.y}}}
+if(!(c.h.gas&&from.mol))for(let k=0;k<n;k++){const p=mk(c,from);p.x=s>0?c.x0+8:c.x1-8;p.a=0;c.ps.push(p)}};
+const trim=(c,sp,cap)=>{const l=c.ps.filter(p=>p.sp===sp&&!p.gas&&!p.tgt&&!p.out&&!p.dead);if(l.length>cap){l.sort((a,b)=>Math.abs(b.x-c.ex)-Math.abs(a.x-c.ex));l[0].dead=1}};
+const m=A.h.n*C.h.n/gcd(A.h.n,C.h.n),stA=()=>{if(A.h.red.met){const s=sd(A),l=A.oc.filter(o=>o.on);if(l.length){const m=Math.max(...l.map(o=>o.q*s)),cd=l.filter(o=>o.q*s==m),o=cd[Math.floor(Math.random()*cd.length)];o.on=false;A.ps.push({sp:A.h.ox,x:A.ex+o.q*18,y:o.y,vx:0,vy:R(-15,15),out:1,a:1});A.flash=1;A.rho=A.oc.filter(q=>q.on).length/54;trim(A,A.h.ox,22)}}
+else{conv(A,A.h.red,A.h.red.c,A.h.ox,A.h.ox.c);trim(A,A.h.ox,Math.round(A.h.mix[1]*1.7)+3)}},stC=()=>{conv(C,C.h.ox,C.h.ox.c,C.h.red.met?null:C.h.red,C.h.red.c);if(!C.h.red.met)trim(C,C.h.red,Math.round(C.h.mix[0]*1.7)+3)};for(let q=0;q<m/A.h.n;q++)stA();for(let q=0;q<m/C.h.n;q++)stC();for(let q=0;q<m;q++)st.el.push({s:-q*.05});
+const src=C.ctrA?C:A,dst=C.ctrA?A:C,q=src.ps.find(p=>p.sp.ctr&&!p.tgt);if(q){src.ps.splice(src.ps.indexOf(q),1);dst.ps.push(q);q.vx=(dst.ex<src.ex?-1:1)*55}}
+function dot(g,x,y,r,col,tx,fs){g.beginPath();g.arc(x,y,r,0,7);g.fillStyle=col;g.fill();g.beginPath();g.arc(x-r/3,y-r/3,r/3,0,7);g.fillStyle='rgba(255,255,255,.35)';g.fill();
+if(tx){g.font='600 '+(fs||10)+'px system-ui';g.textAlign='center';g.textBaseline='middle';g.lineWidth=3;g.strokeStyle='rgba(0,0,0,.6)';g.strokeText(tx,x,y);g.fillStyle='#fff';g.fillText(tx,x,y)}}
+function drw(g,x,y,s){if(s.mol){dot(g,x-8,y,11,s.col,s.sym,10);dot(g,x+8,y,11,s.col,s.sym,10)}else dot(g,x,y,s.ctr?17:16,s.col,s.f,s.ctr?10:11)}
+function flow(g,ax,cx,y0,y1){const v=y0-y1,L=Math.abs(cx-ax),Tt=2*v+L,d=cx>ax?1:-1;for(let i=0;i<Math.ceil(Tt/36);i++){const s=(st.t*90+i*36)%Tt;let x,y;if(s<v){x=ax;y=y0-s}else if(s<v+L){x=ax+d*(s-v);y=y1}else{x=cx;y=y1+(s-v-L)}dot(g,x,y,6,'#38bdf8','e⁻',8)}}
+function lab(g,x,y,t,c,fs){g.font=(fs||12)+'px system-ui';g.textAlign='center';g.textBaseline='alphabetic';g.fillStyle=c||'#1e293b';g.fillText(t,x,y)}
+function arr(g,y,d,tx,col){g.save();g.strokeStyle=col;g.fillStyle=col;g.lineWidth=3;g.setLineDash([8,6]);g.lineDashOffset=-st.t*30;g.beginPath();g.moveTo(450-d*55,y);g.lineTo(450+d*55,y);g.stroke();g.setLineDash([]);g.beginPath();g.moveTo(450+d*64,y);g.lineTo(450+d*50,y-7);g.lineTo(450+d*50,y+7);g.fill();lab(g,450,y-10,tx,col,11);g.restore()}
+const lb=h=>h.red.met?'c('+h.ox.f+') = 1 mol/L':h.k[0]=='F'?'c(Fe²⁺) = c(Fe³⁺) = 1 mol/L':'c('+(h.ox.f=='H⁺'?'H⁺':h.red.f)+') = 1 mol/L'+(h.gas?' · p = 1013 hPa':'');
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x,y);g.lineTo(x+w,y);g.lineTo(x+w,y+h-r);g.quadraticCurveTo(x+w,y+h,x+w-r,y+h);g.lineTo(x+r,y+h);g.quadraticCurveTo(x,y+h,x,y+h-r);g.closePath()}
+const X=c=>c.ex<450?270:630,UR=g=>{g.beginPath();g.moveTo(195,200);g.lineTo(195,415);g.lineTo(705,415);g.lineTo(705,200);g.lineTo(555,200);g.lineTo(555,340);g.lineTo(345,340);g.lineTo(345,200);g.closePath()};
+function macro(){const g=mc.getContext('2d'),r=roles(),u=U(),a=Math.min(1,st.disp/1.2);g.clearRect(0,0,900,470);
+let b=g.createLinearGradient(0,425,0,470);b.addColorStop(0,'#d8c4a2');b.addColorStop(1,'#b89b72');g.fillStyle=b;g.fillRect(0,425,900,45);g.fillStyle='rgba(0,0,0,.12)';g.fillRect(0,425,900,3);
+if(st.load){b=g.createRadialGradient(450,44,4,450,44,90);b.addColorStop(0,`rgba(255,215,60,${.8*a})`);b.addColorStop(1,'rgba(255,215,60,0)');g.fillStyle=b;g.fillRect(340,0,220,140);
+g.fillStyle='#8b8f98';g.fillRect(372,80,156,18);g.fillRect(440,66,20,16);g.beginPath();g.arc(450,44,24,0,7);g.fillStyle=`rgba(255,226,120,${.2+.8*a})`;g.fill();g.strokeStyle='#475569';g.lineWidth=3;g.stroke();
+g.strokeStyle='#7c4a03';g.lineWidth=2;g.beginPath();g.moveTo(440,66);g.lineTo(443,50);g.lineTo(450,60);g.lineTo(457,50);g.lineTo(460,66);g.stroke();lab(g,450,12,'Verbraucher: Glühlampe','#1e293b',11)}
+else{b=g.createLinearGradient(0,14,0,98);b.addColorStop(0,'#e3e8ef');b.addColorStop(1,'#a3adbb');rr(g,370,14,160,84,8);g.fillStyle=b;g.fill();g.strokeStyle='#64748b';g.lineWidth=2;g.stroke();g.fillStyle='#07140e';g.fillRect(386,24,128,42);lab(g,450,52,f2(st.disp)+' V','#7CFFB2',22);lab(g,450,84,'Voltmeter (hochohmig)','#243044',10)}
+UR(g);g.fillStyle='rgba(190,225,255,.18)';g.fill();g.save();UR(g);g.clip();g.fillStyle='rgba(120,180,230,.3)';g.fillRect(190,255,520,170);
+cells.forEach((c,i)=>{if(c.h.t){const f=1+(i===r.a?1:-.9)*.8*st.prog,x0=c.ex<450?190:450;g.fillStyle=c.h.t;g.globalAlpha=Math.min(1,f);g.fillRect(x0,255,260,170);if(f>1){g.globalAlpha=f-1;g.fillRect(x0,255,260,170)}g.globalAlpha=1}});g.fillStyle='rgba(255,255,255,.6)';g.fillRect(190,255,520,2);g.restore();
+cells.forEach((c,i)=>{const x=X(c),s=c.ex<450?1:-1,met=c.h.red.met,rho=c.rho||1,w=met?Math.max(4,18+(rho-1)*30):10,col=met?c.h.red.col:'#d5dbe3';
+const gr=g.createLinearGradient(x-w/2,0,x+w/2,0);gr.addColorStop(0,'rgba(255,255,255,.75)');gr.addColorStop(.35,col);gr.addColorStop(1,'rgba(0,0,0,.35)');g.fillStyle=gr;g.fillRect(x-w/2,170,w,225);g.strokeStyle='rgba(30,41,59,.5)';g.lineWidth=1;g.strokeRect(x-w/2,170,w,225);
+if(met&&rho>1.02)for(let k=0;k<14;k++){g.fillStyle=col;g.beginPath();g.arc(x+(k%2?1:-1)*w/2,270+k*8,.5+(rho-1)*8,0,7);g.fill()}
+g.save();UR(g);g.clip();g.fillStyle='rgba(120,180,230,.1)';g.fillRect(c.ex<450?190:450,255,260,170);g.restore();
+if(c.h.gas){const gx=x-s*38,gc=c.h.red.mol?'#64748b':'#65a30d';g.lineJoin='round';const tp=()=>{g.beginPath();g.moveTo(gx,150);g.lineTo(gx,372);g.quadraticCurveTo(gx,406,gx+s*30,406);g.lineTo(x-s*12,406);g.quadraticCurveTo(x,406,x,398)};tp();g.strokeStyle='rgba(71,85,105,.85)';g.lineWidth=12;g.stroke();tp();g.strokeStyle='rgba(225,238,250,.95)';g.lineWidth=8;g.stroke();lab(g,gx,138,(c.h.red.mol?'H₂':'Cl₂')+'-Gas',gc,12);
+for(let k=0;k<12;k++){const f=((st.t*.4+k/12)%1),yy=396-f*140,xx=x+Math.sin(yy/9+k*2)*(5+f*10);g.beginPath();g.arc(xx,yy,2+k%3,0,7);g.strokeStyle=gc;g.lineWidth=1.5;g.stroke()}}});
+const wl=()=>{g.beginPath();g.moveTo(195,200);g.lineTo(195,415);g.lineTo(705,415);g.lineTo(705,200);g.moveTo(555,200);g.lineTo(555,340);g.lineTo(345,340);g.lineTo(345,200)};g.lineJoin='round';wl();g.strokeStyle='#475569';g.lineWidth=11;g.stroke();wl();g.strokeStyle='#d5e8f5';g.lineWidth=7;g.stroke();g.fillStyle='rgba(255,255,255,.4)';g.fillRect(203,210,6,195);g.fillRect(563,210,6,125);
+g.fillStyle='#d9ccb0';g.fillRect(436,346,28,63);g.strokeStyle='#8a7b5e';g.lineWidth=1.5;g.strokeRect(436,346,28,63);g.fillStyle='#8a7b5e';for(let k=0;k<20;k++)g.fillRect(440+(k%4)*6,348+Math.floor(k/4)*13,2,3);
+lab(g,450,440,'Diaphragma','#1e293b',11);
+[cells[r.a],cells[r.c]].forEach((c,j)=>{const x=X(c),sx=j?490:410,col=j?'#d32f2f':'#2563eb';g.lineWidth=4;g.strokeStyle=col;g.beginPath();g.moveTo(x,168);if(j)g.bezierCurveTo(x,90,sx,150,sx,104);else{const m=x<450?1:-1;g.bezierCurveTo(x,150,410-90*m,175,410-90*m,140)}g.stroke();
+dot(g,sx,98,6,j?'#ef4444':'#3b82f6');g.fillStyle=col;g.fillRect(x-13,166,26,22);lab(g,x,183,j?'+':'−','#fff',16)});
+{const m=cells[r.a].ex<450?1:-1,a1=410-90*m,a2=410-25*m;g.strokeStyle='#2563eb';g.lineWidth=4;g.beginPath();g.moveTo(a2,140);g.quadraticCurveTo(410,140,410,116);g.lineTo(410,104);g.stroke();dot(g,a1,140,5,'#64748b');dot(g,a2,140,5,'#64748b');g.strokeStyle='#b45309';g.lineWidth=5;g.lineCap='round';g.beginPath();g.moveTo(a1,140);st.sw?g.lineTo(a2,140):g.lineTo(a1+(a2-a1)*.8,114);g.stroke();g.lineCap='butt';lab(g,405,168,st.sw?'Schalter geschlossen':'Schalter offen','#1e293b',11)}
+cells.forEach((c,i)=>{const isA=i===r.a;lab(g,X(c),452,c.k||c.h.k+(isA?' · Minuspol (Anode)':' · Pluspol (Kathode)'),isA?'#1d4ed8':'#b91c1c',13);lab(g,X(c),467,lb(c.h),'#1e293b',11)})}
+function part(){const g=pc.getContext('2d'),r=roles(),u=U();g.clearRect(0,0,900,470);g.save();g.translate(0,15);
+g.fillStyle='rgba(120,180,230,.13)';g.fillRect(40,70,820,340);cells.forEach(c=>{if(c.h.t){g.fillStyle=c.h.t;g.fillRect(c.ex<450?40:450,70,410,340)}});
+g.strokeStyle='#94a3b8';g.lineWidth=3;g.strokeRect(40,70,820,340);g.fillStyle='rgba(100,116,139,.35)';g.fillRect(445,70,10,340);lab(g,450,62,'Diaphragma',null,11);
+const A=cells[r.a],C=cells[r.c];
+g.strokeStyle='#1e293b';g.lineWidth=3;g.beginPath();g.moveTo(230,60);g.lineTo(230,24);g.lineTo(670,24);g.lineTo(670,60);g.stroke();
+g.beginPath();g.arc(450,24,14,0,7);g.fillStyle='#0f1b30';g.fill();g.stroke();lab(g,450,28,st.load?'⚡':'V','#fde68a',13);if(!st.sw)g.clearRect(322,19,36,10);dot(g,322,24,4,'#64748b');dot(g,358,24,4,'#64748b');g.strokeStyle='#b45309';g.lineWidth=4;g.lineCap='round';g.beginPath();g.moveTo(322,24);st.sw?g.lineTo(358,24):g.lineTo(352,6);g.stroke();g.lineCap='butt';lab(g,340,46,st.sw?'Schalter geschlossen':'Schalter offen','#1e293b',11);
+cells.forEach((c,i)=>{const s=c.ex<450?1:-1,h=c.h,isA=i===r.a;
+g.fillStyle='rgba(148,163,184,.28)';{const on=c.oc.filter(o=>o.on),qa=on.length?Math.min(...on.map(o=>o.q)):0,qb=on.length?Math.max(...on.map(o=>o.q)):0;g.fillRect(c.ex+qa*18-10,60,(qb-qa)*18+20,345);g.strokeStyle='#64748b';g.lineWidth=1;g.strokeRect(c.ex+qa*18-10,60,(qb-qa)*18+20,345)}
+c.oc.forEach(o=>{if(o.on)dot(g,c.ex+o.q*18,o.y,8.5,h.red.met?h.red.col:'#9aa5b1',h.red.met?h.red.f:'Pt',9)});
+for(let k=0;k<5;k++)dot(g,c.ex+Math.sin(st.t*2+k*1.7)*10,95+k*60+Math.cos(st.t*1.6+k)*8,4,'#0284c7');
+if(c.flash){g.beginPath();g.arc(c.ex+s*34,240,70,0,7);g.fillStyle=`rgba(255,240,150,${c.flash*.3})`;g.fill()}});
+if(st.load&&st.sw&&u)st.el.forEach(e=>{if(e.s<0)return;const v=36,L=Math.abs(C.ex-A.ex),Tt=2*v+L,s=e.s*Tt,d=C.ex>A.ex?1:-1;let x,y;if(s<v){x=A.ex;y=60-s}else if(s<v+L){x=A.ex+d*(s-v);y=24}else{x=C.ex;y=24+(s-v-L)}dot(g,x,y,6,'#38bdf8','e⁻',8)});
+cells.forEach(c=>c.ps.forEach(p=>{g.globalAlpha=p.a===undefined?1:Math.max(0,p.a);drw(g,p.x,p.y,p.sp);g.globalAlpha=1}));
+if(!st.load)cells.forEach(c=>{const s=c.ex<450?1:-1,h=c.h,an=h.red.f.endsWith('⁻'),n=an?5:Math.max(1,Math.min(7,Math.round(7.4-(h.E+2.4)*1.6))),sp=an?h.red:h.ox;
+for(let i=0;i<n;i++){const y=100+(i+.5)*270/n;if(an)dot(g,c.ex+s*33,y,6,'#f87171','+',9);else dot(g,c.ex+s*33,y,6,'#0284c7','e⁻',7);dot(g,c.ex+s*(57+Math.sin(st.t*2+i)*1.5),y,14,sp.col,sp.f,10)}
+lab(g,c.ex+s*57,82,'⇌','#b45309',22);
+if(st.step>=3){g.save();g.setLineDash([6,5]);g.strokeStyle='#b45309';g.lineWidth=2;g.beginPath();g.ellipse(c.ex+s*45,240,40,150,0,0,7);g.stroke();g.restore();lab(g,c.ex+s*45,50,'Doppelschicht','#b45309',11)}});
+cells.forEach((c,i)=>{const h=c.h,isA=i===r.a,k=calc();let t=!st.load?eq1(h):(isA?'Anode (−): '+k.ox:'Kathode (+): '+k.red);{g.font='12px system-ui';const w=g.measureText(t).width+16;g.fillStyle=isA?'rgba(147,197,253,.5)':'rgba(252,165,165,.5)';g.fillRect(c.ex-w/2,413,w,21)}lab(g,c.ex,428,t,'#1e293b',12)});g.restore()}
+function upd(){const k=calc(),u=U();$('#info').innerHTML=`<h3>Zelle: ${k.d}</h3><p><b>ΔE = ${f2(u)} V</b> &nbsp;(E°(+) − E°(−) = ${f2(k.C.E)} V − (${f2(k.A.E)} V))</p>`+
+(u?`<span class="eq" style="background:rgba(147,197,253,.4)">Oxidation (Anode, Minuspol): ${k.ox}</span><span class="eq" style="background:rgba(252,165,165,.4)">Reduktion (Kathode, Pluspol): ${k.red}</span><span class="eq">Gesamtreaktion: ${k.all}</span>`:'<p>Gleiche Halbzelle auf beiden Seiten: ΔE = 0 V, keine Reaktion.</p>')+
+`<p style="color:var(--mut)">${st.load?'Beobachtungen: Die Lampe leuchtet, die Elektrode am Minuspol wird abgetragen (dünner), am Pluspol scheidet sich Metall ab (dicker), die Farbintensität der Lösungen ändert sich; an Gaselektroden perlt das Gas.':'Hochohmiges Voltmeter: kein nennenswerter Stromfluss, gemessen wird die Ruhespannung.'}</p>`;
+$('#dl').style.display=(!st.load&&$('#cdl').checked)?'block':'none';steps()}
+const ST=['Gleichgewicht: An jeder Elektrode stellt sich ein dynamisches Gleichgewicht ein. Metallatome gehen als Ionen in Lösung (Oxidation), gleichzeitig scheiden sich Ionen wieder ab (Reduktion).','Beim Übergang eines Ions in die Lösung bleiben die Elektronen im Metall zurück: Die Elektrode lädt sich negativ auf, die Lösung direkt an der Elektrode positiv.','Die entgegengesetzt geladenen Teilchen ziehen sich an: Elektronen im Elektrodenmaterial und Ionen in der Lösung ordnen sich an der Phasengrenze zur elektrochemischen Doppelschicht an.','Je unedler das Metall, desto weiter liegt das Gleichgewicht auf der Ionenseite und desto mehr Elektronen bleiben im Metall (Zn mehr als Cu). Bei Halogenen mit Pt-Elektrode kehrt sich die Ladung um: Elektronenmangel, Anionen in der Lösung.','Das Potential einer einzelnen Halbzelle ist nicht messbar. Gemessen wird die Differenz zweier Halbzellen, ΔE = E(Pluspol) − E(Minuspol), bezogen auf die Standardwasserstoffelektrode (0,00 V).','Das hochohmige Voltmeter lässt praktisch keinen Strom fließen, die Gleichgewichte bleiben ungestört: Die Ruhespannung wird gemessen. Schalte auf „Belastet“, um den Ablauf zu sehen.'];
+function steps(){$('#dt').textContent=ST[st.step];$('#sn').textContent=(st.step+1)+' / '+ST.length}
+$('#pv').onclick=()=>{st.step=Math.max(0,st.step-1);steps()};$('#nx').onclick=()=>{st.step=Math.min(ST.length-1,st.step+1);steps()};
+['#sl','#sr'].forEach((s,j)=>{const e=$(s);H.forEach((h,i)=>e.add(new Option(h.k,i)));e.value=idx(j?st.R.k:st.L.k);e.onchange=()=>{st[j?'R':'L']=H[+e.value];build()}});
+document.querySelectorAll('.seg').forEach(s=>s.onclick=e=>{const b=e.target.closest('button');if(!b)return;s.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+if(s.id=='mode'){st.load=+b.dataset.v;upd()}else{st.view=b.dataset.v;mc.style.display=st.view=='part'?'none':'block';pc.style.display=st.view=='macro'?'none':'block';$('#cv').style.gridTemplateColumns=st.view=='both'?'':'1fr'}});
+$('#spd').oninput=e=>st.sp=+e.target.value;$('#rs').onclick=build;$('#cmw').onchange=e=>$('#mw').style.display=e.target.checked?'block':'none';$('#cdl').onchange=upd;$('#pa').onclick=e=>{st.run=!st.run;e.target.textContent=st.run?'Pause':'Weiter'};
+const sh=h=>h.k.split('/')[0];
+$('#sv').onclick=()=>{if(!st.sw){$('#msg').textContent='Schließe zuerst den Stromkreis (Versuch starten).';return}const k=calc(),u=U(),key=k.A.k+'|'+k.C.k;if(!u){$('#msg').textContent='Gleiche Halbzelle: ΔE = 0 V wird nicht eingetragen.';return}
+if(st.rows.some(r=>r.key==key)){$('#msg').textContent='Diese Kombination ist bereits in der Tabelle.';return}
+st.rows.push({key,U:u,d:k.d,g:k.all,l:sh(k.A)+'|'+sh(k.C)});$('#msg').textContent='Messwert festgehalten.';tbl()};
+$('#so').onclick=()=>{st.rows.sort((a,b)=>b.U-a.U);tbl()};$('#cl').onclick=()=>{st.rows=[];tbl()};$('#m3').onclick=()=>{st.rows=[];$('#msg').textContent='';tbl()};window.del=i=>{st.rows.splice(i,1);tbl()};
+function tbl(){$('#tb').innerHTML='<tr><th>Nr.</th><th>Zellendiagramm</th><th>ΔE in V</th><th>Gesamtreaktion</th><th></th></tr>'+st.rows.map((r,i)=>`<tr><td>${i+1}</td><td>${r.d}</td><td><b>${f2(r.U)}</b></td><td>${r.g}</td><td><button onclick="del(${i})">✕</button></td></tr>`).join('');chart();lad()}
+function chart(){const g=chc.getContext('2d'),L=st.rows;g.clearRect(0,0,900,220);g.font='13px system-ui';g.textAlign='center';g.fillStyle='#94a3b8';
+if(!L.length){g.fillText('Noch keine Messwerte festgehalten.',450,110);return}
+const mx=Math.max(1,...L.map(r=>r.U))*1.2,bw=Math.min(70,830/L.length-10);g.strokeStyle='#334155';g.beginPath();g.moveTo(50,10);g.lineTo(50,180);g.lineTo(890,180);g.stroke();
+L.forEach((r,i)=>{const x=60+(i+.5)*(830/L.length),h=r.U/mx*165,gr=g.createLinearGradient(0,180-h,0,180);gr.addColorStop(0,'#22d3ee');gr.addColorStop(1,'#6366f1');g.fillStyle=gr;g.fillRect(x-bw/2,180-h,bw,h);g.fillStyle='#1e293b';g.fillText(f2(r.U)+' V',x,172-h);g.fillStyle='#94a3b8';g.fillText(r.l,x,200)})}
+let last=0;function loop(ts){const dt=Math.min(.05,(ts-last)/1000);last=ts;if(st.run){const d=dt*st.sp;st.t+=d;sim(d)}st.disp+=((st.sw?U():0)-st.disp)*Math.min(1,dt*6);macro();part();if(zs.c>=0)zdraw(dt);requestAnimationFrame(loop)}
+
+function derive(){const E=st.rows.map(r=>[...r.key.split('|'),r.U]),ks=[...new Set(E.flatMap(e=>[e[0],e[1]]))],S='H₂/H⁺';if(!ks.length)return{P:{},she:0};
+const she=ks.includes(S),P={[she?S:ks[0]]:0};let ch=1;while(ch){ch=0;E.forEach(([a,c,u])=>{if(a in P&&!(c in P)){P[c]=rd(P[a]+u);ch=1}else if(c in P&&!(a in P)){P[a]=rd(P[c]-u);ch=1}})}
+let ref=S;if(!she){const m=Math.min(...Object.values(P));ref=Object.keys(P).find(k=>P[k]==m);Object.keys(P).forEach(k=>P[k]=rd(P[k]-m))}return{P,she,ref}}
+function addPair(x,y){const o=[st.L,st.R];st.L=x;st.R=y;cells[0].h=x;cells[1].h=y;const k=calc(),u=Math.round(Math.abs(y.E-x.E)*100)/100,key=k.A.k+'|'+k.C.k;if(u&&!st.rows.some(r=>r.key==key))st.rows.push({key,U:u,d:k.d,g:k.all,l:sh(k.A)+'|'+sh(k.C)});st.L=o[0];st.R=o[1];cells[0].h=o[0];cells[1].h=o[1]}
+$('#m1').onclick=()=>{const s0=H[idx('H₂/H⁺')];H.forEach(h=>{if(h!==s0)addPair(h,s0)});tbl()};
+
+['#a1','#a2','#a3'].forEach((s,j)=>{const e=$(s);H.forEach((h,i)=>e.add(new Option(h.k,i)));e.value=idx(['Zn/Zn²⁺','H₂/H⁺','Cu/Cu²⁺'][j]);e.onchange=lad});
+const sg=v=>(v>0?'+':'')+f2(v),rd=v=>Math.round(v*100)/100;
+function ml(P){const R=st.rows,k=new Set(R.flatMap(r=>r.key.split('|'))),out=[...k].filter(x=>!(x in P));$('#ml').innerHTML=R.length?'<b>Gemessene Potentialdifferenzen:</b> '+R.map(r=>`<span class="chip">${r.l.replace('|',' | ')}: <b>${f2(r.U)} V</b></span>`).join('')+(out.length?`<div style="color:var(--mut);font-size:13px;margin-top:4px">Noch nicht angeordnet (keine gemeinsame Messung mit der Reihe): ${out.join(', ')}</div>`:''):''}
+function fillSel(L){['#a1','#a2','#a3'].forEach((s,j)=>{const e=$(s),v=e.value,ids=L.map(h=>H.indexOf(h)),key=ids.join();if(e.dataset.k!=key){e.innerHTML='';L.forEach(h=>e.add(new Option(h.k,H.indexOf(h))));e.dataset.k=key;e.value=ids.includes(+v)?v:H.indexOf(L[[0,Math.floor((L.length-1)/2),L.length-1][j]])}})}
+function lad(){const g=$('#ld').getContext('2d'),D=derive(),P=D.P,Z=D.she?330:120,L=H.filter(h=>h.k in P).sort((a,b)=>P[a.k]-P[b.k]),rh=28,y0=44;$('#ld').height=L.length<2?110:y0+L.length*rh+44;g.clearRect(0,0,900,700);ml(P);
+if(L.length<2){lab(g,450,60,'Halte Messwerte fest: Die Spannungsreihe entsteht hier allein aus den gemessenen Potentialdifferenzen.','#475569',14);$('#tp').innerHTML='';$('#ad').textContent='';return}
+fillSel(L);const hs=['#a1','#a2','#a3'].map(s=>H[+$(s).value]).filter(h=>h.k in P).sort((a,b)=>P[a.k]-P[b.k]),ok=hs.length==3&&new Set(hs).size==3,Y={};
+lab(g,Z,28,D.she?'E° gegen SHE in V':'relativ zu '+D.ref+' (Bezug = 0 V)','#475569',12);lab(g,650,28,'Nachbardifferenz ΔE','#475569',12);lab(g,820,28,'Additivität','#475569',12);
+L.forEach((h,i)=>{Y[h.k]=y0+i*rh+rh/2;if(ok&&hs.includes(h)){g.fillStyle='rgba(250,204,21,.25)';g.fillRect(6,Y[h.k]-15,888,30)}});
+{g.strokeStyle='#64748b';g.lineWidth=2;g.beginPath();g.moveTo(Z,38);g.lineTo(Z,y0+L.length*rh);g.stroke();lab(g,Z,y0+L.length*rh+14,(D.she?'0 V (SHE)':'0 V (Bezug)'),'#475569',11)}
+L.forEach((h,i)=>{const y=Y[h.k],E=P[h.k];{g.fillStyle=!D.she?'rgba(14,116,144,.5)':E<0?'rgba(59,130,246,.5)':'rgba(239,68,68,.5)';g.fillRect(Math.min(Z,Z+E*100),y-9,Math.abs(E)*100,18);dot(g,Z+E*100,y,9,h.pt?'#9aa5b1':h.red.col)}
+g.font='13px system-ui';g.textBaseline='middle';g.fillStyle='#1e293b';g.textAlign='left';g.fillText(h.k,14,y);g.textAlign='right';g.fillText((D.she?'':'Δ ')+sg(E)+' V',570,y);
+if(i<L.length-1){const y2=Y[L[i+1].k],d=rd(P[L[i+1].k]-E);g.strokeStyle='#0e7490';g.lineWidth=2;g.beginPath();g.moveTo(612,y+4);g.lineTo(620,y+4);g.lineTo(620,y2-4);g.lineTo(612,y2-4);g.stroke();g.textAlign='left';g.fillStyle='#0e7490';g.fillText(f2(d)+' V',628,(y+y2)/2)}});
+const br=(x,a,b,c)=>{const ya=Y[a.k],yb=Y[b.k],d=rd(P[b.k]-P[a.k]);g.strokeStyle=c;g.lineWidth=3;g.beginPath();g.moveTo(x-8,ya);g.lineTo(x,ya);g.lineTo(x,yb);g.lineTo(x-8,yb);g.stroke();g.fillStyle=c;g.textAlign='left';g.font='bold 12px system-ui';g.fillText(f2(d)+' V',x+6,(ya+yb)/2);return d};
+if(ok){const d1=br(790,hs[0],hs[1],'#16a34a'),d2=br(790,hs[1],hs[2],'#16a34a'),d3=br(852,hs[0],hs[2],'#ea580c');$('#ad').textContent=`ΔE(${hs[0].k}, ${hs[1].k}) + ΔE(${hs[1].k}, ${hs[2].k}) = ${f2(d1)} V + ${f2(d2)} V = ${f2(rd(d1+d2))} V = ΔE(${hs[0].k}, ${hs[2].k}) = ${f2(d3)} V`}else $('#ad').textContent=(L.length<3?'Für die Additivität werden mindestens drei miteinander verbundene Halbzellen benötigt.':'Wähle drei verschiedene Halbzellen.');
+$('#tp').innerHTML=!D.she?'<tr><td style="color:var(--mut)">Die Tabelle der Standardpotentiale erscheint, sobald gegen die Standardwasserstoffelektrode (0 V) gemessen wurde.</td></tr>':`<tr><th>Nr.</th><th>Redoxpaar</th><th>Halbreaktion (Reduktion)</th><th>${D.she?'E° in V':'E in V (relativ)'}</th></tr>`+L.map((h,i)=>`<tr><td>${i+1}</td><td>${h.k}</td><td>${T(h.ox.c,h.ox.f)} + ${T(h.n,'e⁻')} ⇌ ${T(h.red.c,h.red.f)}</td><td><b>${sg(P[h.k])}</b></td></tr>`).join('')}
+const zs={c:-1,t:0,k:''},zc=$('#zc'),smooth=x=>x*x*(3-2*x),clp=(x,a,b)=>Math.max(a,Math.min(b,x));
+function openZ(i){zs.c=i;zs.t=0;zs.k='';$('#zm').style.display='flex'}
+$('#zx').onclick=()=>{zs.c=-1;$('#zm').style.display='none'};$('#zm').onclick=e=>{if(e.target.id=='zm')$('#zx').click()};
+document.addEventListener('keydown',e=>{if(e.key=='Escape'&&zs.c>=0)$('#zx').click()});
+function zdraw(dt){if(st.run)zs.t+=dt*st.sp;const g=zc.getContext('2d'),t=zs.t,c=cells[zs.c],h=c.h,r=roles(),isA=zs.c===r.a,ld=st.load&&st.sw&&U()>0,met=h.red.met,an=h.red.f.endsWith('⁻'),sx=298,k=an?4:clp(Math.round(7.4-(h.E+2.4)*1.6),1,6),K=calc(),sy=i=>100+i*62,col=met?h.red.col:'#9aa5b1',lay=an?h.red:h.ox,par=an?h.ox:h.red;
+const zp=(x,y,s,al,rr)=>{if(al<=.01)return;g.globalAlpha=al;if(s.mol){dot(g,x-rr*.7,y,rr*.85,s.col,s.sym,15);dot(g,x+rr*.7,y,rr*.85,s.col,s.sym,15)}else dot(g,x,y,rr,s.col,s.f,rr>20?15:12);g.globalAlpha=1},
+zsc=(x,y,s,al)=>{const n=s.c||1;for(let q=0;q<n;q++)zp(x+(q-(n-1)/2)*(s.mol?0:16),y+(q-(n-1)/2)*(s.mol?0:46),s,al,n>1&&!s.mol?18:24)},
+zel=(x,y,al,pl)=>{if(al<=.01)return;g.globalAlpha=al;dot(g,x,y,9,pl?'#f87171':'#38bdf8',pl?'+':'e⁻',pl?12:10);g.globalAlpha=1},
+pp=(y,p)=>{const d=clp(p,0,1)*(104+y-64);return d<104?[sx-d,y]:[194,y-(d-104)]};
+g.clearRect(0,0,900,560);g.fillStyle='rgba(120,180,230,.2)';g.fillRect(330,46,570,514);if(h.t){g.fillStyle=h.t;g.fillRect(330,46,570,514)}
+g.fillStyle='rgba(148,163,184,.3)';g.fillRect(50,56,276,504);g.strokeStyle='#64748b';g.lineWidth=2;g.strokeRect(50,56,276,504);g.fillStyle='#94a3b8';g.fillRect(186,46,16,14);
+g.fillStyle=isA?'rgba(147,197,253,.65)':'rgba(252,165,165,.65)';g.fillRect(0,0,900,46);
+lab(g,450,20,(isA?'Anode (Minuspol)':'Kathode (Pluspol)')+' · '+h.k+' · '+(ld?(isA?'Oxidation':'Reduktion'):'Gleichgewicht (stromlos)'),'#1e293b',17);lab(g,450,39,ld?(isA?K.ox:K.red):eq1(h),'#1e293b',13);
+for(let q=0;q<4;q++)for(let i=0;i<7;i++){const y=sy(i)+(q%2?31:0);if(y<535)dot(g,90+q*52,y,24,col,met?h.red.f:'Pt',15)}
+for(let e=0;e<6;e++)zel(130+((e*53)%140)+Math.sin(t*1.5+e)*10,150+e*65+Math.cos(t*1.2+e*2)*12,.85);
+for(let j=0;j<7;j++)zp(500+((j*97)%360)+Math.sin(t*.8+j)*25,110+((j*173)%380)+Math.cos(t*.6+j*1.7)*22,lay,1,20);
+if(!ld){for(let i=0;i<7;i++){const y=sy(i),pl=Math.pow(Math.max(0,Math.sin(t*1.3+i*2.3)),6),s=i<k?1-pl:pl;
+if(met){zsc(sx,y,h.red,1-s);zsc(sx+86*smooth(s),y,h.ox,s)}else{dot(g,sx,y,24,col,'Pt',15);zsc(sx+75,y,par,1-s);zsc(sx+75+40*smooth(s),y,lay,s)}
+for(let e=0;e<h.n;e++)zel(sx-14+e*22,y,s,an)}
+g.save();g.setLineDash([8,6]);g.strokeStyle='#d97706';g.lineWidth=3;g.strokeRect(262,60,170,490);g.restore();lab(g,347,78,'Doppelschicht','#b45309',14)}
+else{const rc=isA?h.red:h.ox,pr=isA?h.ox:h.red;for(let i=0;i<7;i++){const y=sy(i),u=((t/7)+i*.13)%1,fl=Math.max(0,1-Math.abs(u-.47)/.07),fd=(a,b)=>clp((u-a)/(b-a),0,1);let at=-1;
+if(fl>0){g.beginPath();g.arc(sx+10,y,42,0,7);g.fillStyle=`rgba(250,204,21,${fl*.6})`;g.fill()}
+if(!met){dot(g,sx,y,24,col,'Pt',15);const nr=rc.mol?1:(rc.c||1),np=pr.mol?1:(pr.c||1),oy=(n,q)=>(q-(n-1)/2)*46;for(let q=0;q<nr;q++){const ta=.33+q*.12;if(u<ta)zp(sx+46+(1-smooth(u/ta))*300,y+oy(nr,q),rc,1,nr>1?18:24)}for(let q=0;q<np;q++){const v=fd(.45+q*.06,1);if(u>=.45+q*.06)zp(sx+46+smooth(v)*300,y+oy(np,q)*(1+v*.9),pr,1-fd(.8,1),np>1?18:24)}}
+else if(isA){at=u<.45?1:(u<.85?0:fd(.85,1));zsc(sx,y,h.red,at);if(u>=.45)zsc(sx+smooth(fd(.45,1))*320,y,h.ox,1-fd(.8,1))}
+else{at=u<.45?0:(u<.9?1:1-fd(.9,1));if(u<.45)zsc(sx+(1-smooth(u/.45))*330,y,h.ox,1);zsc(sx,y,h.red,at)}
+if(met&&at<.5){g.save();g.setLineDash([5,5]);g.strokeStyle='#94a3b8';g.lineWidth=2;g.beginPath();g.arc(sx,y,24,0,7);g.stroke();g.restore()}
+const p0=isA?(u-.45)/.4:u/.45;for(let e=0;e<h.n;e++){const p=p0-e*.12;if(p>0&&p<1){const q=pp(y,isA?p:1-p);zel(q[0],q[1],1)}}}
+lab(g,120,72,isA?'e⁻ → zum Stromkreis':'e⁻ ← vom Stromkreis','#0e7490',12)}
+lab(g,188,552,'Elektrode','#334155',13);
+const key=zs.c+'|'+ld;if(zs.k!=key){zs.k=key;$('#zt').textContent=!ld?`Dynamisches Gleichgewicht ${eq1(h)}: Hin- und Rückreaktion laufen gleich schnell ab. ${met?'Wenn ein Atom als Ion in die Lösung geht, bleiben seine Elektronen im Metall zurück; kehrt das Ion zurück, nimmt es sie wieder auf.':'Die Pt-Elektrode nimmt Elektronen auf oder gibt sie ab, die Pt-Atome bleiben unverändert.'} Dadurch entsteht die elektrochemische Doppelschicht: Ladungen in der Elektrode und entgegengesetzt geladene Teilchen in der Lösung unmittelbar an der Oberfläche. Je weiter das Gleichgewicht auf der Seite der Ionen und Elektronen liegt, desto stärker ist die Doppelschicht aufgebaut.`:isA?`Oxidation: ${met?'Ein Atom der Elektrode gibt Elektronen ab und geht als Kation in Lösung. Die Elektrode verliert Material und wird kleiner.':'Teilchen aus der Lösung geben an der Pt-Oberfläche Elektronen ab, die Pt-Atome bleiben unverändert.'} Die Elektronen wandern durch das Metall und über den Draht zum Pluspol.`:`Reduktion: Die Elektronen kommen aus dem Draht vom Minuspol. Teilchen aus der Lösung nehmen sie an der Elektrode auf${met?' und werden als Atome in das Metallgitter eingebaut. Die Elektrode wird größer.':'. Die Pt-Atome der Elektrode bleiben unverändert.'}`}}
+const adc=$('#ad').closest('.card');
+function fsad(on){if(on){const b=adc.getBoundingClientRect();adc.style.transformOrigin=(b.left+b.width/2-.02*innerWidth)+'px '+(b.top+b.height/2-.02*innerHeight)+'px';adc.classList.add('fs')}else{adc.classList.add('fsout');setTimeout(()=>adc.classList.remove('fs','fsout'),220)}$('#fsb').textContent=on?'✕ Schließen':'⤢ Vollbild'}
+$('#fsb').onclick=()=>fsad(!adc.classList.contains('fs')||adc.classList.contains('fsout'));
+document.addEventListener('keydown',e=>{if(e.key=='Escape'&&adc.classList.contains('fs'))fsad(false)});
+function setSw(v){st.sw=v;$('#go').textContent=v?'Versuch beenden':'Versuch starten';$('#go').classList.toggle('pri',!v)}
+$('#go').onclick=()=>setSw(!st.sw);
+const hit=(cv,e)=>{const b=cv.getBoundingClientRect();return[(e.clientX-b.left)*cv.width/b.width,(e.clientY-b.top)*cv.height/b.height]};
+mc.onclick=e=>{const[x,y]=hit(mc,e);if(x>290&&x<520&&y>105&&y<180)setSw(!st.sw)};
+pc.onclick=e=>{const[x,y]=hit(pc,e);if(x>310&&x<370&&y<70)setSw(!st.sw);else cells.forEach((c,i)=>{if(Math.abs(x-c.ex)<40&&y>70&&y<430)openZ(i)})};
+build();tbl();requestAnimationFrame(loop);
+</script></body></html>

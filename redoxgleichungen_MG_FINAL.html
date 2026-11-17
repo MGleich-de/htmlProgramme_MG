@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Redoxgleichungen – Lernen und Trainieren</title>
+<style>
+:root{--bg:#eef1fb;--bg2:#e6defc;--card:rgba(255,255,255,.82);--tx:#18202e;--mu:#4f5b6e;--pr:#5a3db0;--pr2:#8b5cf6;--prt:#fff;--ox:#b34700;--re:#0b6aa8;--ok:#16743a;--okb:#e1f5e8;--bad:#b3261e;--badb:#fde9e7;--wa:#7a4e00;--wab:#fff3d1;--bd:#cdd3e0;--sh:0 10px 30px rgba(70,50,140,.13);--tgc:#e08a00;--bl:#c4b5fd}
+[data-theme=dark]{--bg:#0e111a;--bg2:#1a1436;--card:rgba(26,31,45,.84);--tx:#eceff7;--mu:#aab3c6;--pr:#b7a2ff;--pr2:#7c5cf0;--prt:#150d33;--ox:#ffab70;--re:#7fd0ff;--ok:#79e09a;--okb:#12301d;--bad:#ff938a;--badb:#3b1814;--wa:#ffd27a;--wab:#38290a;--bd:#353d52;--sh:0 10px 30px rgba(0,0,0,.45);--tgc:#cdd8ff;--bl:#5b3fd0}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:linear-gradient(160deg,var(--bg),var(--bg2));background-attachment:fixed;color:var(--tx);font:17px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;transition:background .5s,color .4s}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bg i{position:absolute;border-radius:50%;background:radial-gradient(circle,var(--bl),transparent 70%);opacity:.45;filter:blur(30px);animation:fl 18s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:46vmax;height:46vmax;left:-12vmax;top:-10vmax}
+.bg i:nth-child(2){width:38vmax;height:38vmax;right:-10vmax;top:30vh;animation-duration:23s;background:radial-gradient(circle,#38bdf8,transparent 70%);opacity:.28}
+.bg i:nth-child(3){width:34vmax;height:34vmax;left:25vw;bottom:-16vmax;animation-duration:27s;background:radial-gradient(circle,#fb923c,transparent 70%);opacity:.2}
+@keyframes fl{to{transform:translate(8vmax,6vmax) scale(1.18)}}
+header{position:sticky;top:0;z-index:5;background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--bd);box-shadow:0 4px 18px rgba(60,40,120,.08)}
+.top{max-width:900px;margin:auto;padding:8px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;gap:10px;align-items:center;margin-right:auto}
+.brand h1{font-size:1.15rem;margin:0;line-height:1.15;background:linear-gradient(90deg,var(--pr),var(--re));-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand small{color:var(--mu);font-size:.78rem}
+.atom{width:40px;height:40px;color:var(--pr)}.atom g{transform-origin:20px 20px;animation:spin 9s linear infinite}
+.atom ellipse{fill:none;stroke:currentColor;stroke-width:1.5}.atom circle{fill:var(--ox)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tabs{display:flex;gap:6px;padding:4px;border-radius:14px;background:rgba(127,127,160,.14)}
+.tab{min-height:40px;padding:0 16px;border-radius:11px;border:0;background:none;color:var(--tx);font:inherit;font-weight:600;cursor:pointer;transition:all .3s}
+.tab:hover{background:rgba(139,92,246,.16)}
+.tab[aria-current=true]{background:linear-gradient(135deg,var(--pr2),var(--pr));color:var(--prt);box-shadow:0 4px 12px rgba(90,61,176,.35)}
+.tg{width:44px;height:44px;border-radius:50%;border:2px solid var(--pr);background:var(--card);color:var(--tgc);cursor:pointer;display:grid;place-items:center;padding:0;transition:transform .4s,box-shadow .3s,border-color .3s}
+.tg:hover{transform:rotate(25deg) scale(1.08);box-shadow:0 0 0 6px rgba(139,92,246,.18)}
+.tg svg{width:26px;height:26px}.sun,.moon{transform-origin:12px 12px;transition:transform .7s cubic-bezier(.3,1.4,.5,1),opacity .4s}
+.moon{opacity:0;transform:rotate(-90deg) scale(.3)}
+[data-theme=dark] .sun{opacity:0;transform:rotate(90deg) scale(.3)}[data-theme=dark] .moon{opacity:1;transform:none}
+#pg{height:6px;background:var(--bd)}#pb{height:100%;width:0;border-radius:0 6px 6px 0;background:linear-gradient(90deg,var(--pr2),var(--re),var(--pr2));background-size:200% 100%;animation:sh 3s linear infinite;transition:width .6s cubic-bezier(.3,1,.4,1)}
+@keyframes sh{to{background-position:-200% 0}}
+main{max-width:900px;margin:auto;padding:16px 14px 40px}
+#app>*{animation:up .55s cubic-bezier(.2,.9,.3,1) both}
+@keyframes up{from{opacity:0;transform:translateY(18px)}}
+.card{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--bd);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+h2{font-size:1.4rem;margin:.2em 0 .6em}h2:focus{outline:none}
+h2::after{content:"";display:block;width:56px;height:4px;margin-top:6px;border-radius:4px;background:linear-gradient(90deg,var(--pr2),var(--re));animation:gr .8s .2s both}
+@keyframes gr{from{width:0}}
+.mu{color:var(--mu);margin:.2em 0}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.grid>*{animation:up .55s both}.grid>:nth-child(2){animation-delay:.08s}.grid>:nth-child(3){animation-delay:.16s}.grid>:nth-child(4){animation-delay:.24s}.grid>:nth-child(5){animation-delay:.32s}
+.mini{background:var(--card);border:1px solid var(--bd);border-left:5px solid var(--pr2);border-radius:14px;padding:12px 14px;box-shadow:var(--sh);transition:transform .3s,box-shadow .3s}
+.mini:hover,.card:hover{transform:translateY(-3px)}
+.ox{color:var(--ox);font-weight:700}.re{color:var(--re);font-weight:700}
+.big{font-size:1.25rem;font-weight:700;text-align:center;padding:14px;border:2px solid transparent;border-radius:16px;margin:12px 0;white-space:nowrap;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(135deg,var(--pr2),var(--re)) border-box;animation:pul 3.5s ease-in-out infinite}
+@keyframes pul{50%{box-shadow:0 0 22px rgba(139,92,246,.35)}}
+.btn{min-height:48px;min-width:48px;padding:0 20px;font:inherit;font-weight:600;border-radius:14px;border:2px solid var(--pr);background:var(--card);color:var(--pr);cursor:pointer;transition:transform .2s,box-shadow .3s,background .3s}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 16px rgba(90,61,176,.28)}.btn:active:not(:disabled){transform:scale(.96)}
+.btn.p{background:linear-gradient(135deg,var(--pr2),var(--pr));color:var(--prt);border-color:transparent}.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn[aria-pressed=true]{background:linear-gradient(135deg,var(--pr2),var(--pr));color:var(--prt)}
+:focus-visible{outline:3px solid var(--wa);outline-offset:2px}
+.nav,.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:14px}.row{justify-content:flex-start}
+.eq{display:flex;flex-wrap:nowrap;white-space:nowrap;align-items:flex-end;gap:.4em;font-size:1.4rem;margin:14px 0}.eq>*{flex-shrink:0}
+.sp{display:inline-flex;align-items:center;gap:.25em}.sp.c{flex-direction:column;gap:2px}.sp small{font-size:.55em;color:var(--mu)}
+.op{padding:0 .1em;color:var(--mu)}
+.num{width:3em;height:2.3em;font:inherit;font-size:.85em;text-align:center;border:2px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);transition:border-color .3s,box-shadow .3s,transform .2s}
+.num:focus{outline:none;border-color:var(--pr2);box-shadow:0 0 0 4px rgba(139,92,246,.25);transform:scale(1.06)}
+input[aria-label^="Oxidationszahl"]{color:var(--ok);font-weight:700}
+.num.ok{border-color:var(--ok);background:var(--okb);animation:pop .45s}.num.bad{border-color:var(--bad);background:var(--badb);animation:shk .4s}
+@keyframes pop{50%{transform:scale(1.16)}}@keyframes shk{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.tb,.ozt{border-collapse:separate;border-spacing:0;width:100%;margin:10px 0;border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.tb th,.tb td,.ozt td,.ozt th{border-bottom:1px solid var(--bd);padding:7px 10px;text-align:center}.tb th,.ozt th{background:rgba(139,92,246,.14)}
+.ozt td:last-child{color:var(--ok);font-weight:700}
+.tb tr{animation:up .4s both}.tb tr:nth-child(2){animation-delay:.05s}.tb tr:nth-child(3){animation-delay:.1s}.tb tr:nth-child(4){animation-delay:.15s}.tb tr:nth-child(5){animation-delay:.2s}
+.tb .g{color:var(--ok);font-weight:700}.tb .r{color:var(--bad);font-weight:700}
+.fb{padding:12px 14px;border-radius:14px;margin:12px 0;animation:pop2 .45s}.fb:empty{display:none}
+@keyframes pop2{from{opacity:0;transform:scale(.94) translateY(6px)}}
+.fb.ok{background:var(--okb);color:var(--ok)}.fb.bad{background:var(--badb);color:var(--bad)}.fb.hint{background:var(--wab);color:var(--wa)}
+.lv{text-align:left;display:block;width:100%;margin-bottom:12px;padding:14px 18px;animation:up .5s both}.lv:nth-of-type(2){animation-delay:.1s}.lv:nth-of-type(3){animation-delay:.2s}
+.trans{display:block;width:100%;max-width:620px;margin:12px auto;color:var(--mu)}
+.trans text{fill:var(--tx);font:600 16px "Segoe UI",system-ui,sans-serif}.trans .arc{fill:none;stroke:currentColor;stroke-width:1.4;stroke-dasharray:5 4;animation:dash 1.2s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-9}}.trans .a{fill:rgba(255,140,60,.18);stroke:var(--ox);stroke-width:2.5;animation:gl 2.8s ease-in-out infinite}.trans .b{fill:rgba(60,160,230,.18);stroke:var(--re);stroke-width:2.5;animation:gl 2.8s 1.4s ease-in-out infinite}
+@keyframes gl{50%{stroke-width:5}}
+.cf{position:fixed;top:-12px;width:9px;height:14px;border-radius:2px;z-index:20;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.cf{display:none}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+<header>
+  <div class="top">
+    <div class="brand"><svg class="atom" viewBox="0 0 40 40" aria-hidden="true"><g><ellipse cx="20" cy="20" rx="16" ry="6"/><ellipse cx="20" cy="20" rx="16" ry="6" transform="rotate(60 20 20)"/><ellipse cx="20" cy="20" rx="16" ry="6" transform="rotate(120 20 20)"/></g><circle cx="20" cy="20" r="3.5"/></svg><div><h1>Redoxgleichungen</h1><small>Autor: Matthias Gleich</small></div></div>
+    <div class="tabs"><button class="tab" id="t1" onclick="go('learn')">Lernen</button><button class="tab" id="t2" onclick="go('train')">Training</button></div>
+    <button class="tg" id="tg" onclick="theme()" aria-label="Zum dunklen Modus wechseln"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="sun"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g><path class="moon" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="currentColor"/></svg></button>
+  </div>
+  <div id="pg" role="progressbar" aria-label="Fortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="pb"></div></div>
+</header>
+<main id="app"></main>
+
+<script>
+/* ===================== Hilfsfunktionen ===================== */
+const $=s=>document.querySelector(s);
+const sub=f=>f.replace(/\d+/g,'<sub>$&</sub>');
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const sg=n=>n>0?'+'+n:n<0?'−'+(-n):'0';                    // Vorzeichen-Darstellung
+const rom=n=>{const r={1:'I',2:'II',3:'III',4:'IV',5:'V',6:'VI',7:'VII'};return n==0?'0':(n>0?'+':'−')+r[Math.abs(n)]};
+function setBar(p){$('#pb').style.width=Math.round(p*100)+'%';$('#pg').setAttribute('aria-valuenow',Math.round(p*100))}
+/* Teilchen-Token: "Cr2O7^2-" = Formel^Ladung; e^- ist das Elektron */
+const ch=t=>{const c=t.split('^')[1];if(!c)return 0;const m=c.match(/^(\d*)([+-])$/);return(+m[1]||1)*(m[2]=='+'?1:-1)};
+const tk=t=>{const[f,c]=t.split('^');return sub(f)+(c?`<sup>${c.replace('-','−')}</sup>`:'')};
+/* Atome zählen: Ladungsteil nach ^ enthält keine Großbuchstaben und wird ignoriert */
+function atoms(f){const o={};f.replace(/([A-Z][a-z]?)(\d*)/g,(m,e,n)=>{o[e]=(o[e]||0)+(+n||1)});return o}
+function side(sp,nums){const o={};let c=0;sp.forEach((t,i)=>{const a=atoms(t);for(const e in a)o[e]=(o[e]||0)+a[e]*nums[i];c+=ch(t)*nums[i]});return{o,c}}
+/* Gleichung: "Cu HNO3 H3O^+>Cu^2+ NO2 H2O|1,2,2,1,2,4" */
+function P(s){const[a,b]=s.split('|'),[l,r]=a.split('>');return{L:l.split(' '),R:r.split(' '),sol:b.split(',').map(Number)}}
+const flat=eq=>eq.L.concat(eq.R);
+/* Bilanz aus Atomen UND Ladung – die Prüfung erfolgt rechnerisch, nicht per Musterlösung */
+function bal(eq,nums){const n=eq.L.length,l=side(eq.L,nums.slice(0,n)),r=side(eq.R,nums.slice(n));
+  const es=[...new Set(Object.keys(l.o).concat(Object.keys(r.o)))].map(e=>({e,l:l.o[e]||0,r:r.o[e]||0}));
+  if(flat(eq).some(t=>ch(t)))es.push({e:'Ladung',l:l.c,r:r.c});
+  es.forEach(x=>x.ok=x.l==x.r);return{els:es,ok:es.every(x=>x.ok)}}
+function tbl(eq,nums){const b=bal(eq,nums),f=x=>x.e=='Ladung'?sg(x.l):x.l,g=x=>x.e=='Ladung'?sg(x.r):x.r;
+  return'<table class="tb"><tr><th>Element / Ladung</th><th>links</th><th>rechts</th><th>ausgeglichen?</th></tr>'+
+  b.els.map(x=>`<tr><td>${x.e}</td><td>${f(x)}</td><td>${g(x)}</td><td class="${x.ok?'g':'r'}">${x.ok?'✓ ja':'✗ nein'}</td></tr>`).join('')+'</table>'}
+function eqStr(eq,nums){const n=eq.L.length,s=(a,o)=>a.map((t,i)=>nums[o+i]>0?(nums[o+i]>1?nums[o+i]+' ':'')+tk(t):'').filter(Boolean).join(' + ');return s(eq.L,0)+' → '+s(eq.R,n)}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+/* ===================== Navigation ===================== */
+function go(m){$('#t1').setAttribute('aria-current',m=='learn');$('#t2').setAttribute('aria-current',m=='train');m=='learn'?render1():menu()}
+
+/* ===================== TEIL 1: Erklärung ===================== */
+const TRANS=`<svg class="trans" viewBox="0 0 600 230" role="img" aria-label="Elektronenübergang: Das Kupfer-Atom gibt zwei Elektronen ab und wird zum kleineren Cu²⁺-Ion. Zwei Ag⁺-Ionen nehmen je ein Elektron auf und werden zu größeren Silber-Atomen. Die Oxidationszahlen über den Teilchen ändern sich von 0 auf +II beim Kupfer und von +I auf 0 beim Silber."><defs><marker id="ah" markerWidth="7" markerHeight="7" refX="5.5" refY="3.5" orient="auto"><path d="M1 1 L5.5 3.5 L1 6" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="300" y="20" text-anchor="middle" style="fill:var(--mu);font-size:13px">Elektronenübergang</text><path class="arc" d="M140 100 Q300 5 466 80" marker-end="url(#ah)"/><path class="arc" d="M140 130 Q300 225 466 160" marker-end="url(#ah)"/><circle class="a" cx="100" cy="115" r="38"><animate attributeName="r" dur="8s" repeatCount="indefinite" keyTimes="0;.10;.40;.90;1" values="38;38;22;22;38"/></circle><circle class="b" cx="500" cy="80" r="22"><animate attributeName="r" dur="8s" repeatCount="indefinite" keyTimes="0;.30;.38;.90;1" values="22;22;28;28;22"/></circle><circle class="b" cx="500" cy="160" r="22"><animate attributeName="r" dur="8s" repeatCount="indefinite" keyTimes="0;.45;.53;.90;1" values="22;22;28;28;22"/></circle><text x="100" y="120" text-anchor="middle" style="font-size:16px" opacity="1">Cu<animate attributeName="opacity" dur="8s" repeatCount="indefinite" keyTimes="0;.40;.90" values="1;0;1" calcMode="discrete"/></text><text x="100" y="120" text-anchor="middle" style="font-size:13px" opacity="0">Cu²⁺<animate attributeName="opacity" dur="8s" repeatCount="indefinite" keyTimes="0;.40;.90" values="0;1;0" calcMode="discrete"/></text><text x="500" y="85" text-anchor="middle" style="font-size:13px" opacity="1">Ag⁺<animate attributeName="opacity" dur="8s" repeatCount="indefinite" keyTimes="0;.30;.90" values="1;0;1" calcMode="discrete"/></text><text x="500" y="85" text-anchor="middle" style="font-size:16px" opacity="0">Ag<animate attributeName="opacity" dur="8s" repeatCount="indefinite" keyTimes="0;.30;.90" values="0;1;0" calcMode="discrete"/></text><text x="500" y="165" text-anchor="middle" style="font-size:13px" opacity="1">Ag⁺<animate attributeName="opacity" dur="8s" repeatCount="indefinite" keyTimes="0;.45;.90" values="1;0;1" calcMode="discrete"/></text><text x="500" y="165" text-anchor="middle" style="font-size:16px" opacity="0">Ag<animate attributeName="opacity" dur="8s" repeatCount="indefinite" keyTimes="0;.45;.90" values="0;1;0" calcMode="discrete"/></text><text x="100" y="62" text-anchor="middle" opacity="1" style="fill:var(--ok);font-size:16px;font-weight:700">0<animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;.40;.90" values="1;0;1"/></text><text x="100" y="62" text-anchor="middle" opacity="0" style="fill:var(--ok);font-size:16px;font-weight:700">+II<animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;.40;.90" values="0;1;0"/></text><text x="500" y="40" text-anchor="middle" opacity="1" style="fill:var(--ok);font-size:16px;font-weight:700">+I<animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;.30;.90" values="1;0;1"/></text><text x="500" y="40" text-anchor="middle" opacity="0" style="fill:var(--ok);font-size:16px;font-weight:700">0<animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;.30;.90" values="0;1;0"/></text><text x="500" y="124" text-anchor="middle" opacity="1" style="fill:var(--ok);font-size:16px;font-weight:700">+I<animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;.45;.90" values="1;0;1"/></text><text x="500" y="124" text-anchor="middle" opacity="0" style="fill:var(--ok);font-size:16px;font-weight:700">0<animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;.45;.90" values="0;1;0"/></text><text x="100" y="222" text-anchor="middle" style="fill:var(--ox)">Oxidation</text><text x="500" y="222" text-anchor="middle" style="fill:var(--re)">Reduktion</text><g opacity="0"><animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;.10;.30;1" path="M140 100 Q300 5 466 80"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" keyTimes="0;.10;.30" values="0;1;0" calcMode="discrete"/><circle r="10" fill="var(--pr2)"/><text y="4" text-anchor="middle" style="fill:#fff;font-size:11px">e⁻</text></g><g opacity="0"><animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;.25;.45;1" path="M140 130 Q300 225 466 160"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" keyTimes="0;.25;.45" values="0;1;0" calcMode="discrete"/><circle r="10" fill="var(--pr2)"/><text y="4" text-anchor="middle" style="fill:#fff;font-size:11px">e⁻</text></g></svg>`;
+let V=0;const NS=9;const EXA=P('MnO4^- e^- H2O>MnO2 OH^-|1,3,2,1,4');
+const EXR=P('HNO3 e^- H3O^+>NO2 H2O|1,1,1,1,2'),EXT=P('Cu HNO3 H3O^+>Cu^2+ NO2 H2O|1,2,2,1,2,4');
+function slide(){
+ if(V==0)return`<h2 tabindex="-1">Oxidationszahlen bestimmen</h2><div class="grid">
+ <div class="mini"><b>1.</b> Atome in <b>Elementen</b> haben OZ 0 (S, Cl<sub>2</sub>, Na).</div>
+ <div class="mini"><b>2.</b> In <b>einatomigen Ionen</b> ist die OZ gleich der Ladung: Na<sup>+</sup> → +I, O<sup>2−</sup> → −II.</div>
+ <div class="mini"><b>3.</b> In Molekülen und Molekül-Ionen gilt (in dieser Reihenfolge):<br>a) Metalle: positive OZ<br>b) Fluor: −I<br>c) Wasserstoff: meist +I<br>d) Sauerstoff: meist −II<br>e) Cl, Br, I: −I</div>
+ <div class="mini"><b>4.</b> In <b>Molekülen</b> ist die Summe der OZ gleich 0.</div>
+ <div class="mini"><b>5.</b> In <b>Molekül-Ionen</b> ist die Summe der OZ gleich der Ionenladung.</div></div>
+ <p class="mu">Eine Regel gilt nur, wenn eine vorhergehende nichts anderes festlegt. Beispiel H<sub>2</sub>SO<sub>4</sub>: 2·(+I) + S + 4·(−II) = 0 → S = +VI.</p>`;
+ if(V==1)return`<h2 tabindex="-1">Oxidation und Reduktion</h2><div class="grid">
+ <div class="card"><p class="ox">Oxidation</p><p>Die OZ <b>steigt</b>. Das Teilchen <b>gibt Elektronen ab</b>. Die Elektronen stehen in der Teilgleichung <b>rechts</b>.</p></div>
+ <div class="card"><p class="re">Reduktion</p><p>Die OZ <b>sinkt</b>. Das Teilchen <b>nimmt Elektronen auf</b>. Die Elektronen stehen in der Teilgleichung <b>links</b>.</p></div></div>
+ ${TRANS}<p>Oxidation und Reduktion laufen immer <b>gleichzeitig</b> ab (Redoxreaktion). Die Zahl der abgegebenen Elektronen ist gleich der Zahl der aufgenommenen.</p>`;
+ if(V==2)return`<h2 tabindex="-1">So stellst du eine Redoxgleichung auf</h2><div class="card">
+ <p><b>1.</b> Teilchenformeln der Edukte und Produkte aufschreiben.</p><p><b>2.</b> Oxidationszahlen bestimmen.</p>
+ <p><b>3.</b> Oxidation (OZ steigt) und Reduktion (OZ sinkt) zuordnen.</p>
+ <p><b>4.</b> Teilgleichungen aufstellen:<br>4.1 Redoxpaar mit OZ (beteiligte Ionen genügen)<br>4.2 Atome mit OZ-Änderung ausgleichen<br>4.3 Elektronen ergänzen (Atomzahl beachten!)<br>4.4 Ladung ausgleichen: H<sub>3</sub>O<sup>+</sup> (sauer) oder OH<sup>−</sup> (basisch)<br>4.5 Atombilanz mit H<sub>2</sub>O ausgleichen</p>
+ <p><b>5.</b> Teilgleichungen so multiplizieren, dass abgegebene = aufgenommene Elektronen. Dann addieren, im kleinstmöglichen Zahlenverhältnis.</p></div>`;
+ if(V==3)return`<h2 tabindex="-1">Beispiel 1/4: OZ bestimmen, zuordnen</h2><p>Cu + HNO<sub>3</sub> → Cu<sup>2+</sup> + NO<sub>2</sub></p>
+ <table class="ozt"><tr><th>Teilchen</th><th>OZ der Atome</th></tr><tr><td>HNO<sub>3</sub></td><td>H +I · N +V · O −II</td></tr><tr><td>NO<sub>2</sub></td><td>N +IV · O −II</td></tr><tr><td>Cu</td><td>0</td></tr><tr><td>Cu<sup>2+</sup></td><td>+II</td></tr></table>
+ <p><span class="re">Reduktion:</span> HNO<sub>3</sub> → NO<sub>2</sub> (N: +V → +IV, die OZ sinkt)<br><span class="ox">Oxidation:</span> Cu → Cu<sup>2+</sup> (0 → +II, die OZ steigt)</p>
+ <p class="mu">Atome mit OZ-Änderung müssen auf beiden Seiten gleich oft vorkommen (hier jeweils 1).</p>`;
+ if(V==4)return`<h2 tabindex="-1">Beispiel 2/4: Elektronen</h2><p>Die OZ-Differenz gibt die Zahl der Elektronen. Achte auf die Zahl der Atome!</p>
+ <div class="card"><p class="re">Reduktion: HNO<sub>3</sub> + <b>1 e<sup>−</sup></b> → NO<sub>2</sub></p><p class="mu">N: +V → +IV, Differenz 1, aufgenommen.</p>
+ <p class="ox">Oxidation: Cu → Cu<sup>2+</sup> + <b>2 e<sup>−</sup></b></p><p class="mu">Cu: 0 → +II, Differenz 2, abgegeben.</p></div>`;
+ if(V==5)return`<h2 tabindex="-1">Beispiel 3/4: Ladung und Stoffbilanz</h2>
+ <p>Reduktion: HNO<sub>3</sub> + e<sup>−</sup> → NO<sub>2</sub>. Links ist die Ladung −1, rechts 0. Im sauren Milieu gleichst du sie mit <b>H<sub>3</sub>O<sup>+</sup></b> aus (basisch: OH<sup>−</sup>).</p>
+ <p>Dann fehlen noch Atome (H und O): Der Ausgleich erfolgt mit <b>H<sub>2</sub>O</b>.</p>
+ <div class="card"><div class="eq"><span>${eqStr(EXR,EXR.sol)}</span></div>${tbl(EXR,EXR.sol)}</div><p class="mu">Die Oxidation Cu → Cu<sup>2+</sup> + 2 e<sup>−</sup> ist schon ausgeglichen (Ladung 0 = 0).</p>`;
+ if(V==6)return`<h2 tabindex="-1">Beispiel 4/4: Gesamtgleichung</h2>
+ <p>Die Oxidation gibt 2 e<sup>−</sup> ab, die Reduktion nimmt nur 1 e<sup>−</sup> auf. Darum multiplizierst du die Reduktion <b>mal 2</b> und addierst:</p>
+ <div class="card"><p class="re">Red: 2 HNO<sub>3</sub> + 2 e<sup>−</sup> + 2 H<sub>3</sub>O<sup>+</sup> → 2 NO<sub>2</sub> + 4 H<sub>2</sub>O</p><p class="ox">Ox: Cu → Cu<sup>2+</sup> + 2 e<sup>−</sup></p>
+ <div class="big">${eqStr(EXT,EXT.sol)}</div>${tbl(EXT,EXT.sol)}</div><p class="mu">Die Elektronen kürzen sich weg. Atome und Ladung stimmen auf beiden Seiten.</p>`;
+ if(V==7)return`<h2 tabindex="-1">Sauer oder alkalisch?</h2>
+ <p>Nach den Elektronen vergleichst du die Gesamtladung links und rechts. Die Seite mit der <b>negativeren</b> Ladung bekommt in saurer Lösung <b>H<sub>3</sub>O<sup>+</sup></b>. Die Seite mit der <b>positiveren</b> Ladung bekommt in alkalischer Lösung <b>OH<sup>−</sup></b>. Danach gleichst du die Atome mit H<sub>2</sub>O aus.</p>
+ <div class="card"><p class="mu">Alkalisch: MnO<sub>4</sub><sup>−</sup> + 3 e<sup>−</sup> → MnO<sub>2</sub>. Links ist die Ladung −4, rechts 0. Rechts ist es positiver, also kommen 4 OH<sup>−</sup> nach rechts. Dann fehlen links 2 H<sub>2</sub>O.</p>
+ <div class="eq"><span>${eqStr(EXA,EXA.sol)}</span></div>${tbl(EXA,EXA.sol)}</div>
+ <p class="mu">Bei der Reduktion mit HNO<sub>3</sub> war es umgekehrt: Links −1, rechts 0. Links ist es negativer, also kommt H<sub>3</sub>O<sup>+</sup> nach links.</p>`;
+ return`<h2 tabindex="-1">Tipps und häufige Fehler</h2><div class="card"><p><b>Strategie für Teilgleichungen:</b> zuerst die Atome mit OZ-Änderung, dann Elektronen, dann Ladung (H<sub>3</sub>O<sup>+</sup> oder OH<sup>−</sup>), zuletzt H<sub>2</sub>O.</p>
+ <p><b>Häufige Fehler</b></p><p>✗ Elektronen auf der falschen Seite (Oxidation: rechts, Reduktion: links).<br>✗ Die Atomzahl bei der OZ-Differenz vergessen (z. B. Cr<sub>2</sub>O<sub>7</sub><sup>2−</sup> hat 2 Cr).<br>✗ Ladung und Atome verwechseln: Beides muss stimmen.<br>✗ Im basischen Milieu H<sub>3</sub>O<sup>+</sup> verwenden.</p></div>
+ <button class="btn p" onclick="go('train')">Los zum Training</button>`}
+function render1(foc){setBar((V+1)/NS);
+ $('#app').innerHTML=slide()+`<div class="nav"><button class="btn" onclick="nav(-1)" ${V==0?'disabled':''}>Zurück</button><span class="mu" style="align-self:center">${V+1} / ${NS}</span><button class="btn p" onclick="nav(1)" ${V==NS-1?'disabled':''}>Weiter</button></div>`;
+ if(foc){const h=$('h2');h&&h.focus()}}
+function nav(d){V=Math.max(0,Math.min(NS-1,V+d));render1(true);scrollTo(0,0)}
+
+/* ===================== TEIL 2: Training ===================== */
+/* Stufe 1: OZ ("Formel;OZ in Reihenfolge des Auftretens"), Stufe 2: Teilgleichungen, Stufe 3: Gesamtgleichungen */
+const OZ=['H2O;1,-2','CO2;4,-2','H2SO4;1,6,-2','HNO3;1,5,-2','NO2;4,-2','KMnO4;1,7,-2','MnO4^-;7,-2','Cr2O7^2-;6,-2','NH3;-3,1','NH4^+;-3,1','SO4^2-;6,-2','Fe2O3;3,-2','CH4;-4,1','CO;2,-2','MnO2;4,-2','H2S;1,-2','H2O2;1,-1','Cl2;0','Cu2O;1,-2','NO3^-;5,-2'];
+const TG=[['HNO3 e^- H3O^+>NO2 H2O|1,1,1,1,2','Reduktion','sauer'],['Cu>Cu^2+ e^-|1,1,2','Oxidation','sauer'],['MnO4^- e^- H3O^+>Mn^2+ H2O|1,5,8,1,12','Reduktion','sauer'],['Fe^2+>Fe^3+ e^-|1,1,1','Oxidation','sauer'],['Cr2O7^2- e^- H3O^+>Cr^3+ H2O|1,6,14,2,21','Reduktion','sauer'],['SO2 H2O>SO4^2- H3O^+ e^-|1,6,1,4,2','Oxidation','sauer'],
+['MnO4^- e^- H2O>MnO2 OH^-|1,3,2,1,4','Reduktion','alkalisch'],['Zn OH^->ZnO2^2- H2O e^-|1,4,1,2,2','Oxidation','alkalisch'],['Cr^3+ OH^->CrO4^2- H2O e^-|1,8,1,4,3','Oxidation','alkalisch'],['H2O2 e^->OH^-|1,2,2','Reduktion','alkalisch'],['O2 e^- H2O>OH^-|1,4,2,4','Reduktion','alkalisch'],['Al OH^->AlO2^- H2O e^-|1,4,1,2,3','Oxidation','alkalisch']];
+/* Stufe 3: H3O+/OH- und H2O stehen als Zusatzteilchen auf BEIDEN Seiten (0 = nicht vorhanden); die Seite wählt der Lernende */
+const GE=[['Cu HNO3 H3O^+ H2O>Cu^2+ NO2 H3O^+ H2O|1,2,2,0,1,2,0,4','sauer'],['MnO4^- Fe^2+ H3O^+ H2O>Mn^2+ Fe^3+ H3O^+ H2O|1,5,8,0,1,5,0,12','sauer'],['Zn H3O^+ H2O>Zn^2+ H2 H3O^+ H2O|1,2,0,1,1,0,2','sauer'],['Cr2O7^2- Fe^2+ H3O^+ H2O>Cr^3+ Fe^3+ H3O^+ H2O|1,6,14,0,2,6,0,21','sauer'],['MnO4^- Cl^- H3O^+ H2O>Mn^2+ Cl2 H3O^+ H2O|2,10,16,0,2,5,0,24','sauer'],
+['MnO4^- I^- OH^- H2O>MnO2 I2 OH^- H2O|2,6,0,4,2,3,8,0','alkalisch'],['Zn NO3^- OH^- H2O>ZnO2^2- NH3 OH^- H2O|4,1,7,0,4,1,0,2','alkalisch'],['Cr^3+ H2O2 OH^- H2O>CrO4^2- OH^- H2O|2,3,10,0,2,0,8','alkalisch'],['Al OH^- H2O>AlO2^- H2 OH^- H2O|2,2,2,2,3,0,0','alkalisch']];
+const best=[0,0,0];let R=null;
+const stars=p=>p>=95?'★★★':p>=80?'★★☆':p>=60?'★☆☆':'☆☆☆';
+const fb=(c,h)=>{const e=$('#fb');e.className='';void e.offsetWidth;e.className='fb '+c;e.innerHTML=h};
+
+function menu(){setBar(0);
+ const nm=['Stufe 1: Oxidationszahlen bestimmen','Stufe 2: Teilgleichungen (sauer und alkalisch)','Stufe 3: Gesamtgleichung (Seite für H<sub>3</sub>O<sup>+</sup>/OH<sup>−</sup> selbst wählen)'];
+ $('#app').innerHTML='<h2 tabindex="-1">Training</h2><p>Wähle eine Stufe. Eine Runde hat bis zu 6 Aufgaben.</p>'+
+ nm.map((x,i)=>`<button class="btn lv p" onclick="start(${i})">${x}<br><small>Beste Runde: ${best[i]} % ${stars(best[i])}</small></button>`).join('')}
+
+function start(lvl,tasks,retry){
+ if(!tasks){const pool=lvl==0?OZ.map(s=>{const[f,o]=s.split(';');return{f,o:o.split(',').map(Number)}}):lvl==1?TG.map(x=>({eq:P(x[0]),cls:x[1],mil:x[2]})):GE.map(x=>({eq:P(x[0]),mil:x[1],aux:true}));
+  tasks=lvl==0?shuffle(pool).slice(0,6):shuffle(shuffle(pool.filter(x=>x.mil=='sauer')).slice(0,3).concat(shuffle(pool.filter(x=>x.mil!='sauer')).slice(0,3)))}
+ R={lvl,tasks,i:0,res:[],retry:!!retry};showTask()}
+
+function showTask(){
+ const t=R.cur=R.tasks[R.i];R.tries=0;R.hint=0;R.hinted=false;R.done=false;R.cls=null;setBar(R.i/R.tasks.length);
+ const head=R.lvl==0?`Bestimme die Oxidationszahl jedes Atoms in <b>${tk(t.f)}</b>.`:R.lvl==1?`Teilgleichung im <b>${t.mil}en</b> Milieu: Ordne zu und gleiche aus.`:`Stelle die Gesamtgleichung für <b>${t.mil=='sauer'?'saure':'alkalische'} Lösung</b> auf. Entscheide selbst, auf welcher Seite ${t.mil=='sauer'?'H<sub>3</sub>O<sup>+</sup>':'OH<sup>−</sup>'} und H<sub>2</sub>O stehen müssen.`;
+ $('#app').innerHTML=`<div class="card"><p class="mu">Stufe ${R.lvl+1} · Aufgabe ${R.i+1} von ${R.tasks.length}</p><h2 tabindex="-1">${head}</h2>
+ <p class="mu">${R.lvl==0?'Schreibe z. B. +4, −2 oder 0.':R.lvl==2?'Bei den Reaktionsteilchen bedeutet leer 1. Bei den gestrichelten Zusatzteilchen bedeutet leer 0: Ein Zusatzteilchen steht nur auf einer Seite.':'Leer oder 1 bedeutet 1. Zum Ausgleichen helfen e<sup>−</sup>, H<sub>3</sub>O<sup>+</sup>, OH<sup>−</sup> und H<sub>2</sub>O.'}</p>
+ ${R.lvl==1?'<div class="row" role="group" aria-label="Zuordnung"><button class="btn" id="cOx" aria-pressed="false" onclick="sc(\'Oxidation\')">Oxidation</button><button class="btn" id="cRe" aria-pressed="false" onclick="sc(\'Reduktion\')">Reduktion</button></div>':''}
+ <div class="eq" id="eq"></div><div class="fb" id="fb" aria-live="polite"></div><div id="tb"></div>
+ <div class="row" id="btns"><button class="btn p" id="bc" onclick="check()">Prüfen</button><button class="btn" id="bh" onclick="hint()">Tipp</button><button class="btn" id="bs" onclick="solve()">Lösung zeigen</button></div></div>`;
+ drawEq();$('h2').focus()}
+function sc(c){R.cls=c;[['cOx','Oxidation'],['cRe','Reduktion']].forEach(([i,n])=>{const b=$('#'+i);b.classList.toggle('p',n==c);b.setAttribute('aria-pressed',n==c)})}
+
+function drawEq(vals){const t=R.cur;let h='';
+ if(R.lvl==0)Object.keys(atoms(t.f)).forEach((e,i)=>{h+=`<span class="sp c"><input class="num" id="n${i}" maxlength="3" autocomplete="off" aria-label="Oxidationszahl von ${e}" value="${vals?sg(vals[i]):''}"><small>${e}</small></span>`});
+ else{const sp=flat(t.eq),n=t.eq.L.length;sp.forEach((f,i)=>{h+=i==n?'<span class="op">→</span>':i?'<span class="op">+</span>':'';
+  const ax=isAux(i);h+=`<span class="sp"><input class="num" id="n${i}" inputmode="numeric" maxlength="2" ${ax?'placeholder="0" style="border-style:dashed"':''} aria-label="Zahl vor ${f.replace('^',' Ladung ')}${ax?' (Zusatzteilchen, leer bedeutet 0)':''}" value="${vals&&vals[i]?vals[i]:''}"><span>${tk(f)}</span></span>`})}
+ $('#eq').innerHTML=h;
+ document.querySelectorAll('#eq input').forEach(x=>x.addEventListener('keydown',e=>{if(e.key=='Enter'&&!R.done)check()}));
+ const f=$('#eq input');f&&f.focus()}
+
+const isAux=i=>{const t=R.cur;if(!t.aux)return false;const nl=t.eq.L.length,n=nl+t.eq.R.length;return(i>=nl-2&&i<nl)||i>=n-2};
+const cnt=()=>R.lvl==0?Object.keys(atoms(R.cur.f)).length:flat(R.cur.eq).length;
+function readNums(){const o=[];for(let i=0;i<cnt();i++){const v=$('#n'+i).value.trim();const ax=isAux(i);if(v==='')o.push(ax?0:1);else if(/^\d{1,2}$/.test(v)&&(ax||+v>0))o.push(+v);else return null}return o}
+const ozSum=(f,o)=>{const a=atoms(f);return Object.keys(a).reduce((s,e,i)=>s+a[e]*o[i],0)};
+
+function check(){const t=R.cur;
+ if(R.lvl==0){const el=Object.keys(atoms(t.f)),v=el.map((e,i)=>{const s=$('#n'+i).value.replace('−','-').replace('+','').trim();return/^-?\d+$/.test(s)?+s:NaN});
+  if(v.some(isNaN)){fb('bad','Bitte für jedes Atom eine ganze Zahl eintragen, z. B. +4 oder −2.');return}
+  let all=true;v.forEach((x,i)=>{const ok=x==t.o[i];$('#n'+i).className='num '+(ok?'ok':'bad');if(!ok)all=false});
+  if(!all){R.tries++;fb('bad',`Noch nicht richtig. Die Summe aller OZ (mit Atomzahl) muss ${sg(ch(t.f))} ergeben. Bei dir: ${sg(ozSum(t.f,v))}.`);return}
+  return finish(R.tries==0&&!R.hinted?2:1)}
+ if(R.lvl==1&&!R.cls){fb('bad','Wähle zuerst: Oxidation oder Reduktion?');return}
+ if(R.lvl==1&&R.cls!=t.cls){R.tries++;fb('bad',t.cls=='Oxidation'?'Hier steigt die OZ und das Teilchen gibt Elektronen ab. Das ist eine Oxidation.':'Hier sinkt die OZ und das Teilchen nimmt Elektronen auf. Das ist eine Reduktion.');return}
+ const nums=readNums();if(!nums){fb('bad','Bitte nur ganze Zahlen ab 1 eintragen (oder das Feld leer lassen).');return}
+ const b=bal(t.eq,nums);
+ if(!b.ok){R.tries++;fb('bad','Noch nicht richtig: '+b.els.filter(x=>!x.ok).map(x=>x.e=='Ladung'?`Ladung: links ${sg(x.l)}, rechts ${sg(x.r)}`:`${x.e}: links ${x.l}, rechts ${x.r}`).join(' · '));$('#tb').innerHTML=tbl(t.eq,nums);return}
+ if(R.cur.aux){const nl=t.eq.L.length,n=nl+t.eq.R.length;for(const k of[0,1]){if(nums[nl-2+k]&&nums[n-2+k]){R.tries++;fb('bad',`${tk(t.eq.L[nl-2+k])} darf nur auf einer Seite stehen. Fasse die Zahlen zusammen und trage nur die Differenz auf der passenden Seite ein.`);$('#tb').innerHTML=tbl(t.eq,nums);return}}}
+ const g=nums.filter(Boolean).reduce(gcd);
+ if(g>1){fb('hint',`Stimmt, aber kürzbar! Alle Zahlen sind durch ${g} teilbar. Kürze sie auf das kleinstmögliche Verhältnis.`);$('#tb').innerHTML=tbl(t.eq,nums);return}
+ finish(R.tries==0&&!R.hinted?2:1);$('#tb').innerHTML=tbl(t.eq,nums)}
+
+function finish(pts,msg,c){R.res[R.i]={t:R.cur,pts};R.done=true;
+ document.querySelectorAll('#eq input,#btns button,.row button').forEach(x=>x.disabled=true);
+ fb(c||'ok',msg||('Richtig! ✓ '+(pts==2?'Gleich beim ersten Versuch: 2 Punkte.':'Geschafft: 1 Punkt.')));
+ const last=R.i==R.tasks.length-1;
+ $('#btns').insertAdjacentHTML('beforeend',`<button class="btn p" id="nx" onclick="nextT()">${last?'Zur Auswertung':'Weiter'}</button>`);$('#nx').focus()}
+function nextT(){R.i++;R.i>=R.tasks.length?evalR():showTask()}
+
+function hint(){const t=R.cur;R.hinted=true;R.hint++;
+ if(R.lvl==0)return fb('hint',R.hint==1?'Tipp 1: Sauerstoff hat meist −II, Wasserstoff meist +I (Ausnahme: Peroxide). Ein Element hat OZ 0.':`Tipp 2: Rechne mit Atomzahlen: Die Summe aller OZ ist ${sg(ch(t.f))}. Das übrige Atom ergibt sich aus dieser Summe.`);
+ if(R.hint==1)return fb('hint',R.lvl==1?'Tipp 1: Erst das Atom mit OZ-Änderung, dann e<sup>−</sup>, dann Ladung mit H<sub>3</sub>O<sup>+</sup> (sauer) oder OH<sup>−</sup> (basisch), zuletzt H<sub>2</sub>O.':'Tipp 1: Stelle zuerst die Teilgleichungen auf. Abgegebene und aufgenommene Elektronen müssen gleich sein. Dann: sauer → H<sub>3</sub>O<sup>+</sup> auf die Seite mit der negativeren Ladung, alkalisch → OH<sup>−</sup> auf die Seite mit der positiveren Ladung, zuletzt H<sub>2</sub>O für die Atome.');
+ const nums=readNums()||flat(t.eq).map(()=>1),b=bal(t.eq,nums),pr=e=>e=='Ladung'?1:e=='O'?2:e=='H'?3:0;
+ const x=b.els.filter(y=>!y.ok).sort((a,c)=>pr(a.e)-pr(c.e))[0];
+ fb('hint',!x?'Tipp 2: Alles ist ausgeglichen. Lässt sich noch kürzen?':x.e=='Ladung'?`Tipp 2: Prüfe jetzt die Ladung: links ${sg(x.l)}, rechts ${sg(x.r)}. Hier helfen e<sup>−</sup> und H<sub>3</sub>O<sup>+</sup> bzw. OH<sup>−</sup>.`:`Tipp 2: Prüfe jetzt <b>${x.e}</b>: links ${x.l}, rechts ${x.r}.`)}
+
+function solve(){const t=R.cur;
+ if(R.lvl==0){const a=atoms(t.f),el=Object.keys(a);drawEq(t.o);
+  finish(0,`Lösung: ${el.map((e,i)=>`${e} ${rom(t.o[i])}`).join(', ')}.<br>Probe: ${el.map((e,i)=>`${a[e]}·(${sg(t.o[i])})`).join(' + ')} = ${sg(ch(t.f))}`,'hint');return}
+ drawEq(t.eq.sol);$('#tb').innerHTML=tbl(t.eq,t.eq.sol);if(R.lvl==1)sc(t.cls);
+ finish(0,`Lösung: ${eqStr(t.eq,t.eq.sol)}<br>Vorgehen: Atome mit OZ-Änderung → Elektronen → Ladung → H<sub>2</sub>O. Die Tabelle zeigt: Atome und Ladung stimmen links und rechts.`,'hint')}
+
+function evalR(){const n=R.tasks.length,tot=R.res.reduce((a,r)=>a+r.pts,0),max=2*n,pc=Math.round(100*tot/max),bad=R.res.filter(r=>r.pts<2);
+ if(!R.retry&&pc>best[R.lvl])best[R.lvl]=pc;setBar(1);if(pc>=80)setTimeout(confetti,250);window.bad_=bad.map(r=>r.t);
+ const line=r=>R.lvl==0?`${tk(r.t.f)}: ${Object.keys(atoms(r.t.f)).map((e,i)=>`${e} ${rom(r.t.o[i])}`).join(', ')}`:eqStr(r.t.eq,r.t.eq.sol);
+ $('#app').innerHTML=`<div class="card"><h2 tabindex="-1">Auswertung</h2><div class="big">${tot} von ${max} Punkten<br>${stars(pc)} ${pc} %</div>
+ ${bad.length?'<p><b>Hier solltest du nochmal üben:</b></p><ul>'+bad.map(r=>`<li>${line(r)}</li>`).join('')+'</ul>':'<p>Keine Fehler – stark gemacht!</p>'}
+ <div class="row">${bad.length?'<button class="btn p" onclick="start(R.lvl,bad_,true)">Fehleraufgaben wiederholen</button>':''}<button class="btn ${bad.length?'':'p'}" onclick="start(R.lvl)">Neue Runde</button><button class="btn" onclick="menu()">Zur Stufenwahl</button></div></div>`;
+ $('h2').focus()}
+/* ===================== Design: Umschalter, Anpassung, Konfetti ===================== */
+function lab(){const d=document.documentElement.dataset.theme=='dark';$('#tg').setAttribute('aria-label',d?'Zum hellen Modus wechseln':'Zum dunklen Modus wechseln')}
+function theme(){const d=document.documentElement,n=d.dataset.theme=='dark'?'light':'dark';d.dataset.theme=n;try{localStorage.setItem('redox-th',n)}catch(e){}lab()}
+try{if(localStorage.getItem('redox-th')=='dark')document.documentElement.dataset.theme='dark'}catch(e){}lab();
+function fit(){document.querySelectorAll('.eq,.big').forEach(e=>{e.style.fontSize='';const w=e.clientWidth,s=e.scrollWidth;if(s>w+1)e.style.fontSize=parseFloat(getComputedStyle(e).fontSize)*w/s*.96+'px'})}
+new MutationObserver(()=>requestAnimationFrame(()=>{fit();if(matchMedia('(prefers-reduced-motion:reduce)').matches)document.querySelectorAll('.trans').forEach(x=>x.pauseAnimations())})).observe($('#app'),{childList:true,subtree:true});addEventListener('resize',fit);
+function confetti(){const c=['#8b5cf6','#f59e0b','#22c55e','#0ea5e9','#ef4444'];for(let i=0;i<44;i++){const s=document.createElement('i');s.className='cf';s.style.cssText=`left:${Math.random()*100}vw;background:${c[i%5]};animation-delay:${Math.random()*.8}s;animation-duration:${2+Math.random()*1.5}s`;document.body.appendChild(s);setTimeout(()=>s.remove(),4400)}}
+
+go('learn');
+</script>
+</body>
+</html>

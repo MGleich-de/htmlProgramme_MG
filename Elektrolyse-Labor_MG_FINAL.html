@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="de" data-theme="light"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Elektrolyse-Labor</title>
+<style>
+:root{--bg:#0b1620;--pn:#122230;--ln:#233c4f;--tx:#e7eff4;--mu:#8fa8b8;--ka:#5aa9ff;--an:#ff7a66;--am:#e8b04a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+*{box-sizing:inherit}html,body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+body{background:radial-gradient(1200px 500px at 20% -10%,#17384c 0,transparent 60%),var(--bg);min-height:100vh}
+.app{max-width:1280px;margin:0 auto;padding:14px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+h1{font:600 28px Georgia,"Times New Roman",serif;margin:0;letter-spacing:.2px}
+h1 small{font:400 14px system-ui;color:var(--mu);margin-left:10px}
+nav{display:flex;background:var(--pn);border:1px solid var(--ln);border-radius:30px;padding:3px}
+button,select{font:inherit;color:var(--tx);background:#183247;border:1px solid var(--ln);border-radius:9px;padding:7px 12px;cursor:pointer}
+button:hover{background:#1f4260}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--am);outline-offset:2px}
+nav button{border:0;background:none;border-radius:26px;padding:7px 18px}nav button.on{background:var(--am);color:#1a1205;font-weight:600}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:14px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:linear-gradient(160deg,#15293a,#0f1d29);border:1px solid var(--ln);border-radius:16px;padding:12px}
+canvas{width:100%;height:auto;display:block;border-radius:12px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.bar label{display:flex;gap:6px;align-items:center;color:var(--mu);font-size:13px}
+input[type=range]{accent-color:var(--am)}
+h2{font:600 19px Georgia,serif;margin:2px 0 6px}h3{font-size:14px;margin:10px 0 4px;color:var(--am)}
+p{margin:6px 0}.mu{color:var(--mu);font-size:13px}
+.eq{display:block;background:#0c1a26;border-radius:10px;padding:8px 10px;margin:6px 0;font-size:16px;line-height:1.8}sup,sub{font-size:.72em;line-height:0}
+.tag{margin-right:10px;font-size:12px;border-radius:6px;padding:1px 8px;font-weight:600}.ox{background:#4a211c;color:var(--an)}.re{background:#17334f;color:var(--ka)}.gs{background:#2b2a15;color:var(--am)}
+.def{border-left:3px solid var(--am);padding:4px 10px;background:#0c1a26;border-radius:0 10px 10px 0;margin-top:10px;font-size:14px}
+.steps{display:flex;gap:5px;margin:8px 0}.steps i{flex:1;height:5px;border-radius:3px;background:#24425a}.steps i.d{background:var(--am)}
+.ro{display:flex;gap:10px;flex-wrap:wrap}.ro div{background:#0c1a26;border-radius:10px;padding:6px 12px;min-width:90px}.ro b{font:600 20px Georgia,serif;display:block}
+.cols{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:14px;margin-top:14px}@media(max-width:900px){.cols{grid-template-columns:1fr}}
+[hidden]{display:none!important}
+.dsum{cursor:pointer;color:var(--am);font-weight:600;font-size:14px;margin:10px 0 4px}
+html[data-theme=light]{--bg:#f1f6fa;--pn:#fff;--ln:#c5d5e1;--tx:#14232f;--mu:#506679;--ka:#1f6fd0;--an:#d4452f;--am:#b86e00;color-scheme:light}
+html[data-theme=light] body{background:radial-gradient(1200px 500px at 20% -10%,#dcecf6 0,transparent 60%),var(--bg)}
+html[data-theme=light] .card{background:#fff;box-shadow:0 2px 10px rgba(30,60,90,.08)}
+html[data-theme=light] .eq,html[data-theme=light] .def,html[data-theme=light] .ro div{background:#edf3f8}
+html[data-theme=light] button,html[data-theme=light] select{background:#e4edf4;color:var(--tx)}
+html[data-theme=light] button:hover{background:#d3e2ee}
+html[data-theme=light] nav button{background:none}html[data-theme=light] nav button.on{background:var(--am);color:#fff}
+html[data-theme=light] .steps i{background:#cfdde8}html[data-theme=light] .steps i.d{background:var(--am)}
+html[data-theme=light] .ox{background:#fde3dd;color:#b8301c}html[data-theme=light] .re{background:#dbe9fb;color:#1558b0}html[data-theme=light] .gs{background:#fff0cf;color:#8a5200}
+html[data-theme=light] canvas{filter:invert(.92) hue-rotate(180deg)}
+</style></head><body><div class="app">
+<header><div><h1>Elektrolyse-Labor<small id="sub"></small></h1><div class="mu">Autor: Matthias Gleich</div></div><button id="th" aria-label="Farbmodus wechseln">Dunkelmodus</button>
+<nav><button data-m="mit" class="on">Mittelstufe</button><button data-m="kurs">Kursstufe</button></nav></header>
+<div class="grid"><div class="card"><canvas id="cv" width="900" height="520" aria-label="Elektrolysezelle"></canvas><div class="bar" id="bar"></div></div>
+<aside class="card" id="side"></aside></div>
+<div class="cols" id="kx" hidden>
+<div class="card"><h2>Stromstärke-Spannungs-Diagramm</h2><canvas id="ch" width="560" height="340"></canvas>
+<p class="mu" id="chn">Stelle die Spannung ein oder starte die Messreihe.</p></div>
+<div class="card" id="ev"></div></div></div>
+<script>
+const $=s=>document.querySelector(s),cv=$('#cv'),g=cv.getContext('2d');
+const SUP={1:'⁺',2:'²⁺',3:'³⁺'};const ion=(s,z)=>`${s}<sup>${z>1?z:''}+</sup>`,anion=s=>`${s}<sup>−</sup>`,mol=s=>`${s}<sub>2</sub>`,co=n=>n>1?n+' ':'';
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const SALTS={ZnI2:{n:'Zink(II)iodid',f:'ZnI<sub>2</sub>',M:'Zn',z:2,X:'I',nx:2,mc:'#aab4c0',xc:'#e0a030',E:-.76,EX:.54,ob:'grauer Zink-Überzug an der Kathode, gelb-braune Iod-Lösung an der Anode'},
+ZnBr2:{n:'Zink(II)bromid',f:'ZnBr<sub>2</sub>',M:'Zn',z:2,X:'Br',nx:2,mc:'#aab4c0',xc:'#d4601e',E:-.76,EX:1.07,ob:'grauer Zink-Überzug an der Kathode, gelb-orange Brom-Lösung an der Anode'},
+
+FeBr3:{n:'Eisen(III)bromid',f:'FeBr<sub>3</sub>',M:'Fe',z:3,X:'Br',nx:3,mc:'#7d8794',xc:'#c24a1a',E:-.45,EX:1.07,ob:'grauer Eisen-Überzug an der Kathode, rotbraune Brom-Lösung an der Anode'},
+CuCl2:{n:'Kupfer(II)chlorid',f:'CuCl<sub>2</sub>',M:'Cu',z:2,X:'Cl',nx:2,mc:'#d9824a',xc:'#b8e060',E:.34,EX:1.36,gas:1,ob:'rotbrauner Kupfer-Überzug an der Kathode, gelbgrünes Chlorgas an der Anode'}};
+const KS={ZnBr2:{c:'Zn',z:2,Ec:-.76,a:'Br',Ea:1.07,mc:'#aab4c0',xc:'#d4601e'},ZnI2:{c:'Zn',z:2,Ec:-.76,a:'I',Ea:.54,mc:'#aab4c0',xc:'#e0a030'},CuCl2:{c:'Cu',z:2,Ec:.34,a:'Cl',Ea:1.36,mc:'#d9824a',xc:'#b8e060'},CuSO4:{c:'Cu',z:2,Ec:.34,mc:'#d9824a',xc:'#7fb0e0'},NiSO4:{c:'Ni',z:2,Ec:-.26,mc:'#8fc7a0',xc:'#7fb0e0'},AgNO3:{c:'Ag',z:1,Ec:.8,mc:'#e4ebf2',xc:'#7fb0e0'},NaCl:{c:'Na',z:1,Ec:-2.71,a:'Cl',Ea:1.36,mc:'#f0d27a',xc:'#b8e060'}};
+const EM={Cu:[.34,2],Zn:[-.76,2],Ag:[.8,1],Fe:[-.45,2],Ni:[-.26,2]},ETAH={C:-.6,Pt:-.01,Cu:-.5,Zn:-.68,Ag:-.5,Fe:-.4,Ni:-.3},ETAA={C:{O:.95,Cl:.12,Br:.1,I:.05},Pt:{O:.4,Cl:.05,Br:.04,I:.02}};
+const ELC={C:'#2b3038',Pt:'#3b4047',Cu:'#c8743c',Zn:'#98a2ae',Ag:'#e4ebf2',Fe:'#7b838d',Ni:'#9fb0b0'},ELP={C:'#9aa3ad',Pt:'#a7b0ba',Cu:'#d9824a',Zn:'#aab4c0',Ag:'#e4ebf2',Fe:'#8d97a3',Ni:'#9fc0c0'},ELN={C:'Graphit',Pt:'Platin (platiniert)',Cu:'Kupfer',Zn:'Zink',Ag:'Silber',Fe:'Eisen',Ni:'Nickel'};
+let mode='mit',salt='ZnI2',on=false,galv=false,step=0,sp=1,pv=0,pvT=0,arrows=true,parts=[],dep=0,mols=0,pend=0,frame=0,es=0,hl='',fl=[];
+const ks={salt:'ZnBr2',A:'C',K:'C',c:1,U:0,pts:[],auto:null};
+if(matchMedia('(prefers-reduced-motion:reduce)').matches)sp=.4;
+const inside=(x,y)=>(x>=208&&x<=312&&y>=229&&y<=464)||(x>=588&&x<=692&&y>=229&&y<=464)||(y>=406&&y<=464&&x>=208&&x<=692);
+function rnd(){let x,y;do{x=200+Math.random()*500;y=232+Math.random()*236}while(!inside(x,y));return[x,y]}
+const cur=()=>mode=='mit'?SALTS[salt]:KS[ks.salt];
+function add(t,x,y){parts.push({t,x,y,r:Math.random()*6})}
+function reset(){parts=[];dep=0;mols=0;pend=0;on=false;galv=false;es=0;fl=[];const s=cur();
+ const nx=mode=='mit'?s.nx:(s.a?(s.z==2?2:1):1),z=s.z,nc=mode=='mit'?Math.round(24/(1+nx)):8;
+ for(let i=0;i<nc;i++){let[x,y]=rnd();add('c',x,y)}
+ const na=mode=='mit'?nc*nx:(s.a||true?nc*z:0);for(let i=0;i<na;i++){let[x,y]=rnd();add('a',x,y)}
+ if(mode=='mit'){step=0;ui()}}
+/* ---------- Kursstufe-Physik ---------- */
+const sps=z=>SUP[z]||'';
+function calc(){const s=KS[ks.salt],lc=Math.log10(ks.c),K=[],A=[];
+ K.push({k:'M',eq:`${s.c}${sps(s.z)} + ${s.z} e⁻ → ${s.c}`,E:s.Ec+.059/s.z*lc,eta:-.02});
+ K.push({k:'H',eq:'2 H₂O + 2 e⁻ → H₂ + 2 OH⁻',E:-.83+.059*7,eta:ETAH[ks.K]});
+ const ea=ETAA[ks.A]||ETAA.C;
+ if(s.a)A.push({k:'X',eq:`2 ${s.a}⁻ → ${s.a}₂ + 2 e⁻`,E:s.Ea-.059*lc,eta:ea[s.a]});
+ A.push({k:'O',eq:'6 H₂O → O₂ + 4 H₃O⁺ + 4 e⁻',E:1.23-.059*7,eta:ea.O});
+ if(EM[ks.A])A.push({k:'D',eq:`${ks.A} → ${ks.A}${sps(EM[ks.A][1])} + ${EM[ks.A][1]} e⁻`,E:EM[ks.A][0],eta:.02});
+ K.forEach(r=>r.Ef=r.E+r.eta);A.forEach(r=>r.Ef=r.E+r.eta);
+ const bK=K.reduce((a,b)=>b.Ef>a.Ef?b:a),bA=A.reduce((a,b)=>b.Ef<a.Ef?b:a);
+ const nK=K.reduce((a,b)=>b.E>a.E?b:a),nA=A.reduce((a,b)=>b.E<a.E?b:a);
+ const prs=[];K.forEach(k=>A.forEach(a=>prs.push(a.Ef-k.Ef)));prs.sort((a,b)=>a-b);
+ return{K,A,bK,bA,nK,nA,U1:Math.max(.05,prs[0]),U2:Math.max(.05,prs[1]),U0:bA.E-bK.E}}
+let C=calc();
+const Icur=U=>Math.max(0,60*(U-C.U1))+Math.max(0,40*(U-C.U2));
+/* ---------- Zeichnen ---------- */
+const WIRE=[[640,130],[640,70],[480,70],[420,70],[260,70],[260,130]];
+function pathPt(s){let L=[],t=0;for(let i=1;i<WIRE.length;i++){const d=Math.hypot(WIRE[i][0]-WIRE[i-1][0],WIRE[i][1]-WIRE[i-1][1]);L.push(d);t+=d}
+ s=((s%1)+1)%1*t;for(let i=0;i<L.length;i++){if(s<=L[i]){const a=WIRE[i],b=WIRE[i+1],f=s/L[i];return[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f]}s-=L[i]}return WIRE[5]}
+function draw(){const s=cur(),mc=s.mc,xc=s.xc,run=mode=='mit'?on&&!galv:C&&Icur(ks.U)>.5;
+ g.clearRect(0,0,900,520);
+ const bg=g.createLinearGradient(0,0,0,520);bg.addColorStop(0,'#0e1e2b');bg.addColorStop(1,'#08121a');g.fillStyle=bg;g.fillRect(0,0,900,520);
+ g.fillStyle='#1b2a37';g.fillRect(0,490,900,30);g.fillStyle='#2c4254';g.fillRect(0,488,900,3);
+ g.fillStyle='#3a4a58';g.fillRect(100,60,12,430);g.fillRect(100,455,560,8);
+ const lq=g.createLinearGradient(0,215,0,470);lq.addColorStop(0,'rgba(80,190,200,.34)');lq.addColorStop(1,'rgba(40,120,150,.5)');g.fillStyle=lq;
+ g.fillRect(200,215,120,255);g.fillRect(580,215,120,255);g.fillRect(200,400,500,70);
+ const t=Math.min(.7,mols*.05);if(t>0){const rg=g.createRadialGradient(640,330,5,640,330,150);rg.addColorStop(0,xc+Math.round(t*255).toString(16).padStart(2,'0'));rg.addColorStop(1,xc+'00');g.fillStyle=rg;g.fillRect(560,215,160,255)}
+ g.strokeStyle='rgba(220,240,255,.45)';g.lineWidth=3;g.lineJoin='round';g.beginPath();g.moveTo(190,205);g.lineTo(190,470);g.quadraticCurveTo(190,482,202,482);g.lineTo(698,482);g.quadraticCurveTo(710,482,710,470);g.lineTo(710,205);g.stroke();
+ g.beginPath();g.moveTo(330,205);g.lineTo(330,392);g.lineTo(570,392);g.lineTo(570,205);g.stroke();
+ g.strokeStyle='rgba(180,240,255,.5)';g.lineWidth=1.5;g.beginPath();g.moveTo(200,215);g.lineTo(320,215);g.moveTo(580,215);g.lineTo(700,215);g.stroke();
+ // Elektroden (links Kathode/Minus, rechts Anode/Plus; im galvanischen Element getauscht)
+ const eL=mode=='mit'?'C':ks.K,eR=mode=='mit'?'C':ks.A,th=Math.min(14,dep*.9);
+ if(th>.3){g.fillStyle=mode=='mit'?s.mc:(KS[ks.salt].mc);g.beginPath();g.roundRect(245-th,222,30+2*th,128,6);g.fill()}
+ for(const[x,c]of[[260,eL],[640,eR]]){const gr=g.createLinearGradient(x-15,0,x+15,0);gr.addColorStop(0,'#000');gr.addColorStop(.4,ELC[c]);gr.addColorStop(1,'#000');g.fillStyle=ELC[c];g.beginPath();g.roundRect(x-15,128,30,224,4);g.fill();g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x+3,128,12,224)}
+ if(th>.3){g.fillStyle=(mode=='mit'?s.mc:KS[ks.salt].mc)+'cc';g.beginPath();g.roundRect(245-th,222,30+2*th,128,6);g.fill()}
+ if(hl){const x=hl=='K'?260:640;g.strokeStyle=hl=='K'?'#5aa9ff':'#ff7a66';g.lineWidth=3;g.globalAlpha=.5+.5*Math.sin(frame*.1);g.beginPath();g.roundRect(x-34,120,68,250,14);g.stroke();g.globalAlpha=1}
+ // Leitung + Quelle
+ g.strokeStyle='#b9c4cc';g.lineWidth=3;g.beginPath();WIRE.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();
+ g.fillStyle='#0b1620';g.fillRect(420,52,60,36);
+ if(mode=='mit'&&galv){g.strokeStyle='#e8b04a';g.lineWidth=3;g.beginPath();g.arc(450,70,28,0,7);g.stroke();g.fillStyle='#e8b04a';g.font='600 15px system-ui';g.textAlign='center';
+  const dE=(dep>0&&mols>.01&&!s.gas)?(s.EX-s.E)*Math.min(1,.6+dep/10):0;g.fillText(dE.toFixed(2).replace('.',',')+' V',450,75);g.font='11px system-ui';g.fillText('Voltmeter',450,38);window._dE=dE}
+ else{g.strokeStyle='#b9c4cc';g.lineWidth=3;g.beginPath();g.moveTo(436,50);g.lineTo(436,90);g.stroke();g.lineWidth=6;g.beginPath();g.moveTo(462,58);g.lineTo(462,82);g.stroke();
+  g.fillStyle='#ff7a66';g.font='600 16px system-ui';g.textAlign='center';g.fillText('+',478,60);g.fillStyle='#5aa9ff';g.fillText('−',420,60);g.fillStyle='#8fa8b8';g.font='11px system-ui';g.fillText('Gleichspannungsquelle',450,38)}
+ g.font='600 14px system-ui';g.textAlign='center';
+ const kl=galv?['Anode (Oxidation)','Minuspol','#ff7a66']:['Kathode (Reduktion)','Minuspol','#5aa9ff'],al=galv?['Kathode (Reduktion)','Pluspol','#5aa9ff']:['Anode (Oxidation)','Pluspol','#ff7a66'];
+ g.fillStyle=kl[2];g.fillText(kl[0],260,108);g.fillStyle='#8fa8b8';g.font='12px system-ui';g.fillText(kl[1],260,124);
+ g.fillStyle=al[2];g.font='600 14px system-ui';g.fillText(al[0],640,108);g.fillStyle='#8fa8b8';g.font='12px system-ui';g.fillText(al[1],640,124);
+ // Teilchen
+ g.textBaseline='middle';
+ for(const p of parts){g.globalAlpha=(p.t=='c'||p.t=='a'||p.t=='m')?Math.max(.1,pv):1;
+  if(p.t=='c'){g.fillStyle=mc;g.beginPath();g.arc(p.x,p.y,7,0,7);g.fill();if(pv>.5){g.fillStyle='#0b1620';g.font='bold 10px system-ui';g.textAlign='center';g.fillText('+',p.x,p.y+.5)}}
+  else if(p.t=='a'){g.fillStyle=xc;g.beginPath();g.arc(p.x,p.y,9,0,7);g.fill();if(pv>.5){g.fillStyle='#0b1620';g.font='bold 12px system-ui';g.textAlign='center';g.fillText('−',p.x,p.y+.5)}}
+  else if(p.t=='m'){g.fillStyle=xc;g.beginPath();g.arc(p.x-5,p.y,8,0,7);g.arc(p.x+5,p.y,8,0,7);g.fill()}
+  else{g.strokeStyle=p.t=='h'?'#dff':p.t=='o'?'#ffd':xc;g.lineWidth=1.5;g.beginPath();g.arc(p.x,p.y,3+p.r*.5,0,7);g.stroke()}
+  g.globalAlpha=1}
+ // Pfeile
+ if(arrows&&run&&pv>.4){g.fillStyle='rgba(255,255,255,.6)';g.font='13px system-ui';g.textAlign='center';g.fillText('Kationen ⟵',380,430);g.fillText('⟶ Anionen',520,430)}
+ // Elektronen
+ const moving=run||(galv&&window._dE>0);
+ if(moving){const dir=galv?-1:1;for(let i=0;i<14;i++){const[x,y]=pathPt(es*dir+i/14);g.fillStyle='#ffe27a';g.shadowColor='#ffd24a';g.shadowBlur=10;g.beginPath();g.arc(x,y,4,0,7);g.fill();g.shadowBlur=0}
+  g.fillStyle='#ffe27a';g.font='12px system-ui';g.textAlign='center';g.fillText(galv?'e⁻ ⟵ fließen zum Pluspol-Seite rechts':'e⁻ fließen von der Anode zur Kathode',450,150)}
+ // Blitze bei Reaktion
+ fl=fl.filter(f=>f.a>0);for(const f of fl){g.fillStyle=`rgba(255,226,122,${f.a})`;g.beginPath();g.arc(f.x,f.y,6+(1-f.a)*14,0,7);g.fill();f.a-=.05}
+ g.textBaseline='alphabetic';g.fillStyle='#8fa8b8';g.font='12px system-ui';g.textAlign='left';
+ g.fillText(mode=='mit'?s.n+'-Lösung, Graphitelektroden':'Elektrolyt: '+ks.salt+' ('+ks.c.toFixed(2)+' mol/L)',16,508);
+ g.textAlign='right';g.fillText(pv>.5?'Teilchenebene':'Stoffebene',884,508)}
+/* ---------- Simulation ---------- */
+function mv(p,dx,dy){const x=p.x+dx,y=p.y+dy;if(inside(x,y)){p.x=x;p.y=y}else if(inside(x,p.y))p.x=x;else if(inside(p.x,y))p.y=y}
+function spawnProd(kind,x,y){if(parts.length<260)add(kind,x,y)}
+function tick(){frame++;pv+=(pvT-pv)*.08;const s=cur();
+ let run,drift;
+ if(mode=='mit'){run=on&&!galv;drift=run?1.1*sp:0}else{const I=Icur(ks.U);run=I>.5;drift=run?Math.min(1.6,.3+I/80)*sp:0}
+ if(run||(galv&&window._dE>0))es+=(mode=='mit'?.004:.002+Icur(ks.U)/60000)*sp;
+ const gas=mode=='mit'?s.gas:0;
+ for(let i=parts.length-1;i>=0;i--){const p=parts[i];
+  if(p.t=='c'||p.t=='a'){let dx=(Math.random()-.5)*1.6,dy=(Math.random()-.5)*1.6;
+   if(drift){const arm=p.t=='c'?0:1,cu=p.x<450?0:1,tx=arm?640:260;
+    if(cu!=arm){if(p.y<390)dy+=drift;else dx+=(tx<p.x?-1:1)*drift}else{if(p.y>345)dy-=drift;dx+=(tx-p.x)*.02}}
+   mv(p,dx,dy);
+   if(drift&&p.y<372&&Math.abs(p.x-(p.t=='c'?260:640))<24){
+    fl.push({x:p.t=='c'?260:640,y:p.y,a:1});
+    if(mode=='mit'){parts.splice(i,1);if(p.t=='c')dep++;else{pend++;if(pend==2){pend=0;if(gas)spawnProd('g',640,340);else{mols++;spawnProd('m',640,330)}}}}
+    else{const[x,y]=rnd();p.x=x;p.y=y;
+     if(p.t=='c'){if(C.bK.k=='M')dep+=.5;else spawnProd('h',260+(Math.random()-.5)*20,345)}
+     else{if(C.bA.k=='O')spawnProd('o',640+(Math.random()-.5)*20,345);else if(C.bA.k=='X'){if(s.a=='Cl')spawnProd('g',640,340);else{mols+=.25;if(parts.filter(q=>q.t=='m').length<20)spawnProd('m',640,330)}}else if(C.bA.k=='D'){spawnProd('c',640,360)}}}}}
+  else if(p.t=='m'){mv(p,(Math.random()-.5)*.8,(Math.random()-.5)*.8)}
+  else{p.y-=1.3+p.r*.1;p.x+=Math.sin(frame*.1+p.r)*.5;if(!inside(p.x,p.y)||p.y<208)parts.splice(i,1)}}
+ if(mode=='mit'&&galv&&!gas&&frame%35==0&&dep>=1&&mols>.01){dep--;const[,]=[0];add('c',275,330);for(let k=0;k<s.z;k++)add('a',625,330+k*8);mols=Math.max(0,mols-s.z/2);
+  const ms=parts.filter(q=>q.t=='m');while(ms.length>Math.ceil(mols-1e-9)&&ms.length){parts.splice(parts.indexOf(ms.pop()),1)}}
+ draw();requestAnimationFrame(tick)}
+/* ---------- Mittelstufe UI ---------- */
+const STEPS=['Aufbau','Ionenwanderung','Anode: Oxidation','Kathode: Reduktion','Gesamtgleichung','Galvanisches Element'];
+function eqs(){const s=SALTS[salt],N=s.z*2/gcd(s.z,2),m=N/s.z,X=s.X;
+ return{an:`${co(N)}${anion(X)} → ${co(N/2)}${mol(X)} + ${N} e<sup>−</sup>`,ka:`${co(m)}${ion(s.M,s.z)} + ${N} e<sup>−</sup> → ${co(m)}${s.M}`,ge:`${co(m)}${ion(s.M,s.z)} + ${N} ${anion(X)} → ${co(m)}${s.M} + ${co(N/2)}${mol(X)}`,
+ gan:`${co(m)}${s.M} → ${co(m)}${ion(s.M,s.z)} + ${N} e<sup>−</sup>`,gka:`${co(N/2)}${mol(X)} + ${N} e<sup>−</sup> → ${N} ${anion(X)}`,gge:`${co(m)}${s.M} + ${co(N/2)}${mol(X)} → ${co(m)}${ion(s.M,s.z)} + ${N} ${anion(X)}`}}
+const TXT=[
+ s=>`Zwei Graphitelektroden tauchen in die ${s.n}-Lösung (${s.f}). Noch ist keine Spannung angelegt: Die Ionen bewegen sich nur ungeordnet. Schalte die Spannung ein oder klicke auf „Weiter“.`,
+ s=>`Der Minuspol der Quelle lädt die linke Elektrode negativ, der Pluspol die rechte positiv. Die positiven ${s.M}-Kationen wandern zur negativen Elektrode, die negativen ${s.X}-Anionen zur positiven. Im Draht fließen die Elektronen.`,
+ s=>`An der rechten Elektrode geben die Anionen Elektronen ab. Das ist eine <b>Oxidation</b>. Beobachtung: ${s.ob.split(', ')[1]||s.ob}.`,
+ s=>`An der linken Elektrode nehmen die Kationen Elektronen auf. Das ist eine <b>Reduktion</b>. Beobachtung: ${s.ob.split(', ')[0]}.`,
+ s=>`Addiert man beide Teilgleichungen (gleiche Elektronenzahl), kürzen sich die Elektronen. Die Elektrolyse erzwingt die Zersetzung von ${s.f}.`,
+ s=>`Ohne Quelle sind die Elektroden jetzt verschieden: links ${s.M}, rechts ${s.X}<sub>2</sub>/${anion(s.X)}. Es läuft die freiwillige Rückreaktion – ein galvanisches Element. Die Elektronen fließen umgekehrt, die Teilreaktionen kehren sich um. ${s.gas?'<b>Aber:</b> Das Gas ist entwichen, daher kann hier keine Spannung gemessen werden.':''}`];
+function ui(){const s=SALTS[salt],e=eqs(),tag=(c,t)=>`<span class="tag ${c}">${t}</span>`;let h=`<h2>${STEPS[step]}</h2><div class="steps">${STEPS.map((_,i)=>`<i class="${i<=step?'d':''}"></i>`).join('')}</div><p>${TXT[step](s)}</p>`;
+ if(step==2||step==4)h+=`<div class="eq">${tag('ox','Oxidation')}Anode: ${e.an}</div>`;
+ if(step==3||step==4)h+=`<div class="eq">${tag('re','Reduktion')}Kathode: ${e.ka}</div>`;
+ if(step==4)h+=`<div class="eq">${tag('gs','Gesamt')}${e.ge}</div>`;
+ if(step==5){h+=`<div class="eq">${tag('ox','Oxidation')}Anode (−): ${e.gan}</div><div class="eq">${tag('re','Reduktion')}Kathode (+): ${e.gka}</div><div class="eq">${tag('gs','Gesamt')}${e.gge}</div><p class="mu">Es ist messbar, weil an den Elektroden zwei verschiedene Redoxpaare vorliegen (E°: ${s.M} ${s.E.toString().replace('.',',')} V; ${s.X} ${s.EX.toString().replace('.',',')} V).</p>`}
+ h+=`<div class="def"><b>Merke:</b> An der <b>Anode</b> läuft immer die <b>Oxidation</b> ab, an der <b>Kathode</b> die <b>Reduktion</b> (AN-OX, KAT-RED). Bei der Elektrolyse ist die Anode der Pluspol, im galvanischen Element der Minuspol.</div>`;
+ $('#side').innerHTML=h+`<div class="bar"><button id="pb" ${step==0?'disabled':''}>Zurück</button><button id="nb" ${step==5?'disabled':''}>Weiter</button></div>`;
+ $('#pb').onclick=()=>go(step-1);$('#nb').onclick=()=>go(step+1);hl=step==2?'A':step==3?'K':'';if(step>=1&&step<5&&!galv&&!ks.full)on=true}
+function go(n){if(n==5&&dep<1){step=4;ui();return}step=Math.max(0,Math.min(5,n));if(step==5){on=false;galv=true}else galv=false;ui();bar()}
+function bar(){const b=$('#bar');
+ if(mode=='mit'){b.innerHTML=`<select id="sa">${Object.keys(SALTS).map(k=>`<option value="${k}" ${k==salt?'selected':''}>${SALTS[k].n}</option>`).join('')}</select><button id="b1">${on?'Spannung aus':'Spannung ein'}</button><button id="b2">${galv?'Zurück zur Quelle':'Messgerät statt Quelle'}</button><button id="b3">Ebene wechseln</button><button id="b4">Neu füllen</button><label>Tempo <input id="sl" type="range" min=".2" max="2" step=".1" value="${sp}"></label>`;
+  $('#sa').onchange=e=>{salt=e.target.value;reset();bar()};$('#b1').onclick=()=>{if(galv||ks.full)return;on=!on;bar()};$('#b2').onclick=()=>{if(!galv&&dep<1){return}galv=!galv;on=false;step=galv?5:4;ui();bar()};$('#b3').onclick=()=>pvT=pvT>.5?.1:1;$('#b4').onclick=()=>{reset();bar()};$('#sl').oninput=e=>sp=+e.target.value}}
+/* ---------- Kursstufe UI ---------- */
+function kui(){const opt=(o,sel)=>Object.keys(o).map(k=>`<option value="${k}" ${k==sel?'selected':''}>${o[k]}</option>`).join('');
+ $('#side').innerHTML=`<h2>Versuchsaufbau</h2><div class="bar" style="margin:0 0 8px"><label>Elektrolyt <select id="ks">${Object.keys(KS).map(k=>`<option ${k==ks.salt?'selected':''}>${k}</option>`).join('')}</select></label><label>Anode (+) <select id="kA">${opt(ELN,ks.A)}</select></label><label>Kathode (−) <select id="kK">${opt(ELN,ks.K)}</select></label></div>
+ <label class="mu">Konzentration c: <b id="cl">${ks.c.toFixed(2)}</b> mol/L <input id="cc" type="range" min="-2" max="0" step=".05" value="${Math.log10(ks.c)}"></label><br>
+ <label class="mu">Spannung U <input id="uu" type="range" min="0" max="5" step=".05" value="${ks.U}" style="width:100%"></label>
+ <div class="ro"><div>U<b id="ru">0,00 V</b></div><div>I<b id="ri">0 mA</b></div></div><div class="bar"><button id="ka">Messreihe starten</button><button id="kr">Zurücksetzen</button></div>
+ <h3>Mögliche Elektrodenreaktionen</h3><div id="rx"></div>`;
+ const up=()=>{C=calc();ks.pts=[];$('#rx').innerHTML=rx();chart();evl()};
+ $('#ks').onchange=e=>{ks.salt=e.target.value;reset();up()};$('#kA').onchange=e=>{ks.A=e.target.value;ks.an=20;parts=parts.filter(q=>!q.f);up()};$('#kK').onchange=e=>{ks.K=e.target.value;up()};
+ $('#cc').oninput=e=>{ks.c=10**+e.target.value;$('#cl').textContent=ks.c.toFixed(2);up()};
+ $('#uu').oninput=e=>setU(+e.target.value);$('#kr').onclick=()=>{clearInterval(ks.auto);ks.U=0;$('#uu').value=0;up();setU(0)};
+ $('#ka').onclick=()=>{clearInterval(ks.auto);ks.pts=[];ks.U=0;ks.auto=setInterval(()=>{ks.U=Math.min(5,ks.U+.1);$('#uu').value=ks.U;setU(ks.U);if(ks.U>=5)clearInterval(ks.auto)},170)};
+ $('#bar').innerHTML=`<button id="b3">Ebene wechseln</button><button id="b4">Neu füllen</button><label>Tempo <input id="sl" type="range" min=".2" max="2" step=".1" value="${sp}"></label><span class="mu">Gase steigen als Blasen auf, Metalle scheiden sich an der Kathode ab.</span>`;
+ $('#b3').onclick=()=>pvT=pvT>.5?.1:1;$('#sl').oninput=e=>sp=+e.target.value;$('#b4').onclick=()=>reset();up()}
+const f2=x=>x.toFixed(2).replace('.',',');
+function rx(){return'<p class="mu">Kathode (Reduktion), E + η:</p>'+C.K.map(r=>`<div class="eq" style="${r===C.bK?'outline:2px solid #5aa9ff':''}"><span class="tag re">${f2(r.Ef)} V</span>${r.eq}</div>`).join('')+'<p class="mu">Anode (Oxidation), E + η:</p>'+C.A.map(r=>`<div class="eq" style="${r===C.bA?'outline:2px solid #ff7a66':''}"><span class="tag ox">${f2(r.Ef)} V</span>${r.eq}</div>`).join('')+'<p class="mu">Umrandet: Reaktion, die zuerst abläuft (höchstes E an der Kathode, niedrigstes an der Anode).</p><details '+(ks.dopen===false?'':'open')+' ontoggle="ks.dopen=this.open"><summary class="dsum">Teilchenebene: konkurrierende Teilchen</summary><p class="mu">An beiden Elektroden konkurrieren die Ionen des Salzes mit den <b>H<sub>2</sub>O-Molekülen</b> (blau). Kathode: H<sub>2</sub>O wird zu H<sub>2</sub> und OH<sup>−</sup> (grün) reduziert. Anode: H<sub>2</sub>O wird zu O<sub>2</sub> und H<sub>3</sub>O<sup>+</sup> (rot) oxidiert. Besteht die Anode aus einem unedlen Metall, bilden dessen Atome (an der Elektrode) ein weiteres konkurrierendes Teilchen. Reagiert wird nur, was in der Auswertung (umrandet) zuerst abläuft; die übrigen Teilchen bleiben an der Elektrode, ohne zu reagieren.</p><p class="mu"><b>Produkte:</b> Metallatome (Kreis mit Elementsymbol) lagern sich an der Kathode an. Moleküle wie H<sub>2</sub>, O<sub>2</sub>, Cl<sub>2</sub>, Br<sub>2</sub> und I<sub>2</sub> bestehen aus zwei verbundenen Kreisen mit dem jeweiligen Elementsymbol. Gase steigen als Bläschen auf. Läuft die Oxidation des Anodenmetalls ab, lösen sich dessen Atome von der Elektrode, verschwinden dort und gehen als Kationen (Kreis mit Symbol und Ladung) in Lösung.</p></details>'}
+function setU(U){ks.U=U;const I=Icur(U)*(1+(Math.random()-.5)*.02);$('#ru').textContent=f2(U)+' V';$('#ri').textContent=Math.round(I)+' mA';
+ const i=ks.pts.findIndex(p=>Math.abs(p[0]-U)<.025);if(i>=0)ks.pts[i]=[U,I];else ks.pts.push([U,I]);ks.pts.sort((a,b)=>a[0]-b[0]);chart();evl()}
+function fit(){const m=Math.max(...ks.pts.map(p=>p[1]));if(m<5)return null;const q=ks.pts.filter(p=>p[1]>.12*m&&p[1]<.7*m);if(q.length<3)return null;
+ const n=q.length,sx=q.reduce((a,p)=>a+p[0],0),sy=q.reduce((a,p)=>a+p[1],0),sxy=q.reduce((a,p)=>a+p[0]*p[1],0),sxx=q.reduce((a,p)=>a+p[0]*p[0],0),a=(n*sxy-sx*sy)/(n*sxx-sx*sx),b=(sy-a*sx)/n;return{a,b,U:-b/a}}
+function chart(){const c=hd($('#ch'),560,340),W=560,H=340,L=56,B=300,T=16,R=540;c.clearRect(0,0,W,H);c.fillStyle='#0c1a26';c.fillRect(0,0,W,H);
+ const mx=Math.max(100,Icur(5)*1.1),X=u=>L+u/5*(R-L),Y=i=>B-i/mx*(B-T);c.strokeStyle='#243d50';c.fillStyle='#8fa8b8';c.font='12px system-ui';c.textAlign='center';c.lineWidth=1;
+ for(let u=0;u<=5;u++){c.beginPath();c.moveTo(X(u),T);c.lineTo(X(u),B);c.stroke();c.fillText(u,X(u),B+16)}
+ for(let k=0;k<=4;k++){const i=mx*k/4;c.beginPath();c.moveTo(L,Y(i));c.lineTo(R,Y(i));c.stroke();c.textAlign='right';c.fillText(Math.round(i),L-6,Y(i)+4)}
+ c.textAlign='center';c.fillText('U in V',(L+R)/2,B+34);c.save();c.translate(14,(T+B)/2);c.rotate(-Math.PI/2);c.fillText('I in mA',0,0);c.restore();
+ const f=fit();if(f){c.strokeStyle='#e8b04a';c.setLineDash([6,4]);c.lineWidth=2;c.beginPath();c.moveTo(X(f.U),Y(0));c.lineTo(X(5),Y(f.a*5+f.b));c.stroke();c.setLineDash([]);c.fillStyle='#e8b04a';c.beginPath();c.arc(X(f.U),Y(0),6,0,7);c.fill();c.textAlign='left';c.fillText('U_Z ≈ '+f2(f.U)+' V',X(f.U)+8,Y(0)-10)}
+ c.fillStyle='#5aa9ff';ks.pts.forEach(p=>{c.beginPath();c.arc(X(p[0]),Y(p[1]),3.5,0,7);c.fill()});
+ $('#chn').textContent=f?`Die Gerade durch den ansteigenden Teil schneidet die U-Achse bei ${f2(f.U)} V: das ist die Zersetzungsspannung.`:'Erhöhe die Spannung schrittweise, bis die Stromstärke ansteigt.'}
+function evl(){const f=fit(),ba=C.bA,bk=C.bK,pretty=r=>r.eq;let h=`<h2>Auswertung</h2>`;
+ h+=`<div class="eq"><span class="tag gs">U<sub>Z</sub></span>theoretisch: E(A) − E(K) = ${f2(ba.E)} V − (${f2(bk.E)} V) = <b>${f2(ba.E-bk.E)} V</b></div>`;
+ h+=`<div class="eq"><span class="tag gs">mit η</span>U<sub>Z</sub> = E(A) + η(A) − (E(K) + η(K)) = ${f2(ba.Ef)} V − (${f2(bk.Ef)} V) = <b>${f2(ba.Ef-bk.Ef)} V</b></div>`;
+ if(f)h+=`<div class="eq"><span class="tag gs">gemessen</span>aus dem Diagramm: <b>${f2(f.U)} V</b></div>`;
+ h+=`<canvas id="ld" width="360" height="340"></canvas>`;
+ h+=`<p>Die Standardpotenziale ordnen die Redoxpaare: Je negativer E°, desto leichter wird das Metall oxidiert, desto schwerer sein Kation reduziert (Zn −0,76 V; Cu +0,34 V; Ag +0,80 V; 2 I<sup>−</sup>/I<sub>2</sub> +0,54 V; 2 Br<sup>−</sup>/Br<sub>2</sub> +1,07 V; 2 Cl<sup>−</sup>/Cl<sub>2</sub> +1,36 V). Bei der Elektrolyse läuft an der Kathode die Reduktion mit dem höchsten, an der Anode die Oxidation mit dem niedrigsten Potenzial ab.</p>`;
+ h+=`<p><b>Überspannung η:</b> Die Elektrodenreaktion ist gehemmt, besonders bei Gasen (H<sub>2</sub>, O<sub>2</sub>). Die Elektrode muss um η weiter polarisiert werden, deshalb ist die gemessene Zersetzungsspannung größer als ΔE. Hier: η(A) = ${f2(ba.eta)} V, η(K) = ${f2(bk.eta)} V (Richtwerte für Graphit, Eisen, Zink und platiniertes Platin aus der Überspannungstabelle, 25 °C, mittlere Stromdichten; Kupfer, Silber, Nickel und Brom/Iod: Schätzwerte).</p>`;
+ if(C.nK!==bk||C.nA!==ba)h+=`<p class="def">Ohne Überspannung würde ${C.nK!==bk?'an der Kathode '+C.nK.eq:''}${C.nK!==bk&&C.nA!==ba?' und ':''}${C.nA!==ba?'an der Anode '+C.nA.eq:''} ablaufen. Die Überspannung ändert hier das Produkt!</p>`;
+ $('#ev').innerHTML=h;lad()}
+function lad(){const d=$('#ld');if(!d)return;const c=d.getContext('2d'),Y=e=>20+(2-e)/3.5*260;c.fillStyle='#0c1a26';c.fillRect(0,0,320,300);c.font='10px system-ui';c.textAlign='right';
+ [['Zn',-.76],['Cu',.34],['Ag',.8],['I⁻',.54],['Br⁻',1.07],['Cl⁻',1.36]].forEach(([n,e])=>{c.strokeStyle='#243d50';c.beginPath();c.moveTo(34,Y(e));c.lineTo(310,Y(e));c.stroke();c.fillStyle='#8fa8b8';c.fillText(n,30,Y(e)+3)});
+ const line=(x,e,col,dash,l)=>{c.strokeStyle=col;c.lineWidth=3;c.setLineDash(dash?[5,3]:[]);c.beginPath();c.moveTo(x,Y(e));c.lineTo(x+50,Y(e));c.stroke();c.setLineDash([]);c.fillStyle=col;c.textAlign='left';c.fillText(l,x+54,Y(e)+3)};
+ const bk=C.bK,ba=C.bA;c.lineWidth=1;line(58,bk.E,'#5aa9ff',0,'E(K)');line(58,bk.Ef,'#5aa9ff',1,'E(K)+η');line(190,ba.E,'#ff7a66',0,'E(A)');line(190,ba.Ef,'#ff7a66',1,'E(A)+η');
+ c.strokeStyle='#e8b04a';c.lineWidth=2;c.beginPath();c.moveTo(150,Y(bk.Ef));c.lineTo(150,Y(ba.Ef));c.stroke();c.fillStyle='#e8b04a';c.textAlign='center';c.fillText('U_Z',150,(Y(bk.Ef)+Y(ba.Ef))/2)}
+/* ---------- Start ---------- */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{mode=b.dataset.m;document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x==b));$('#kx').hidden=mode=='mit';$('#sub').textContent=mode=='mit'?'Mittelstufe':'Kursstufe';hl='';window._dE=0;
+ if(mode=='mit'){reset();bar();ui()}else{reset();kui()}});
+/* ===== Überarbeitung: Teilchendarstellung, Formelschreibweise, Layout, scharfe Abbildungen ===== */
+Object.assign(KS.ZnBr2,{as:'Br',ac:1,na:2});Object.assign(KS.ZnI2,{as:'I',ac:1,na:2});Object.assign(KS.CuCl2,{as:'Cl',ac:1,na:2});Object.assign(KS.CuSO4,{as:'SO₄',ac:2,na:1});Object.assign(KS.NiSO4,{as:'SO₄',ac:2,na:1});Object.assign(KS.AgNO3,{as:'NO₃',ac:1,na:1});Object.assign(KS.NaCl,{as:'Cl',ac:1,na:1});
+function hd(c,W,H){const k=Math.max(1,(c.clientWidth||W)/W*(devicePixelRatio||1));c.width=Math.round(W*k);c.height=Math.round(H*k);const x=c.getContext('2d');x.setTransform(k,0,0,k,0,0);return x}
+function fitCv(){hd(cv,900,520)}addEventListener('resize',()=>{fitCv();chart();lad()});
+function sp2(z){return `<sup>${z>1?z:''}+</sup>`}
+function calc(){const s=KS[ks.salt],lc=Math.log10(ks.c),K=[],A=[],e='e<sup>−</sup>';
+ K.push({k:'M',eq:`${s.c}${sp2(s.z)} + ${s.z} ${e} → ${s.c}`,pair:`${s.c}${SUP[s.z]}/${s.c}`,E:s.Ec+.059/s.z*lc,eta:-.02});
+ K.push({k:'H',eq:`2 H<sub>2</sub>O + 2 ${e} → H<sub>2</sub> + 2 OH<sup>−</sup>`,pair:'H₂/H₂O',E:-.83+.059*7,eta:ETAH[ks.K]});
+ const ea=ETAA[ks.A]||ETAA.C;
+ if(s.a)A.push({k:'X',eq:`2 ${s.a}<sup>−</sup> → ${s.a}<sub>2</sub> + 2 ${e}`,pair:`${s.a}₂/2 ${s.a}⁻`,E:s.Ea-.059*lc,eta:ea[s.a]});
+ A.push({k:'O',eq:`6 H<sub>2</sub>O → O<sub>2</sub> + 4 H<sub>3</sub>O<sup>+</sup> + 4 ${e}`,pair:'O₂/H₂O',E:1.23-.059*7,eta:ea.O});
+ if(EM[ks.A]){const z=EM[ks.A][1];A.push({k:'D',eq:`${ks.A} → ${ks.A}${sp2(z)} + ${z} ${e}`,pair:`${ks.A}${SUP[z]}/${ks.A}`,E:EM[ks.A][0],eta:.02})}
+ K.forEach(r=>r.Ef=r.E+r.eta);A.forEach(r=>r.Ef=r.E+r.eta);
+ const bK=K.reduce((a,b)=>b.Ef>a.Ef?b:a),bA=A.reduce((a,b)=>b.Ef<a.Ef?b:a),nK=K.reduce((a,b)=>b.E>a.E?b:a),nA=A.reduce((a,b)=>b.E<a.E?b:a);
+ const prs=[];K.forEach(k=>A.forEach(a=>prs.push(a.Ef-k.Ef)));prs.sort((a,b)=>a-b);
+ return{K,A,bK,bA,nK,nA,U1:Math.max(.05,prs[0]),U2:Math.max(.05,prs[1]),U0:bA.E-bK.E}}
+C=calc();
+function reset(){parts=[];dep=0;mols=0;pend=0;on=false;galv=false;es=0;fl=[];ks.full=false;ks.an=20;ks.th=0;ks.cg=0;ks.msg='';toks=[];ks.ec=0;const s=cur(),M=mode=='mit',nc=M?15:8,na=M?nc*s.nx:nc*s.na;
+ for(let i=0;i<nc;i++){let[x,y]=rnd();add('c',x,y)}for(let i=0;i<na;i++){let[x,y]=rnd();add('a',x,y)}if(!M)for(let i=0;i<10;i++){const[x,y]=rnd();add('w',x,y);parts[parts.length-1].id=i%2}if(M){step=0;ui()}}
+function liq(){g.beginPath();g.moveTo(190,215);g.lineTo(330,215);g.lineTo(330,390);g.lineTo(570,390);g.lineTo(570,215);g.lineTo(710,215);g.lineTo(710,480);g.lineTo(190,480);g.closePath()}
+function disc(x,y,r,col,sym,chg,a){g.globalAlpha=a;g.fillStyle=col;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.strokeStyle='rgba(8,18,26,.6)';g.lineWidth=1.3;g.stroke();g.fillStyle='#08121a';g.textBaseline='middle';g.textAlign='left';const fz=Math.max(8,Math.round(r*.85)),fz2=Math.max(6,Math.round(fz*.72));g.font='600 '+fz+'px system-ui';const w=g.measureText(sym).width;g.font='600 '+fz2+'px system-ui';const w2=chg?g.measureText(chg).width:0,x0=x-(w+w2)/2;g.font='600 '+fz+'px system-ui';g.fillText(sym,x0,y+1);if(chg){g.font='600 '+fz2+'px system-ui';g.fillText(chg,x0+w+.5,y-4)}g.globalAlpha=1}
+function draw(){discS=(x,y,r,col,sym,a)=>{g.globalAlpha=a;g.fillStyle=col;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.strokeStyle='rgba(8,18,26,.6)';g.lineWidth=1;g.stroke();g.fillStyle='#08121a';g.font='600 8px system-ui';g.textAlign='center';g.textBaseline='middle';g.fillText(sym,x,y+.5);g.globalAlpha=1};mol2=(x,y,sym,col,a)=>{g.globalAlpha=a;g.strokeStyle='#08121a';g.lineWidth=4;g.beginPath();g.moveTo(x-9,y);g.lineTo(x+9,y);g.stroke();g.globalAlpha=1;disc(x-9,y,11,col,sym,'',a);disc(x+9,y,11,col,sym,'',a)};const s=cur(),M=mode=='mit',mc=s.mc,xc=s.xc,cs=M?s.M:s.c,xs=M?s.X:s.as,xch=M||s.ac<2?'−':'2−',czs=s.z>1?s.z+'+':'+',hs=M?s.X:s.a,run=M?on&&!galv:Icur(ks.U)>.5&&!ks.full,a=pv<.15?0:pv;
+ g.clearRect(0,0,900,520);g.fillStyle='#0b1822';g.fillRect(0,0,900,520);g.fillStyle='#16283a';g.fillRect(0,492,900,28);
+ liq();g.fillStyle='rgba(78,178,196,.30)';g.fill();
+ const t=Math.min(.7,mols*.05);if(t>0){g.save();liq();g.clip();const rg=g.createRadialGradient(640,330,5,640,330,150);rg.addColorStop(0,xc+Math.round(t*255).toString(16).padStart(2,'0'));rg.addColorStop(1,xc+'00');g.fillStyle=rg;g.fillRect(560,215,160,270);g.restore()}
+ {const gc=parts.filter(q=>q.t=='g'&&q.gas&&!q.dead&&q.x>450).length;if(gc>0){g.fillStyle=xc+Math.round(Math.min(.5,gc*.07)*255).toString(16).padStart(2,'0');g.fillRect(572,152,136,63)}}
+ g.strokeStyle='rgba(220,240,255,.55)';g.lineWidth=3;g.lineJoin='round';g.beginPath();g.moveTo(190,150);g.lineTo(190,480);g.lineTo(710,480);g.lineTo(710,150);g.moveTo(330,150);g.lineTo(330,390);g.lineTo(570,390);g.lineTo(570,150);g.stroke();
+ g.fillStyle='#7d8a96';g.fillRect(186,142,148,9);g.fillRect(566,142,148,9);
+ const eL=M?'C':ks.K,eR=M?'C':ks.A,dm=M?s.mc:KS[ks.salt].mc,n=Math.floor(dep),th=(ks.th=(ks.th||0)+(Math.max(0,Math.min(14,(n-5)*.55))-(ks.th||0))*.02);
+ for(const[x,c,an]of[[260,eL,0],[640,eR,1]]){g.globalAlpha=1-a;g.fillStyle=ELC[c];g.beginPath();g.roundRect(x-22,128,44,224,4);g.fill();g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x+8,128,14,224);g.globalAlpha=1;
+  if(a>0){const lt=LAT(x),k=(an&&!M&&EM[c])?Math.min(ks.an,20):20;for(let i=0;i<k;i++)disc(lt[i][0],lt[i][1],11,ELP[c],c,'',a)}}
+ ks.cg=(ks.cg||0)+(Math.min(1,n/5)-(ks.cg||0))*.05;
+ if(a<1&&ks.cg>.01){const D=window.DOTS||(window.DOTS=(()=>{const l=[];let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647;for(let i=0;i<180;i++)l.push([238+r()*44,222+r()*128]);return l})()),k=Math.round(ks.cg*180),rd=1.3+ks.cg*3.2;g.globalAlpha=1-a;g.fillStyle=dm;for(let i=0;i<k;i++){g.beginPath();g.arc(Math.max(240,Math.min(280,D[i][0])),D[i][1],rd,0,7);g.fill()}g.globalAlpha=1}
+ if(th>.3&&a<1){g.globalAlpha=1-a;g.fillStyle=dm;g.beginPath();g.roundRect(238-th,222,44+2*th,128+th,6);g.fill();g.globalAlpha=1}
+ const slots=[];for(let j=0;j<3;j++)slots.push([238+j*22,359]);for(let k=0;k<12;k++)slots.push([260+(k%2?1:-1)*33,337-(k>>1)*22]);for(let j=0;j<3;j++)slots.push([238+j*22,381]);for(let k=0;k<12;k++)slots.push([260+(k%2?1:-1)*55,337-(k>>1)*22]);
+ if(a>0)for(let i=0;i<Math.min(n,30);i++)disc(slots[i][0],slots[i][1],11,dm,cs,'',a);
+ 
+ if(hl){const x=hl=='K'?260:640;g.strokeStyle=hl=='K'?'#5aa9ff':'#ff7a66';g.lineWidth=3;g.globalAlpha=.5+.5*Math.sin(frame*.1);g.beginPath();g.roundRect(x-40,120,80,250,14);g.stroke();g.globalAlpha=1}
+ g.strokeStyle='#b9c4cc';g.lineWidth=3;g.beginPath();WIRE.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();
+ g.fillStyle='#0b1822';g.fillRect(412,40,76,60);
+ if(M&&galv){g.strokeStyle='#e8b04a';g.lineWidth=3;g.beginPath();g.arc(450,70,28,0,7);g.stroke();g.fillStyle='#e8b04a';g.font='600 15px system-ui';g.textAlign='center';g.textBaseline='alphabetic';const dE=(dep>0&&mols>.01&&!s.gas)?(s.EX-s.E)*Math.min(1,.6+dep/10):0;g.fillText(dE.toFixed(2).replace('.',',')+' V',450,75);g.font='11px system-ui';g.fillText('Voltmeter',450,30);window._dE=dE}
+ else{g.strokeStyle='#b9c4cc';g.lineWidth=3;g.beginPath();g.moveTo(462,50);g.lineTo(462,90);g.stroke();g.lineWidth=6;g.beginPath();g.moveTo(436,58);g.lineTo(436,82);g.stroke();g.textBaseline='alphabetic';g.textAlign='center';g.fillStyle='#ff7a66';g.font='600 16px system-ui';g.fillText('+',496,62);g.fillStyle='#5aa9ff';g.fillText('−',404,62);g.fillStyle='#8fa8b8';g.font='11px system-ui';g.fillText('Gleichspannungsquelle',450,30)}
+ g.strokeStyle='#b9c4cc';g.lineWidth=3;g.beginPath();g.moveTo(412,70);g.lineTo(M&&galv?422:436,70);g.moveTo(M&&galv?478:462,70);g.lineTo(488,70);g.stroke();
+ // Beschriftung der Elektroden außerhalb von Kabeln und Gefäß
+ const L=galv?['Anode','Oxidation','Minuspol','#ff7a66']:['Kathode','Reduktion','Minuspol','#5aa9ff'],R=galv?['Kathode','Reduktion','Pluspol','#5aa9ff']:['Anode','Oxidation','Pluspol','#ff7a66'];
+ g.textBaseline='alphabetic';g.textAlign='right';g.fillStyle=L[3];g.font='600 15px system-ui';g.fillText(L[0],172,150);g.font='13px system-ui';g.fillText(L[1],172,168);g.fillStyle='#8fa8b8';g.fillText(L[2],172,186);
+ g.textAlign='left';g.fillStyle=R[3];g.font='600 15px system-ui';g.fillText(R[0],728,150);g.font='13px system-ui';g.fillText(R[1],728,168);g.fillStyle='#8fa8b8';g.fillText(R[2],728,186);
+ g.textBaseline='middle';
+ for(const p of parts){
+  if(p.t=='c'&&a>0)disc(p.x,p.y,M?9.5:10,p.col||mc,p.sym||cs,p.chg||czs,a);
+  else if(p.t=='a'&&a>0)disc(p.x,p.y,M?12:14,xc,xs,xch,a);
+  else if(p.t=='x'&&a>0)disc(p.x,p.y,11,xc,hs,'',a);
+  else if(p.t=='w'&&a>0)disc(p.x,p.y,13,'#a9d8ff','H₂O','',a);
+  else if(p.t=='q'&&a>0)disc(p.x,p.y,13,'#c7f0d0','OH','−',a);
+  else if(p.t=='r'&&a>0)disc(p.x,p.y,13,'#ffd0c0','H₃O','+',a);
+  else if(p.t=='m'&&a>0)mol2(p.x,p.y,hs,xc,a);
+  else if(p.t=='g'||p.t=='h'||p.t=='o'){const sy=p.t=='h'?'H':p.t=='o'?'O':hs,co=p.t=='h'?'#e8eef2':p.t=='o'?'#ff9a8a':xc,f=1;if(a>.5)mol2(p.x,p.y,sy,co,a*f);else if(!p.gas){g.globalAlpha=f;g.strokeStyle=co;g.lineWidth=1.6;g.beginPath();g.arc(p.x,p.y,8+p.r*.5,0,7);g.stroke();g.globalAlpha=1}}}
+ if(a>.5){for(const f of fl){g.fillStyle=`rgba(255,226,122,${f.a})`;g.beginPath();g.arc(f.x,f.y,6+(1-f.a)*14,0,7);g.fill()}}
+ fl=fl.filter(f=>(f.a-=.05)>0);if(ks.full&&a>0){g.fillStyle='#e8b04a';g.font='600 13px system-ui';g.textAlign='center';g.fillText(ks.msg||'Elektrode voll belegt',450,250);g.fillText('Elektrolyse beendet',450,270)}
+ const moving=run||(galv&&window._dE>0);
+ if(a>.5&&toks.length){for(const t of toks){if(t.s<0||t.s>=1)continue;const[x,y]=pathPt(t.s);if(x>414&&x<486)continue;g.globalAlpha=a;g.fillStyle='#ffe27a';g.shadowColor='#ffd24a';g.shadowBlur=8;g.beginPath();g.arc(x,y,5.5,0,7);g.fill();g.shadowBlur=0;g.fillStyle='#08121a';g.font='600 8px system-ui';g.textAlign='center';g.textBaseline='middle';g.fillText('e⁻',x,y+.5)}g.globalAlpha=1;g.fillStyle='#ffe27a';g.font='12px system-ui';g.textAlign='center';g.fillText('Elektronen fließen von der Anode zur Kathode',450,122)}
+ g.fillStyle='#8fa8b8';g.font='12px system-ui';g.textAlign='center';if(arrows&&run&&a>.5)g.fillText('⟵ Kationen wandern zur Kathode  ·  Anionen wandern zur Anode ⟶',450,506);
+ g.textAlign='left';g.fillText(M?s.n+'-Lösung, Graphitelektroden':'Elektrolyt '+ks.salt+', c = '+ks.c.toFixed(2).replace('.',',')+' mol/L',14,506);g.textAlign='right';g.fillText(a>0?'Teilchenebene':'Stoffebene',888,506)}
+function tick(){frame++;pv+=(pvT-pv)*.08;dif=(p,k)=>{p.vx=(p.vx||0)*.96+(Math.random()-.5)*k;p.vy=(p.vy||0)*.96+(Math.random()-.5)*k;mv(p,p.vx,p.vy)};LAT=x=>{const l=[];for(let r=0;r<10;r++)for(const cx of[x-11,x+11])l.push([cx,139+r*22]);return l};etok=(n,d)=>{for(let i=0;i<n&&toks.length<80;i++)toks.push({s:d>0?-i*.03:1+i*.03,d})};for(const t of toks){t.s+=t.d*.007*sp;if(t.d>0&&t.s>=1){t.dead=1;ks.ec=(ks.ec||0)+1}else if(t.d<0&&t.s<=0)t.dead=1}toks=toks.filter(t=>!t.dead);if(dep>=(mode=='mit'?15:30)&&!ks.full&&!galv){ks.full=true;if(mode=='mit'){on=false;bar()}else clearInterval(ks.auto)}const s=cur(),M=mode=='mit';let run,drift;
+ if(M){run=on&&!galv;drift=run?.6*sp:0}else{const I=Icur(ks.U);run=I>.5&&!ks.full;drift=run?Math.min(.9,.2+I/160)*sp:0}
+ if(run||(galv&&window._dE>0))es+=(M?.004:.002+Icur(ks.U)/60000)*sp;
+ const gas=M?s.gas:0;
+ for(const p of parts){if(p.dead)continue;
+  if(p.t=='w'){let dx=0,dy=0;p.vx=(p.vx||0)*.96+(Math.random()-.5)*.5;p.vy=(p.vy||0)*.96+(Math.random()-.5)*.5;dx=p.vx;dy=p.vy;const tx=p.id?640:260;
+   if(drift){if((p.x<450?0:1)!=p.id){if(p.y<412)dy+=drift*.5;else dx+=(tx<p.x?-1:1)*drift*.5}else{if(p.y>345)dy-=drift*.5;dx+=(tx-p.x)*.02}}
+   mv(p,dx,dy);
+   if(drift&&p.y<372&&Math.abs(p.x-tx)<36&&Math.random()<.025){
+    if(!p.id&&C.bK.k=='H'&&(ks.ec||0)>=2){ks.ec-=2;fl.push({x:260,y:p.y,a:1});spawnProd('h',260,345);for(let k=0;k<2;k++){const[x,y]=rnd();add('q',x,y)}const[u,v]=rnd();p.x=u;p.y=v}
+    else if(p.id&&C.bA.k=='O'&&toks.length+(ks.ec||0)<5){fl.push({x:640,y:p.y,a:1});etok(4,1);spawnProd('o',640,345);for(let k=0;k<4;k++){const[x,y]=rnd();add('r',x,y)}const[u,v]=rnd();p.x=u;p.y=v}}
+   continue}
+  if(p.t=='c'||p.t=='a'||p.t=='q'||p.t=='r'){let k0=drift?1.6:3.4,dx=(Math.random()-.5)*k0,dy=(Math.random()-.5)*k0;
+   if(drift&&!p.f){const arm=(p.t=='c'||p.t=='r')?0:1,cu=p.x<450?0:1,tx=arm?640:260;if(cu!=arm){if(p.y<412)dy+=drift;else dx+=(tx<p.x?-1:1)*drift}else{if(p.y>345)dy-=drift;dx+=(tx-p.x)*.02}}
+   mv(p,dx,dy);
+   if(drift&&!p.f&&(p.t=='c'||p.t=='a')&&(M?(p.t=='a'?toks.length+(ks.ec||0)<8:(ks.ec||0)>=s.z):(p.t=='c'?C.bK.k=='M'&&(ks.ec||0)>=s.z:C.bA.k=='X'&&toks.length+(ks.ec||0)<8))&&p.y<372&&Math.abs(p.x-(p.t=='c'?260:640))<36&&Math.random()<.025){fl.push({x:p.t=='c'?260:640,y:p.y,a:1});
+    if(M){p.dead=1;if(p.t=='c'){dep++;ks.ec-=s.z}else{pend++;etok(1,1);add('x',640+(p.x<640?-33:33),Math.min(p.y,340));if(pend==2){pend=0;parts.forEach(q=>{if(q.t=='x')q.dead=1});if(gas)spawnProd('g',640,335);else{mols++;const ml=parts.filter(q=>q.t=='m');if(ml.length>=14)ml[0].dead=1;spawnProd('m',640,335)}}}}
+    else{const[x,y]=rnd();p.x=x;p.y=y;
+     if(p.t=='c'){dep+=1;ks.ec-=s.z}
+     else{if(C.bA.k=='O')spawnProd('o',640+(Math.random()-.5)*20,345);else if(C.bA.k=='X'){pend++;etok(1,1);if(pend>=2){pend=0;if(s.a=='Cl')spawnProd('g',640,340);else{mols+=.5;if(parts.filter(q=>q.t=='m').length<8)spawnProd('m',640,335)}}}}}}}
+  else if(p.t=='m')dif(p,.5);else if(p.t=='x'){const k=drift?.8:3.2;mv(p,(Math.random()-.5)*k,(Math.random()-.5)*k)}
+  else{const L0=p.x<450?210:590;if(!p.gas){p.y-=1.3+p.r*.1;p.x+=Math.sin(frame*.1+p.r)*.5;if(p.y<=214){p.gas=1;p.y=166+p.r*6;const an=Math.random()*6.28;p.vx=Math.cos(an)*1.3;p.vy=Math.sin(an)*1.3}}else{p.x+=p.vx*sp;p.y+=p.vy*sp;p.vx+=(Math.random()-.5)*.15;p.vy+=(Math.random()-.5)*.15;const sv=Math.hypot(p.vx,p.vy)||1;p.vx*=1.3/sv;p.vy*=1.3/sv;if(p.x<L0+10){p.x=L0+10;p.vx=Math.abs(p.vx)}if(p.x>L0+90){p.x=L0+90;p.vx=-Math.abs(p.vx)}if(p.y<164){p.y=164;p.vy=Math.abs(p.vy)}if(p.y>203){p.y=203;p.vy=-Math.abs(p.vy)}}if(!p.gas)p.x=Math.max(L0+10,Math.min(L0+90,p.x))}}
+ if(M&&galv&&!gas&&frame%35==0&&dep>=1&&mols>.01){dep--;etok(s.z,-1);add('c',292,330);for(let k=0;k<s.z;k++)add('a',612,300+k*30);mols=Math.max(0,mols-s.z/2);
+  const ms=parts.filter(q=>q.t=='m'&&!q.dead);while(ms.length>Math.ceil(mols-1e-9)&&ms.length)ms.pop().dead=1}
+ if(!M&&drift&&C.bA.k=='D'&&Math.random()<.015*drift&&toks.length+(ks.ec||0)<5){const z=EM[ks.A][1];if(ks.an<=8){ks.full=true;ks.msg='Anode aufgelöst';clearInterval(ks.auto)}else{const ps=LAT(640)[ks.an-1];ks.an--;etok(z,1);parts.push({t:'c',x:ps[0]+(ps[0]>640?22:-22),y:ps[1],r:0,f:1,sym:ks.A,col:ELP[ks.A],chg:(z>1?z:'')+'+'});fl.push({x:ps[0],y:ps[1],a:1});const fc=parts.filter(q=>q.f&&!q.dead);while(fc.length>30)fc.shift().dead=1}}
+ ['q','r'].forEach(t=>{const l=parts.filter(q=>q.t==t&&!q.dead);while(l.length>12)l.shift().dead=1});[0,1].forEach(sd=>{const l=parts.filter(q=>q.gas&&!q.dead&&(q.x<450?0:1)==sd);while(l.length>7)l.shift().dead=1});parts=parts.filter(q=>!q.dead);draw();requestAnimationFrame(tick)}
+function lad(){const d=$('#ld');if(!d)return;const c=hd(d,360,340),all=[...C.K,...C.A].flatMap(r=>[r.E,r.Ef]),lo=Math.min(...all)-.35,hi=Math.max(...all)+.35,Y=e=>34+(hi-e)/(hi-lo)*262;
+ c.fillStyle='#0c1a26';c.fillRect(0,0,360,340);c.font='11px system-ui';c.textAlign='center';c.fillStyle='#e7eff4';c.fillText(`Anode: ${ELN[ks.A]}  |  ${ks.salt}  |  Kathode: ${ELN[ks.K]}`,180,16);
+ for(let e=Math.ceil(lo*2)/2;e<=hi;e+=.5){c.strokeStyle='#1c3346';c.lineWidth=1;c.beginPath();c.moveTo(38,Y(e));c.lineTo(352,Y(e));c.stroke();c.fillStyle='#8fa8b8';c.textAlign='right';c.fillText(e.toFixed(1).replace('.',','),32,Y(e)+4)}
+ c.textAlign='left';c.fillStyle='#8fa8b8';c.fillText('E in V',4,28);
+ const grp=(list,x0,w,col,best)=>list.forEach((r,i)=>{const x=x0+i*w,on=r===best;c.globalAlpha=on?1:.55;c.strokeStyle=col;c.lineWidth=on?4:2.5;c.setLineDash([]);c.beginPath();c.moveTo(x,Y(r.E));c.lineTo(x+w-14,Y(r.E));c.stroke();c.setLineDash([5,3]);c.beginPath();c.moveTo(x,Y(r.Ef));c.lineTo(x+w-14,Y(r.Ef));c.stroke();c.setLineDash([]);
+  const m=x+(w-14)/2,up=r.Ef>r.E;c.lineWidth=1.5;c.beginPath();c.moveTo(m,Y(r.E));c.lineTo(m,Y(r.Ef));c.stroke();c.beginPath();c.moveTo(m-4,Y(r.Ef)+(up?5:-5));c.lineTo(m,Y(r.Ef));c.lineTo(m+4,Y(r.Ef)+(up?5:-5));c.stroke();
+  c.fillStyle=col;c.font=(on?'600 ':'')+'10px system-ui';c.textAlign='center';c.fillText(r.pair,m,Y(Math.max(r.E,r.Ef))-6);c.globalAlpha=1});
+ grp(C.K,48,62,'#5aa9ff',C.bK);grp(C.A,196,54,'#ff7a66',C.bA);
+ const yk=Y(C.bK.Ef),ya=Y(C.bA.Ef);c.strokeStyle='#e8b04a';c.lineWidth=1.5;c.beginPath();c.moveTo(178,yk);c.lineTo(178,ya);c.stroke();c.setLineDash([2,3]);c.beginPath();c.moveTo(48,yk);c.lineTo(178,yk);c.moveTo(178,ya);c.lineTo(330,ya);c.stroke();c.setLineDash([]);
+ c.fillStyle='#e8b04a';c.textAlign='center';c.font='600 12px system-ui';c.fillText('U_Z = '+f2(C.bA.Ef-C.bK.Ef)+' V',180,Math.min(332,(yk+ya)/2));
+ c.font='10px system-ui';c.fillStyle='#8fa8b8';c.fillText('durchgezogen: E · gestrichelt: E + η (η: Überspannung)',180,334)}
+fitCv();
+const TH=$('#th');TH.onclick=()=>{const d=document.documentElement;d.dataset.theme=d.dataset.theme=='light'?'dark':'light';TH.textContent=d.dataset.theme=='light'?'Dunkelmodus':'Hellmodus'};
+$('#sub').textContent='Mittelstufe';reset();bar();ui();tick();
+</script></body></html>

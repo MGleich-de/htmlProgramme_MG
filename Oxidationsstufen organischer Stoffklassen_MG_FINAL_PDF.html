@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Oxidationsstufen organischer Stoffklassen</title>
+<style>
+:root{--bg1:#eef3fb;--bg2:#fdf3e6;--card:#fff;--ink:#1d2433;--mut:#6b7488;--line:#cfd6e6;--red:#d62839;--g:#16883f;--acc:#3b6df0;--sh:0 6px 22px rgba(40,60,110,.13);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-theme=dark]{--bg1:#0e1320;--bg2:#1c1636;--card:#171e30;--ink:#e8ecf7;--mut:#97a1ba;--line:#323c58;--red:#ff6b7a;--g:#4ade80;--acc:#7da2ff;--sh:0 6px 22px rgba(0,0,0,.55)}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(135deg,var(--bg1),var(--bg2)) fixed;min-height:100vh;transition:color .5s}
+header{text-align:center;padding:64px 12px 4px}
+h1{margin:0;font-size:clamp(21px,4.6vw,36px);background:linear-gradient(90deg,var(--acc),#e0559a,#f59e0b,var(--acc));background-size:300%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 9s linear infinite}
+@keyframes sh{to{background-position:300%}}
+.au{color:var(--mut);font-size:14px;margin-top:4px}
+.tg{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px;width:46px;height:46px;border-radius:50%;border:2px solid var(--line);background:var(--card);box-shadow:var(--sh);cursor:pointer;z-index:50;padding:0;overflow:hidden;transition:transform .4s}
+.tg:hover{transform:rotate(20deg) scale(1.06)}
+.tg svg{position:absolute;inset:9px;width:24px;height:24px;transition:transform .7s,opacity .5s}
+.sun{color:#f59e0b}.moon{color:#9db4ff;transform:rotate(-120deg) scale(.2);opacity:0}
+[data-theme=dark] .sun{transform:rotate(120deg) scale(.2);opacity:0}
+[data-theme=dark] .moon{transform:none;opacity:1}
+.steps{display:flex;gap:8px;justify-content:center;margin:12px 0 4px;flex-wrap:wrap}
+.st{padding:4px 13px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--mut);transition:.4s}
+.st.on{background:var(--acc);color:#fff;border-color:var(--acc);transform:scale(1.06)}
+.st.dn{color:var(--g);border-color:var(--g)}
+.tray,.info{margin:10px 12px;background:var(--card);border-radius:16px;box-shadow:var(--sh)}
+.tray{padding:12px}
+.tl{font-weight:600;font-size:14px;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;min-height:40px}
+.bar{height:5px;background:var(--line);border-radius:9px;margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),#22c55e);transition:width .6s}
+.chip{touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:var(--bg1);border:2px solid var(--line);border-radius:12px;padding:4px 10px;animation:fl 3.2s ease-in-out infinite;animation-delay:calc(var(--i)*-.45s);transition:border-color .2s}
+@keyframes fl{50%{transform:translateY(-3px)}}
+.chip.s{padding:2px;width:128px}.chip.s svg{width:100%;display:block}
+.chip.o{color:var(--g);font-weight:700;font-size:17px}.chip.n{font-weight:600}
+.chip.sel{border-color:var(--acc);box-shadow:0 0 0 3px rgba(80,120,240,.3)}
+.chip.lift{opacity:.3}
+.ghost{position:fixed;z-index:99;pointer-events:none;transform:translate(-50%,-50%) scale(1.1);box-shadow:var(--sh);animation:none;background:var(--card)}
+.info{padding:10px 14px;border-left:4px solid var(--acc);font-size:15px;min-height:46px;transition:border-color .3s}
+.info.bad{border-color:var(--red)}.info b{color:var(--g);font-size:1.1em}
+.wrap{overflow-x:auto;padding:10px 12px 20px}
+.board{display:grid;grid-template-columns:230px 60px 230px 60px 230px 60px 230px;min-width:1100px;row-gap:14px}
+.hd{color:var(--red);font-size:22px;font-weight:700;padding:0 6px;animation:in .7s both}
+.hl{grid-row:2;grid-column:1/-1;height:2px;background:var(--red);margin-top:-6px;transform-origin:left;animation:ln 1s .2s both}
+@keyframes ln{from{transform:scaleX(0)}}
+@keyframes in{from{opacity:0;transform:translateY(16px)}}
+.cell{background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:8px;animation:in .6s both;animation-delay:calc(var(--i)*.12s + .3s)}
+.lab{color:var(--red);font-weight:700;font-size:16px;margin:0 2px 4px}
+.dS{height:140px;border:2px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--line);font-size:34px}
+.dN{height:34px;margin-top:6px;border:2px dashed var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:15px}
+.dS.ok,.dN.ok{border-color:transparent;animation:pop .5s}
+.dS.bad,.dN.bad{border-color:var(--red);animation:shk .4s}
+@keyframes pop{40%{transform:scale(1.06)}}
+@keyframes shk{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.mol{width:100%;height:100%}
+.mol text{fill:var(--ink);font:600 15px system-ui,sans-serif;text-anchor:middle;dominant-baseline:central}
+.mol line{stroke:var(--ink);stroke-width:1.8;stroke-linecap:round}
+.mk{opacity:0;pointer-events:none;transition:opacity .6s;cursor:pointer}
+.st3 .mk{opacity:1;pointer-events:all}
+.mk rect{fill:var(--card);stroke:var(--g);stroke-width:1.5;stroke-dasharray:3 2}
+.mk.ok rect{stroke-dasharray:none;fill:rgba(34,197,94,.16)}
+.mk.bad rect{stroke:var(--red)}
+.mol .mk text{fill:var(--g);font-size:12px;font-weight:700}
+.ar{align-self:start;margin-top:92px;overflow:visible}
+.ar.dg{margin-top:-48px}
+.ar line{stroke-width:2;stroke-linecap:round;stroke-dasharray:var(--L);stroke-dashoffset:var(--L);animation:dr 1s 1s forwards}
+.ar polygon{opacity:0;animation:fi .3s 1.9s forwards}
+@keyframes dr{to{stroke-dashoffset:0}}@keyframes fi{to{opacity:1}}
+.rs{font:inherit;padding:8px 18px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;box-shadow:var(--sh)}
+.cf{position:fixed;top:-14px;width:8px;height:12px;z-index:90;pointer-events:none;animation:fall 3s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.tg.pd{right:66px}.tg.pd:disabled{opacity:.35;cursor:not-allowed}.tg.pd svg{inset:10px;width:24px;height:24px;color:var(--acc)}
+@media(min-width:900px){header{padding:10px 120px 0}.wrap{overflow:hidden;padding:0 12px}.board{width:1100px;transform-origin:top left}.tray{padding:8px 12px;min-height:132px}.info{height:56px;overflow:auto;font-size:14px}.chip.s{width:104px}}
+@media print{@page{size:A4 landscape;margin:8mm}body{background:#fff!important}header{padding:0!important}h1{background:none;-webkit-text-fill-color:#1d2433;color:#1d2433;animation:none}.tg,.tray,.info,.steps,.cf{display:none!important}.wrap{overflow:hidden!important}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}body>*:not(#sheet){display:none!important}:root{padding:0!important}body{min-height:0}#sheet{display:block!important;width:1062px;height:718px;overflow:hidden;text-align:center}#sheet h1{font-size:24px;margin:0}#sheet .au{margin:2px 0 8px}#sheet *{animation:none!important}#sheet .ar line{stroke-dashoffset:0!important}#sheet .ar polygon{opacity:1!important}}
+#sheet{display:none}
+#sheet.cap{display:block;position:fixed;left:-6000px;top:0;width:1062px;height:718px;background:#fff;color:#1d2433;text-align:center;overflow:hidden}
+#sheet.cap h1{font-size:24px;margin:0;background:none;-webkit-text-fill-color:#1d2433;color:#1d2433;animation:none}#sheet.cap .au{margin:2px 0 8px}#sheet.cap *{animation:none!important}#sheet.cap .ar line{stroke-dashoffset:0!important}#sheet.cap .ar polygon{opacity:1!important}
+.cr{text-align:right;padding:0 16px 8px;margin:0;font-size:13px}
+.pv{position:fixed;inset:0;z-index:200;background:rgba(10,15,30,.85);display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.pv div{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:10px}.pv a,.pv button{font:inherit;font-size:14px;padding:6px 16px;border-radius:99px;border:0;background:#fff;color:#1d2433;text-decoration:none;cursor:pointer}.pv iframe{flex:1;border:0;background:#fff;margin:0 10px 10px;border-radius:10px}
+</style></head><body>
+<button class="tg" id="tg" aria-label="Hell- und Dunkelmodus umschalten"><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg><svg class="moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20 14.5A8 8 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
+<button class="tg pd" id="pd" disabled aria-label="Als PDF exportieren" title="Als PDF exportieren (nach Abschluss)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9.500 14.500L12 17l2.500-2.500"/></svg></button>
+<header><h1>Oxidationsstufen organischer Stoffklassen</h1><div class="steps"><span class="st" id="s1">1 Strukturformeln</span><span class="st" id="s2">2 Namen</span><span class="st" id="s3">3 Oxidationszahlen</span><button class="rs" id="rs" style="padding:2px 13px;font-size:13px">Neu starten</button></div></header>
+<div class="tray"><div class="tl" id="tl"></div><div class="chips" id="chips"></div><div class="bar"><i id="bar"></i></div></div>
+<div class="info" id="info"></div>
+<div class="wrap"><div class="board" id="board"></div></div>
+<div class="au cr">Erstellt von Matthias Gleich</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),D={u:[0,-30],d:[0,30],l:[-30,0],r:[30,0]};
+const H='0:l:H 0:u:H 0:d:H 1:u:H 1:d:H 2:r:H 2:u:H 2:d:H';
+const M={
+m1:{n:'Propan',t:H,k:[[1,'−II',0,'C‑2: 2 × C (0) und 2 × H (2 × −I) ergibt <b>−II</b>'],[2,'−III',0,'Endständiges C: 1 × C (0) und 3 × H (3 × −I) ergibt <b>−III</b>']]},
+m2:{n:'Propan-1-ol',t:'0:l:H 0:u:H 0:d:H 1:u:H 1:d:H 2:u:H 2:d:H 2:r:OH',k:[[2,'−I',0,'C‑1: 1 × O (+I), 2 × H (2 × −I), 1 × C (0) ergibt <b>−I</b>']]},
+m3:{n:'Propanal',t:'0:l:H 0:u:H 0:d:H 1:u:H 1:d:H 2:r:=O 2:d:H',k:[[2,'+I',0,'C‑1: C=O zählt doppelt (2 × +I), 1 × H (−I), 1 × C (0) ergibt <b>+I</b>']]},
+m4:{n:'Propansäure',t:'0:l:H 0:u:H 0:d:H 1:u:H 1:d:H 2:u:=O 2:r:OH',k:[[2,'+III',0,'C‑1: C=O (2 × +I) und C–OH (+I), 1 × C (0) ergibt <b>+III</b>']]},
+m5:{n:'Propan-2-ol',t:'0:l:H 0:u:H 0:d:H 1:u:H 1:d:OH 2:r:H 2:u:H 2:d:H',k:[[1,'0',0,'C‑2: 1 × O (+I), 1 × H (−I), 2 × C (0) ergibt <b>0</b>']]},
+m6:{n:'Propanon',t:'0:l:H 0:u:H 0:d:H 1:d:=O 2:r:H 2:u:H 2:d:H',k:[[1,'+II',0,'C‑2: C=O (2 × +I), 2 × C (0) ergibt <b>+II</b>']]},
+m7:{n:'2-Methylpropan',t:'0:l:H 0:u:H 0:d:H 1:u:Me 1:d:H 2:r:H 2:u:H 2:d:H',k:[[1,'−I',1,'C‑2: 1 × H (−I), 3 × C (0) ergibt <b>−I</b>']]},
+m8:{n:'2-Methylpropan-2-ol',t:'0:l:H 0:u:H 0:d:H 1:u:Me 1:d:OH 2:r:H 2:u:H 2:d:H',k:[[1,'+I',1,'C‑2: 1 × O (+I), 3 × C (0) ergibt <b>+I</b> – kein H mehr am C, keine weitere Oxidation']]}};
+function mol(k,mk){const m=M[k],C=[0,1,2].map(i=>[44+60*i,75]),A=C.map(p=>['C',p[0],p[1]]),B=[[0,1,1],[1,2,1]];
+const add=(s,x,y,f,o=1)=>{A.push([s,x,y]);B.push([f,A.length-1,o]);return A.length-1};
+m.t.split(' ').forEach(t=>{const[i,d,w]=t.split(':'),f=+i,x=C[f][0]+D[d][0],y=C[f][1]+D[d][1];
+if(w=='H')add('H',x,y,f);else if(w=='=O')add('O',x,y,f,2);
+else if(w=='OH'){const o=add('O',x,y,f);add('H',x+24,y+22,o)}
+else{const o=add('C',x,y,f);[[-30,0],[30,0],[0,-30]].forEach(v=>add('H',x+v[0],y+v[1],o))}});
+let s='<svg class="mol" viewBox="0 0 240 150">';
+B.forEach(([a,b,o])=>{const p=A[a],q=A[b],dx=q[1]-p[1],dy=q[2]-p[2],L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L;
+for(let j=0;j<o;j++){const f=o>1?(j?2.6:-2.6):0;s+=`<line x1="${p[1]+ux*9-uy*f}" y1="${p[2]+uy*9+ux*f}" x2="${q[1]-ux*9-uy*f}" y2="${q[2]-uy*9+ux*f}"/>`}});
+A.forEach((a,i)=>{if(a[0]!='O')return;let sx=0,sy=0;
+B.forEach(([p,q])=>{if(p==i||q==i){const n=A[p==i?q:p],dx=n[1]-a[1],dy=n[2]-a[2],L=Math.hypot(dx,dy);sx+=dx/L;sy+=dy/L}});
+const ph=Math.atan2(-sy,-sx);
+[-1,1].forEach(z=>{const al=ph+z,cx=a[1]+13*Math.cos(al),cy=a[2]+13*Math.sin(al),px=-Math.sin(al)*3.5,py=Math.cos(al)*3.5;
+s+=`<line x1="${cx-px}" y1="${cy-py}" x2="${cx+px}" y2="${cy+py}"/>`})});
+A.forEach(a=>s+=`<text x="${a[1]}" y="${a[2]}">${a[0]}</text>`);
+if(mk)m.k.forEach((q,j)=>{const c=C[q[0]],x=c[0]+(q[2]?25:23),y=c[1]+(q[2]?24:-24);
+s+=`<g class="mk" data-mark="1" data-k="${q[1]}" data-m="${k}" data-j="${j}" transform="translate(${x} ${y})"><rect x="-15" y="-9" width="30" height="18" rx="9"/><text>?</text></g>`});
+return s+'</svg>'}
+function ar(r,c,col,w,h,x1,y1,x2,y2,cl){const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),bx=x2-7*Math.cos(a),by=y2-7*Math.sin(a),nx=-Math.sin(a)*3,ny=Math.cos(a)*3;
+return `<svg class="ar ${cl||''}" style="grid-row:${r};grid-column:${c};--L:${L}" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke="${col}"/><polygon points="${x2},${y2} ${bx+nx},${by+ny} ${bx-nx},${by-ny}" fill="${col}"/></svg>`}
+const CELLS=[['m1',3,1,'Alkan'],['m2',3,3,'prim. Alkanol'],['m3',3,5,'Alkanal'],['m4',3,7,'Alkansäure'],['m5',4,3,'sek. Alkanol'],['m6',4,5,'Alkanon'],['m7',5,1,'Alkan'],['m8',5,3,'tert. Alkanol']];
+const T=['Schritt 1 von 3: Ziehe jede Strukturformel in das passende Feld der Tabelle.','Schritt 2 von 3: Ziehe den systematischen Namen unter die passende Strukturformel.','Schritt 3 von 3: Ziehe die Oxidationszahl an das richtige C‑Atom.'];
+let st=1,sel=null,tot=0,dn=0;
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function msg(t,bad){const i=$('#info');i.innerHTML=t;i.classList.toggle('bad',!!bad)}
+function init(){let h='';
+['Alkan','Alkanol','Alkanal/Alkanon','Alkansäure'].forEach((t,i)=>h+=`<div class="hd" style="grid-row:1;grid-column:${i*2+1}">${t}</div>`);
+h+='<div class="hl"></div>';
+CELLS.forEach(([k,r,c,l],i)=>h+=`<div class="cell" style="grid-row:${r};grid-column:${c};--i:${i}"><div class="lab">${l}</div><div class="dS" data-k="${k}">?</div><div class="dN" data-k="${k}"></div></div>`);
+const O='#f59e0b',Bl='#3b82f6',G='#22c55e';
+h+=ar(3,2,O,60,20,6,10,54,10)+ar(3,4,O,60,20,6,10,54,10)+ar(3,6,O,60,20,6,10,54,10)+ar(4,4,Bl,60,20,6,10,54,10)+ar(5,2,G,60,20,6,10,54,10)+ar(4,2,Bl,60,150,6,4,54,146,'dg');
+$('#board').innerHTML=h;$('#board').classList.remove('st3');load(1)}
+function load(n){st=n;sel=null;let it=[];
+if(n==1)it=Object.keys(M).map(k=>['s',k,mol(k,false)]);
+if(n==2)it=Object.keys(M).map(k=>['n',k,M[k].n]);
+if(n==3){Object.keys(M).forEach(k=>M[k].k.forEach(q=>it.push(['o',q[1],q[1]])));$('#board').classList.add('st3')}
+shuf(it);tot=it.length;dn=0;
+$('#chips').innerHTML=it.map((q,i)=>`<div class="chip ${q[0]}" data-t="${q[0]}" data-k="${q[1]}" style="--i:${i}">${q[2]}</div>`).join('');
+[1,2,3].forEach(i=>$('#s'+i).className='st'+(i<n?' dn':i==n?' on':''));
+$('#tl').textContent=T[n-1];$('#bar').style.width='0';$('#pd').disabled=true;fit();
+msg('Tipp: Element ziehen oder antippen und danach das Zielfeld antippen.')}
+function tryDrop(c,t){if(!t||!t.closest)return;const ty=c.dataset.t,d=t.closest(ty=='s'?'.dS':ty=='n'?'.dN':'[data-mark]');
+if(!d||d.classList.contains('ok'))return;
+if(d.dataset.k!==c.dataset.k){d.classList.add('bad');setTimeout(()=>d.classList.remove('bad'),500);msg('Das passt hier noch nicht – prüfe noch einmal.',1);return}
+const k=c.dataset.k;
+if(ty=='s'){d.innerHTML=mol(k,true);msg('Richtig zugeordnet.')}
+if(ty=='n'){d.textContent=M[k].n;msg('Richtig: <b>'+M[k].n+'</b>')}
+if(ty=='o'){d.classList.add('ok');d.querySelector('text').textContent=k;const m=d.dataset.m;msg(M[m].n+' – '+M[m].k[+d.dataset.j][3])}
+d.classList.add('ok');c.remove();sel=null;dn++;$('#bar').style.width=dn/tot*100+'%';
+if(dn==tot){if(st<3){setTimeout(()=>{msg('Geschafft! Weiter mit dem nächsten Schritt …');setTimeout(()=>load(st+1),900)},1200)}else setTimeout(fin,900)}}
+function fin(){[1,2,3].forEach(i=>$('#s'+i).className='st dn');$('#pd').disabled=false;$('#tl').textContent='Alles richtig zugeordnet!';
+msg('Geschafft! Primär: <b>−I</b> → <b>+I</b> → <b>+III</b>. Sekundär: <b>0</b> → <b>+II</b>. Tertiäre Alkohole (<b>+I</b>) tragen kein H am C‑Atom und lassen sich nicht weiter oxidieren.');
+const cs=['#f59e0b','#3b82f6','#22c55e','#e0559a','#7da2ff'];
+for(let i=0;i<50;i++){const e=document.createElement('i');e.className='cf';e.style.cssText=`left:${Math.random()*100}vw;background:${cs[i%5]};animation-delay:${Math.random()*1.2}s;animation-duration:${2.4+Math.random()*1.8}s`;document.body.appendChild(e);setTimeout(()=>e.remove(),6000)}}
+document.addEventListener('pointerdown',e=>{const c=e.target.closest('.chip');if(!c)return;const sx=e.clientX,sy=e.clientY;let g=null;
+const mv=ev=>{if(!g&&Math.hypot(ev.clientX-sx,ev.clientY-sy)>6){g=c.cloneNode(true);g.classList.add('ghost');document.body.appendChild(g);c.classList.add('lift')}
+if(g){g.style.left=ev.clientX+'px';g.style.top=ev.clientY+'px'}};
+const end=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',end);removeEventListener('pointercancel',end);
+if(g){g.remove();c.classList.remove('lift');if(ev.type=='pointerup')tryDrop(c,document.elementFromPoint(ev.clientX,ev.clientY))}
+else if(ev.type=='pointerup'){document.querySelectorAll('.chip.sel').forEach(x=>x.classList.remove('sel'));if(sel===c)sel=null;else{sel=c;c.classList.add('sel')}}};
+addEventListener('pointermove',mv);addEventListener('pointerup',end);addEventListener('pointercancel',end)});
+$('#board').addEventListener('click',e=>{if(sel)tryDrop(sel,e.target)});
+$('#tg').onclick=()=>{const r=document.documentElement;r.dataset.theme=r.dataset.theme=='dark'?'light':'dark'};
+function fit(W,Hh,pr){const b=$('#board'),w=$('.wrap');W=W||innerWidth;b.style.transform='';w.style.height='';w.style.paddingLeft='';if(W<900&&!pr)return;const nw=1100,nh=b.offsetHeight;Hh=Hh||innerHeight-w.offsetTop-34;const s=Math.min(1,(W-24)/nw,Hh/nh);b.style.transform='scale('+s+')';w.style.height=nh*s+'px';w.style.paddingLeft=Math.max(12,(W-nw*s)/2)+'px'}
+let th0;addEventListener('resize',()=>fit());addEventListener('load',()=>fit());
+function mkSheet(){let s=$('#sheet');if(!s){s=document.createElement('div');s.id='sheet';document.body.appendChild(s)}const b=$('#board'),nh=b.offsetHeight,k=Math.min(1050/1100,650/nh),c=b.cloneNode(true);c.removeAttribute('id');c.style.cssText='position:absolute;top:0;width:1100px;transform-origin:top left;transform:scale('+k+');left:'+(1062-1100*k)/2+'px';s.innerHTML='<h1>Oxidationsstufen organischer Stoffklassen</h1><div style="position:relative;margin-top:8px;height:'+nh*k+'px"></div><div class="au" style="text-align:right;margin:6px 0 0;font-size:13px">Erstellt von Matthias Gleich</div>';s.children[1].appendChild(c)}
+addEventListener('beforeprint',()=>{const r=document.documentElement;th0=r.dataset.theme;r.dataset.theme='light';mkSheet()});
+addEventListener('afterprint',()=>{document.documentElement.dataset.theme=th0||'light';fit()});
+async function pdf(){if(!window.html2canvas||!window.jspdf){print();return}
+const r=document.documentElement,t0=r.dataset.theme,w=window.open('','_blank');msg('PDF wird erstellt …');r.dataset.theme='light';
+try{mkSheet();const s=$('#sheet');s.classList.add('cap');
+s.querySelectorAll('svg line,svg text,svg rect').forEach(e=>{const c=getComputedStyle(e),p=(a,v)=>{if(v&&v!='none')e.setAttribute(a,v)};
+if(e.tagName=='text')['fill','font-size','font-weight','font-family','text-anchor','dominant-baseline'].forEach(a=>p(a,c.getPropertyValue(a)));
+else{['stroke','stroke-width','stroke-linecap'].forEach(a=>p(a,c.getPropertyValue(a)));if(e.tagName=='rect'){p('fill',c.fill);p('stroke-dasharray',c.strokeDasharray)}}});
+s.querySelectorAll('.ar line').forEach(e=>{e.style.strokeDasharray='none';e.style.strokeDashoffset='0'});s.querySelectorAll('.ar polygon').forEach(e=>e.style.opacity='1');
+await Promise.all([...s.querySelectorAll('svg')].map(v=>{const i=new Image();i.className=v.getAttribute('class')||'';i.style.cssText=v.style.cssText;i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(v));v.replaceWith(i);return i.decode().catch(()=>0)}));
+const cv=await html2canvas(s,{scale:2,backgroundColor:'#fff'});
+const P=new jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4'});P.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',8,10,281,281*cv.height/cv.width);
+const u=URL.createObjectURL(P.output('blob'));
+if(w){w.location.href=u;msg('PDF in neuem Tab geöffnet.')}else{prev(u);msg('PDF-Vorschau geöffnet.')}
+}catch(e){if(w)w.close();msg('PDF konnte nicht erstellt werden – bitte Seite in einem eigenen Tab öffnen.',1)}
+finally{const s=$('#sheet');if(s){s.classList.remove('cap');s.innerHTML=''}r.dataset.theme=t0||'light'}}
+function prev(u){const v=document.createElement('div');v.className='pv';v.innerHTML='<div><a href="'+u+'" target="_blank">In neuem Tab öffnen</a><a href="'+u+'" download="Oxidationsstufen.pdf">PDF speichern</a><button>Schließen</button></div><iframe src="'+u+'"></iframe>';v.querySelector('button').onclick=()=>v.remove();document.body.appendChild(v)}
+$('#pd').onclick=pdf;
+$('#rs').onclick=init;init();
+</script></body></html>

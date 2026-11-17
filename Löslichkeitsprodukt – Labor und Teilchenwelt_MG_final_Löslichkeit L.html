@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Löslichkeitsprodukt K_L – Labor und Teilchenwelt</title>
+<style>
+:root{--bg:#e9f0f6;--bg2:#dbe8f1;--card:#fff;--ink:#12202e;--mut:#56687c;--acc:#0b7f86;--acc2:#e08a1e;--bd:#d3dfe9;--glass:#f2f7fb;--ok:#1c9a58;--bad:#cf3f3f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1520;--bg2:#10202e;--card:#15232f;--ink:#e6eef6;--mut:#93a6ba;--acc:#3cc3c9;--acc2:#f0a542;--bd:#26394a;--glass:#0f1c28;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1520;--bg2:#10202e;--card:#15232f;--ink:#e6eef6;--mut:#93a6ba;--acc:#3cc3c9;--acc2:#f0a542;--bd:#26394a;--glass:#0f1c28;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.5 "Avenir Next","Segoe UI",Roboto,"Helvetica Neue",sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--bg),var(--bg2));min-height:100vh}
+main{max-width:1100px;margin:0 auto;padding:14px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 2px 12px}
+h1{font:700 clamp(1.3rem,4.5vw,2rem)/1.15 Georgia,"Times New Roman",serif;margin:0;letter-spacing:-.01em}
+h1 small{display:block;font:500 .85rem "Avenir Next","Segoe UI",sans-serif;color:var(--mut);margin-top:4px}
+h2{font:600 1.05rem Georgia,serif;margin:0 0 8px}
+nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px}
+nav button{flex:1 0 auto;border:1px solid var(--bd);background:var(--card);color:var(--mut);padding:10px 16px;border-radius:12px;font:inherit;font-weight:600;cursor:pointer}
+nav button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:14px;box-shadow:0 6px 24px rgba(10,40,70,.08)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.b{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:9px 13px;font:inherit;font-weight:600;cursor:pointer;margin:3px 3px 3px 0}
+.b.s{background:var(--glass);color:var(--ink);border:1px solid var(--bd)}
+.b:focus-visible,nav button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+.b.on{background:var(--acc2);color:#10202e}
+select,input[type=text]{font:inherit;padding:8px;border-radius:10px;border:1px solid var(--bd);background:var(--glass);color:var(--ink);max-width:100%}
+label{font-size:.85rem;color:var(--mut);display:inline-block;margin:4px 8px 4px 0}
+canvas{width:100%;display:block;border-radius:12px;background:var(--glass);border:1px solid var(--bd)}
+svg{width:100%;max-height:430px;display:block}
+.gl{fill:rgba(160,200,235,.14);stroke:var(--mut);stroke-width:2}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:8px 0}
+.kv div{background:var(--glass);border:1px solid var(--bd);border-radius:12px;padding:8px 10px;font-size:.8rem;color:var(--mut)}
+.kv b{display:block;font-size:1.05rem;color:var(--ink)}
+.track{height:12px;border-radius:8px;background:linear-gradient(90deg,#3b8bd9,#1c9a58 48%,#1c9a58 52%,#cf3f3f);position:relative;margin:8px 0}
+.track i{position:absolute;top:-4px;width:6px;height:20px;border-radius:3px;background:var(--ink);transition:left .2s}
+.bar{height:10px;border-radius:6px;background:var(--bd);margin:3px 0 8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc);width:0}
+.note{font-size:.82rem;color:var(--mut)}
+.sol{background:var(--glass);border-left:4px solid var(--acc);padding:8px 12px;border-radius:8px;margin-top:8px}
+.ok{color:var(--ok);font-weight:600}.no{color:var(--bad);font-weight:600}
+table{border-collapse:collapse;width:100%;font-size:.92rem}td,th{padding:7px 8px;border-bottom:1px solid var(--bd);text-align:left}
+.tbl{overflow-x:auto}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><main>
+<header><h1>Löslichkeitsprodukt K<sub>L</sub><small>Autor: Matthias Gleich</small></h1>
+<button class="b s" id="th" aria-label="Farbschema wechseln">Hell / Dunkel</button></header>
+<nav><button data-t="t0">0 Vorversuch</button><button class="on" data-t="t1">1 Versuch</button><button data-t="t2">2 Teilchenebene</button><button data-t="t3">3 Aufgaben</button><button data-t="t4">4 Formeln</button></nav>
+
+<section id="t0" hidden><div class="grid"><div class="card"><h2>Vorversuch: Herstellen der gesättigten Ca(OH)₂-Lösung</h2>
+<svg id="lab0" viewBox="0 0 420 380" role="img" aria-label="Becherglas mit Magnetrührer, Trichter und Kolben"><defs><clipPath id="bc"><path d="M62 70V300Q62 312 74 312H186Q198 312 198 300V70Z"/></clipPath><clipPath id="kc"><path d="M284 262V285L254 335Q250 350 264 350H336Q350 350 346 335L316 285V262Z"/></clipPath></defs>
+<g transform="translate(34 138) scale(.62)" id="bk"><g clip-path="url(#bc)"><rect id="w0" x="50" y="312" width="160" height="0" fill="#8fc4ff" opacity=".4"/><rect id="fp0" x="50" y="312" width="160" height="0" fill="#e8208c" opacity="0"/><rect id="cl" x="50" y="312" width="160" height="0" fill="#fff" opacity="0"/><g id="gs"></g><rect id="sd" x="50" y="312" width="160" height="0" rx="9" fill="#f1f4f8" stroke="#9aa8b8" stroke-width="1.5"/><rect id="sb0" x="115" y="304" width="30" height="7" rx="3" fill="var(--ink)"/></g>
+<path d="M56 64L62 70V300Q62 312 74 312H186Q198 312 198 300V70L204 64" class="gl" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="56" y="316" width="148" height="26" rx="9" fill="var(--mut)" opacity=".75"/><circle cx="184" cy="329" r="6" fill="var(--acc2)"/><g id="fg"></g><g id="sp" opacity="0"><line x1="0" y1="0" x2="80" y2="0" stroke="var(--mut)" stroke-width="3" stroke-linecap="round"/><ellipse cx="-4" cy="0" rx="13" ry="5" fill="#e4e9ef" stroke="var(--mut)"/></g></g>
+<g clip-path="url(#kc)"><rect id="kq" x="240" y="350" width="120" height="0" fill="#8fc4ff" opacity=".4"/><rect id="kp" x="240" y="350" width="120" height="0" fill="#e8208c" opacity="0"/></g>
+<path d="M240 168L296 228V280M360 168L304 228V280" class="gl" style="fill:none" stroke-linecap="round"/><path d="M249 174L300 226L351 174Z" fill="#eef2f6" fill-opacity=".7" stroke="#c2ccd8" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M279 260H284V285L254 335Q250 350 264 350H336Q350 350 346 335L316 285V260H321" class="gl" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="po" d="M161 178Q235 140 290 205" fill="none" stroke="#6fb4ff" stroke-width="3" opacity="0"/><line id="dr" x1="300" y1="282" x2="300" y2="340" stroke="#6fb4ff" stroke-width="2" opacity="0"/>
+
+<text x="256" y="160" font-size="11" fill="var(--mut)">Trichter mit Filter</text><text x="60" y="360" font-size="11" fill="var(--mut)">Becherglas, 100 mL Wasser</text></svg>
+<button class="b" id="z1">1 Wasser einfüllen</button><button class="b" id="z2">2 Ca(OH)₂ zugeben</button><button class="b" id="z3">3 Rühren</button><button class="b" id="z4">4 Absetzen lassen</button><button class="b" id="z5">5 Abfiltrieren</button><button class="b s" id="zt">Indikatorprobe</button><button class="b s" id="z6">Neu beginnen</button>
+<p class="note" id="m0"></p></div>
+<div class="card"><h2>Was passiert?</h2><div class="kv"><div>Zugegeben<b id="r0m">0 g</b></div><div>Gelöst (max.)<b id="r0d">0 g</b></div><div>c(Ca²⁺)<b id="r0c">0</b></div><div>pH-Wert<b id="r0p">7,0</b></div></div>
+<p>In 100 mL Wasser lösen sich bei 25 °C nur etwa 0,16 g Ca(OH)₂ (L ≈ 0,021 mol/L). Jede weitere Menge bleibt als Bodenkörper zurück. Dann ist die Lösung gesättigt: Lösen und Abscheiden laufen gleich schnell (dynamisches Gleichgewicht).</p>
+<p class="note">Schutzbrille tragen: Gesättigte Ca(OH)₂-Lösung ist ätzend (H314). Die Lösung wird frisch angesetzt und abgedeckt, weil CO₂ aus der Luft sonst CaCO₃ fällt.</p>
+<button class="b" id="go1">Weiter zum Versuch</button><button class="b s" id="go2">Teilchenansicht von Ca(OH)₂</button></div></div></section>
+<section id="t1"><div class="grid">
+<div class="card"><h2>Titration von gesättigter Ca(OH)₂-Lösung mit Salzsäure</h2>
+<svg id="lab" viewBox="0 0 320 430" role="img" aria-label="Bürette, Erlenmeyerkolben, Magnetrührer"><defs><clipPath id="fc"><path d="M148 244V290L116 362Q112 380 128 380H192Q208 380 204 362L172 290V244Z"/></clipPath></defs>
+<g id="ticks" fill="var(--mut)" font-size="8"></g>
+<path d="M150 14V190L157 200V214L158 226M170 14V190L163 200V214L162 226" class="gl" fill="none" stroke-linecap="round"/><rect id="bl" x="152" y="14" width="16" height="0" fill="#5aa7ff" opacity=".65"/>
+<g id="tap"><rect x="144" y="196" width="32" height="6" rx="3" fill="#8a96a8"/></g>
+<line id="stream" x1="160" y1="226" x2="160" y2="330" stroke="#5aa7ff" stroke-width="2" opacity="0"/><circle id="drop" cx="160" cy="230" r="3" fill="#5aa7ff" opacity="0"/>
+<path d="M143 242H148V290L116 362Q112 380 128 380H192Q208 380 204 362L172 290V242H177" class="gl" stroke-linecap="round" stroke-linejoin="round"/>
+<g clip-path="url(#fc)"><rect id="fq" x="90" y="330" width="140" height="80" fill="#8fc4ff" opacity=".4"/><rect id="fp" x="90" y="330" width="140" height="80" fill="#e8208c" opacity="0"/><rect id="sb" x="145" y="374" width="30" height="7" rx="3" fill="var(--ink)"/></g>
+<rect x="92" y="384" width="136" height="28" rx="9" fill="var(--mut)" opacity=".75"/><circle cx="210" cy="398" r="6" fill="var(--acc2)"/></svg>
+<div class="kv"><div>Verbrauch<b id="vv">0,00 mL</b></div><div>pH-Wert<b id="pv">–</b></div><div>Indikatorfarbe<b id="iv">pink</b></div></div>
+<button class="b" id="d1">1 Tropfen</button><button class="b" id="d2">+0,5 mL</button><button class="b" id="d3">+1 mL</button><button class="b s" id="fl">Dauerfluss</button><button class="b s" id="rs">Neu ansetzen</button>
+<div><label>Temperatur <select id="T"><option>10</option><option selected>25</option><option>40</option></select> °C</label><label>Probe <select id="Vp"><option>10</option><option>20</option><option selected>25</option></select> mL</label><label>c(HCl) <select id="Ch"><option>0.05</option><option selected>0.1</option><option>0.2</option></select> mol/L</label></div>
+<p class="note" id="msg">Phenolphthalein färbt die alkalische Lösung pink. Titriere bis zur Entfärbung, im Dauerfluss schaltet die Bürette kurz vor dem Äquivalenzpunkt auf Tropfen.</p></div>
+<div class="card"><h2>pH-Verlauf</h2><canvas id="ch1" height="230"></canvas><button class="b s" id="eb" style="margin-top:10px">Äquivalenzpunkt bestimmen</button><div id="eqi" class="note">Klicke in die Kurve, um Werte abzulesen, oder lass dir den rechnerischen Äquivalenzpunkt anzeigen.</div>
+<button class="b" id="ev" style="margin-top:10px">Auswerten</button><div id="res" class="sol" hidden></div><details class="sol" style="margin-top:10px"><summary style="cursor:pointer;font-weight:600">Hilfe: Was bedeutet K<sub>L</sub> = 4L³?</summary><p>L ist die Löslichkeit von Ca(OH)₂ in mol/L, also wie viel mol Salz sich pro Liter lösen. Die 4 und die dritte Potenz ergeben sich aus der Stöchiometrie:</p><p>Ca(OH)₂(s) ⇌ Ca²⁺(aq) + 2 OH⁻(aq)</p><p>Wenn sich L mol Ca(OH)₂ lösen, entstehen L mol Ca²⁺ und 2L mol OH⁻. Also gilt c(Ca²⁺) = L und c(OH⁻) = 2L.</p><p>K<sub>L</sub> = c(Ca²⁺)·c²(OH⁻) = L·(2L)² = L·4L² = <b>4L³</b></p><p>Die 4 kommt vom Quadrat der 2 bei den Hydroxid-Ionen, die 3 vom Exponenten 1 + 2 = 3. Deshalb gilt dieselbe Formel für alle Salze vom Typ AB₂ oder A₂B, zum Beispiel CaF₂ und Ag₂CrO₄.</p><p>In der Auswertung bekommst du L aus der Titration: L = c(OH⁻)/2, weil jedes gelöste Ca(OH)₂ zwei OH⁻ liefert, die mit der Salzsäure reagieren.</p></details></div></div></section>
+
+<section id="t2" hidden><div class="grid">
+<div class="card"><h2>Lösen und Abscheiden auf Teilchenebene</h2><canvas id="c2" height="320"></canvas>
+<p class="note">Ringe um die Ionen stehen für die Hydrathülle (Wasserdipole). Modell mit Konzentrationen statt Aktivitäten, das ist eine bewusste Vereinfachung.</p></div>
+<div class="card"><label>Salz <select id="sa"></select></label>
+<div><button class="b" id="aS">Salz zugeben</button><button class="b" id="aW">Wasser zugeben</button><button class="b" id="aA">Kationen zugeben</button><button class="b" id="aB">Anionen zugeben</button><button class="b" id="aH">Säure zugeben</button><button class="b s" id="r2">Zurücksetzen</button></div>
+<p id="eq" style="font-size:1.05rem"></p>
+<div class="kv"><div>c(Kation)<b id="ca"></b></div><div>c(Anion)<b id="cb"></b></div><div>Q<b id="qq"></b></div><div>K<sub>L</sub><b id="kk"></b></div></div>
+<div class="track" aria-hidden="true"><i id="mk" style="left:50%"></i></div><p id="stt" style="font-weight:600;margin:0 0 8px"></p>
+<span class="note">Lösen pro Zeit</span><div class="bar"><i id="b1"></i></div><span class="note">Abscheiden pro Zeit</span><div class="bar"><i id="b2" style="background:var(--acc2)"></i></div><p id="dyn" class="note" style="margin-top:8px"></p></div></div></section>
+
+<section id="t3" hidden><div class="card"><div id="chips"></div>
+<div id="stat" class="note" style="margin:8px 0"></div><div class="bar"><i id="pr"></i></div>
+<h2 id="tq"></h2><div id="tin"></div><div id="fb" style="min-height:1.5em"></div><div id="hs"></div>
+<button class="b s" id="hp">Hilfe</button><button class="b s" id="sv">Lösung zeigen</button><button class="b" id="nx">Nächste Aufgabe</button></div></section>
+
+<section id="t4" hidden><div class="grid"><div class="card"><h2>Grundlagen</h2>
+<p>A<sub>a</sub>B<sub>b</sub>(s) ⇌ a A(aq) + b B(aq)</p><p>K = c<sup>a</sup>(A)·c<sup>b</sup>(B) / c(A<sub>a</sub>B<sub>b</sub>) und mit konstanter Feststoffaktivität K<sub>L</sub> = c<sup>a</sup>(A)·c<sup>b</sup>(B)</p>
+<p><b>Entscheidungsregel</b> mit Ionenprodukt Q:<br>Q &lt; K<sub>L</sub> ungesättigt, Q = K<sub>L</sub> gesättigt, Q &gt; K<sub>L</sub> Niederschlag</p>
+<p>Gleichioneneffekt: Ein Überschuss eines beteiligten Ions senkt die Löslichkeit.</p></div>
+<div class="card tbl"><h2>K<sub>L</sub> aus der Löslichkeit L</h2><table><tr><th>Typ</th><th>Beispiel</th><th>K<sub>L</sub></th></tr><tr><td>AB</td><td>AgCl</td><td>L²</td></tr><tr><td>AB₂, A₂B</td><td>CaF₂, Ag₂CrO₄</td><td>4L³</td></tr><tr><td>AB₃</td><td>Al(OH)₃</td><td>27L⁴</td></tr><tr><td>A₂B₃</td><td>As₂S₃</td><td>108L⁵</td></tr></table></div>
+<div class="card tbl"><h2>K<sub>L</sub>-Werte bei 25 °C</h2><table id="ktab"></table><p class="note">Die Werte sind konzentrationsbasiert. Für Ca(OH)₂ ist der Wert aus der gemessenen Löslichkeit berechnet. Thermodynamische Tabellenwerte (etwa 5·10⁻⁶) berücksichtigen Aktivitäten und weichen ab.</p></div></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id),pick=a=>a[Math.floor(Math.random()*a.length)],rnd=(a,b)=>a+Math.random()*(b-a),clamp=(x,a,b)=>Math.min(b,Math.max(a,x)),r2=x=>Number(x.toPrecision(2));
+const sup=n=>n>1?`<sup>${n}</sup>`:'';
+function sci(x,d=3){if(!isFinite(x)||x===0)return'0';let e=Math.floor(Math.log10(Math.abs(x))),t=(x/Math.pow(10,e)).toFixed(d-1);if(parseFloat(t)>=10){e++;t=(x/Math.pow(10,e)).toFixed(d-1)}return `${t.replace('.',',')}·10<sup>${String(e).replace('-','−')}</sup>`}
+const S=[
+{f:'AgCl',a:1,b:1,A:'Ag⁺',B:'Cl⁻',M:143.32,K:1.7e-10,ca:'#aeb8c8',cb:'#27a85a'},
+{f:'CaF₂',a:1,b:2,A:'Ca²⁺',B:'F⁻',M:78.08,K:3.9e-11,ca:'#3d7bff',cb:'#b6c62a'},
+{f:'Mg(OH)₂',a:1,b:2,A:'Mg²⁺',B:'OH⁻',M:58.32,K:5.6e-12,ca:'#1fb5a5',cb:'#e0483e',oh:1},
+{f:'Ca(OH)₂',a:1,b:2,A:'Ca²⁺',B:'OH⁻',M:74.09,K:3.9e-5,ca:'#3d7bff',cb:'#e0483e',oh:1},
+{f:'Ag₂CrO₄',a:2,b:1,A:'Ag⁺',B:'CrO₄²⁻',M:331.73,K:1.1e-12,ca:'#aeb8c8',cb:'#e8a21f'},
+{f:'Al(OH)₃',a:1,b:3,A:'Al³⁺',B:'OH⁻',M:78.0,K:3e-34,ca:'#8f7fd6',cb:'#e0483e',oh:1},
+{f:'PbI₂',a:1,b:2,A:'Pb²⁺',B:'I⁻',M:461.0,K:8.5e-9,ca:'#6e7a8c',cb:'#a24bd1'}];
+const KfromL=(s,L)=>Math.pow(s.a,s.a)*Math.pow(s.b,s.b)*Math.pow(L,s.a+s.b);
+const LfromK=(s,K)=>Math.pow(K/(Math.pow(s.a,s.a)*Math.pow(s.b,s.b)),1/(s.a+s.b));
+const zOf=a=>{const m=a.match(/([²³])?[⁺⁻]$/);return m&&m[1]?(m[1]=='²'?2:3):1};
+const SPEC={Na:{lab:'Na⁺',col:'#b69cff'},NO3:{lab:'NO₃⁻',col:'#8696ad'},Cl:{lab:'Cl⁻',col:'#27a85a'}};
+const eqn=s=>`${s.f}(s) ⇌ ${s.a>1?s.a:''}${s.A}(aq) + ${s.b>1?s.b:''}${s.B}(aq)`;
+const kex=s=>`c${sup(s.a)}(${s.A})·c${sup(s.b)}(${s.B})`;
+$('ktab').innerHTML='<tr><th>Salz</th><th>K<sub>L</sub></th></tr>'+S.map(s=>`<tr><td>${s.f}</td><td>${sci(s.K,2)}</td></tr>`).join('');
+// Navigation und Farbschema
+let cur='t1';
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('section').forEach(s=>s.hidden=s.id!==b.dataset.t);cur=b.dataset.t;size();draw1()});
+$('th').onclick=()=>{const d=document.documentElement,dark=getComputedStyle(d).colorScheme==='dark';d.dataset.theme=dark?'light':'dark';draw1()};
+function size(){for(const id of['ch1','c2']){const c=$(id);if(c.clientWidth){c.width=c.clientWidth;}}}
+addEventListener('resize',()=>{size();draw1()});
+
+/* ===== TAB 0: Vorversuch ===== */
+const L25=.0213,G0=[...Array(26)].map(()=>({x:Math.random(),y:Math.random(),a:rnd(0,6.28)}));let s0,t0=0;
+function msg0(t){$('m0').textContent=t}
+function reset0(){s0={w:0,wt:false,m:0,f:0,stir:false,susp:0,filt:0,fa:false,spt:0,test:false,ang:0,fg:[]};msg0('Becherglas, Magnetrührer und Wasser stehen bereit. Beginne mit Schritt 1.')}
+$('z1').onclick=()=>{if(s0.wt)return;s0.wt=true;msg0('100 mL destilliertes Wasser werden eingefüllt. Weiter mit Schritt 2.')};
+$('z2').onclick=()=>{if(s0.w<1){msg0('Fülle zuerst das Wasser ein (Schritt 1).');return}if(s0.filt>0||s0.spt>0)return;s0.m+=.5;s0.spt=1;msg0('Eine Spatelspitze Ca(OH)₂ (etwa 0,5 g) ist zugegeben. Das Pulver sinkt ab und löst sich erst beim Rühren.')};
+$('z3').onclick=()=>{if(s0.m<=0){msg0('Gib zuerst Ca(OH)₂ zu (Schritt 2).');return}s0.stir=!s0.stir;msg0(s0.stir?'Rühren im Zeitraffer: Ca(OH)₂ löst sich, bis die Lösung gesättigt ist. Ein Rest bleibt als Bodenkörper ungelöst.':'Rührer aus.')};
+$('z4').onclick=()=>{s0.stir=false;msg0(s0.f<.98?'Rührer aus. Die Lösung ist noch nicht gesättigt, rühre besser noch einmal länger (Schritt 3).':'Rührer aus: Der Bodenkörper setzt sich ab, darüber steht klare, gesättigte Lösung.')};
+$('z5').onclick=()=>{if(s0.f<.98||s0.susp>.1||s0.stir){msg0('Lass die Lösung zuerst absetzen (Schritt 4).');return}s0.fa=true;msg0('Der klare Überstand läuft durch das Filterpapier, der Bodenkörper bleibt zurück.')};
+$('z6').onclick=reset0;$('zt').onclick=()=>{s0.test=!s0.test;if(s0.test)msg0('Phenolphthalein färbt die alkalische Lösung pink (ab pH 8,2).')};
+$('go1').onclick=()=>document.querySelector('nav button[data-t="t1"]').click();
+$('go2').onclick=()=>{$('sa').value=3;reset2();document.querySelector('nav button[data-t="t2"]').click()};
+function anim0(dt){const s=s0;t0+=dt;if(s.wt&&s.w<1)s.w=Math.min(1,s.w+dt/1.5);
+const top=312-s.w*200*(1-.85*s.filt);
+if(s.spt>0){s.spt=Math.max(0,s.spt-dt/1.6);const u=1-s.spt,x=300-170*Math.min(1,u*2.2),a=-30*clamp((u-.25)*3,0,1);$('sp').setAttribute('transform',`translate(${x} ${30+18*Math.min(1,u*2)}) rotate(${a})`);$('sp').setAttribute('opacity',1);if(u>.35&&u<.8&&Math.random()<.3)s.fg.push({x:x+rnd(-6,6),y:60,v:rnd(40,80)})}else $('sp').setAttribute('opacity',0);
+s.fg=s.fg.filter(g=>{g.v+=200*dt;g.y+=g.v*dt;return g.y<300});$('fg').innerHTML=s.fg.map(g=>`<circle cx="${g.x.toFixed(1)}" cy="${g.y.toFixed(1)}" r="2.5" fill="#e4e9ef" stroke="#8a96a8" stroke-width=".5"/>`).join('');
+const und=Math.max(0,s.m-.158*s.f);
+if(s.stir&&s.m>0){s.f+=(1-s.f)*dt/2.5;s.ang+=dt*9;s.susp=Math.min(1,s.susp+dt*2)}else s.susp=Math.max(0,s.susp-dt/3);
+if(s.fa){s.filt=Math.min(1,s.filt+dt/4);if(s.filt>=1){s.fa=false;msg0('Fertig: Das Filtrat ist die klare, gesättigte Ca(OH)₂-Lösung. Im Versuch werden davon 25 mL pipettiert und titriert.')}}
+const hh=312-top,sdh=(und>.01?Math.min(44,Math.max(14,und*40)):0)*(1-.6*s.susp),pH=s.f>.001?14+Math.log10(2*s.f*L25):7,pk=s.test?.62*clamp((pH-8.2)/1.6,0,1):0;
+['w0','fp0','cl'].forEach(id=>{$(id).setAttribute('y',top);$(id).setAttribute('height',hh)});$('fp0').setAttribute('opacity',pk);$('cl').setAttribute('opacity',s.susp*(und>.01?clamp(.12+und*.5,0,.6):0));
+$('sd').setAttribute('y',312-sdh);$('sd').setAttribute('height',sdh+4);
+$('gs').innerHTML=s.susp>.05&&und>.01?G0.slice(0,Math.round(clamp(und*30,6,26))).map(g=>`<circle cx="${(70+g.x*120+6*Math.sin(t0*1.4+g.a)).toFixed(1)}" cy="${(top+8+g.y*Math.max(0,hh-24)+5*Math.cos(t0*1.1+g.a)).toFixed(1)}" r="2" fill="#fff" opacity="${(s.susp*.85).toFixed(2)}"/>`).join(''):'';
+$('sb0').setAttribute('transform',`translate(130 307.5) scale(${Math.cos(s.ang)} 1) translate(-130 -307.5)`);
+['kq','kp'].forEach(id=>{$(id).setAttribute('y',350-45*s.filt);$(id).setAttribute('height',45*s.filt+2)});$('kp').setAttribute('opacity',pk);
+const pr=s.filt>0&&s.filt<1?.9:0;$('po').setAttribute('opacity',pr);$('dr').setAttribute('opacity',pr);
+$('r0m').textContent=s.m.toFixed(1).replace('.',',')+' g';$('r0d').textContent=(.158*s.f).toFixed(3).replace('.',',')+' g';$('r0c').innerHTML=s.f>.001?sci(L25*s.f,2)+' mol/L':'0';$('r0p').textContent=pH.toFixed(1).replace('.',',')}
+
+/* ===== TAB 1: Titration ===== */
+const LT={10:.0235,25:.0213,40:.019};let s1;
+const Veq=s=>2*s.L*s.V/s.c;
+function ph1(v,s=s1){const net=(2*s.L*s.V-s.c*v)/(s.V+v);if(Math.abs(net)<1e-7)return 7;return net>0?14+Math.log10(net):-Math.log10(-net)}
+function reset1(){const T=$('T').value,V=+$('Vp').value,c=+$('Ch').value;s1={V,c,L:LT[T]*(1+(Math.random()-.5)*.03),add:0,pend:0,flow:false,ang:0,dy:0,rate:0};s1.pts=[{v:0,p:ph1(0)}];$('res').hidden=true;$('fl').textContent='Dauerfluss';$('msg').textContent='Phenolphthalein färbt die alkalische Lösung pink. Titriere bis zur Entfärbung, im Dauerfluss schaltet die Bürette kurz vor dem Äquivalenzpunkt auf Tropfen.';draw1()}
+for(let v=0;v<=50;v+=5){const y=14+176*v/50;$('ticks').innerHTML+=`<line x1="170" x2="${v%10?174:178}" y1="${y}" y2="${y}" stroke="var(--mut)"/>`+(v%10?'':`<text x="181" y="${y+3}">${v}</text>`)}
+['T','Vp','Ch'].forEach(i=>$(i).onchange=reset1);$('rs').onclick=reset1;
+$('d1').onclick=()=>s1.pend+=.05;$('d2').onclick=()=>s1.pend+=.5;$('d3').onclick=()=>s1.pend+=1;
+$('fl').onclick=()=>{s1.flow=!s1.flow;$('fl').textContent=s1.flow?'Stopp':'Dauerfluss'};
+function anim1(dt){const s=s1,eq=Veq(s);let rate=0;
+if(s.flow){rate=(s.add>eq-1.2&&s.add<eq+1.2)?.12:.8;if(s.add>=2*eq){s.flow=false;$('fl').textContent='Dauerfluss';rate=0}else if(rate<.2)$('msg').textContent='Tropfenmodus: Äquivalenzpunkt nah, langsam weiter.'}
+else if(s.pend>0)rate=(s.pend>=.4&&s.add<eq-1.2)?1:.15;
+let dv=clamp(rate*dt,0,50-s.add);if(!s.flow)dv=Math.min(dv,s.pend);
+if(dv>0){s.add+=dv;if(s.ve===undefined&&ph1(s.add)<=8.2)s.ve=s.add;if(!s.flow)s.pend-=dv;const l=s.pts[s.pts.length-1];if(s.add-l.v>=.02||dv>.1)s.pts.push({v:s.add,p:ph1(s.add)})}
+s.rate=dv>0?rate:0;s.ang+=dt*9;s.dy=(s.dy+dt*130)%70;draw1()}
+function draw1(){if(cur!=='t1'||!s1)return;const s=s1,p=ph1(s.add),vol=s.V+s.add;
+$('bl').setAttribute('y',14+176*s.add/50);$('bl').setAttribute('height',176*(1-s.add/50));
+const top=Math.max(262,380-(vol*1.1+4));['fq','fp'].forEach(i=>$(i).setAttribute('y',top));
+const i=clamp((p-8.2)/1.6,0,1);$('fp').setAttribute('opacity',.62*i);
+$('sb').setAttribute('transform',`translate(160 377) scale(${Math.cos(s.ang)} 1) translate(-160 -377)`);
+$('tap').setAttribute('transform',`rotate(${s.rate>0?90:0} 160 199)`);
+$('drop').setAttribute('opacity',s.rate>0&&s.rate<.5?1:0);$('drop').setAttribute('cy',230+s.dy);
+$('stream').setAttribute('opacity',s.rate>=.5?.8:0);$('stream').setAttribute('y2',top);
+$('vv').textContent=s.add.toFixed(2).replace('.',',')+' mL';$('pv').textContent=p.toFixed(2).replace('.',',');$('iv').textContent=p>8.2?'pink':'farblos';
+const c=$('ch1');if(!c.width)return;const g=c.getContext('2d'),W=c.width,H=c.height,xm=Math.max(15,Veq(s)*1.7),X=v=>40+(W-55)*v/xm,Y=q=>H-30-(H-45)*q/14;
+const st=getComputedStyle(document.body);g.clearRect(0,0,W,H);g.strokeStyle=st.getPropertyValue('--bd')||'#ccc';g.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--mut');g.font='12px sans-serif';
+for(let q=0;q<=14;q+=2){g.beginPath();g.moveTo(40,Y(q));g.lineTo(W-10,Y(q));g.stroke();g.fillText(q,18,Y(q)+4)}
+for(let v=0;v<=xm;v+=5){g.fillText(v,X(v)-5,H-12)}g.fillText('V(HCl) in mL',W-90,H-2);
+g.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--acc');g.lineWidth=3;g.beginPath();s.pts.forEach((q,k)=>k?g.lineTo(X(q.v),Y(q.p)):g.moveTo(X(q.v),Y(q.p)));g.stroke();g.lineWidth=1;mark1(g,X,Y)}
+function mark1(g,X,Y){const s=s1,css=getComputedStyle(document.documentElement);
+if(s.eqc){g.fillStyle=css.getPropertyValue('--acc2');g.fillRect(X(s.eqc)-5,Y(7)-5,10,10);g.fillText('ÄP',X(s.eqc)+9,Y(7)+16)}
+if(s.mk){g.strokeStyle=css.getPropertyValue('--ink');g.setLineDash([5,4]);g.beginPath();g.moveTo(X(s.mk.v),Y(0));g.lineTo(X(s.mk.v),Y(14));g.stroke();g.setLineDash([]);g.fillStyle=css.getPropertyValue('--ink');g.beginPath();g.arc(X(s.mk.v),Y(s.mk.p),5,0,7);g.fill()}}
+function pAt(v){const a=s1.pts;for(let i=1;i<a.length;i++)if(a[i].v>=v){const t=(v-a[i-1].v)/((a[i].v-a[i-1].v)||1);return a[i-1].p+t*(a[i].p-a[i-1].p)}return a[a.length-1].p}
+function setMk(v){s1.mk={v,p:pAt(v)};$('eqi').innerHTML=`Abgelesen: V = ${v.toFixed(2).replace('.',',')} mL, pH = ${s1.mk.p.toFixed(2).replace('.',',')}`;draw1()}
+$('ch1').onclick=e=>{const s=s1,c=$('ch1');if(s.add<=0)return;const xm=Math.max(15,Veq(s)*1.7);setMk(clamp((e.offsetX*c.width/c.clientWidth-40)*xm/(c.width-55),0,s.add))};
+$('eb').onclick=()=>{const s=s1,a=s.pts;
+let b=1,m=0;for(let i=1;i<a.length;i++){const d=(a[i].p-a[i-1].p)/((a[i].v-a[i-1].v)||1e9);if(d>m){m=d;b=i}}
+const eq=Veq(s);s.eqc=eq;draw1();$('eqi').innerHTML=`Rechnerisch: n(OH⁻) = 2·L·V<sub>Probe</sub>, V<sub>eq</sub> = n(OH⁻)/c(HCl) = <b>${eq.toFixed(2).replace('.',',')} mL</b>, pH = 7`};
+const lum=h=>{const n=parseInt(h.slice(1),16);return .3*(n>>16)+.59*(n>>8&255)+.11*(n&255)};
+function ionAt(g,x,y,col,lab,rad,al,sh,t){g.save();if(sh>0){g.globalAlpha=al*sh;g.strokeStyle='rgba(130,200,255,.8)';g.lineWidth=1.5;g.beginPath();g.arc(x,y,rad+6,0,7);g.stroke();g.fillStyle='rgb(120,200,255)';for(let i=0;i<4;i++){const a=t*.8+i*Math.PI/2;g.beginPath();g.arc(x+Math.cos(a)*(rad+6),y+Math.sin(a)*(rad+6),2.2,0,7);g.fill()}}
+g.globalAlpha=al;g.fillStyle=col;g.beginPath();g.arc(x,y,rad,0,7);g.fill();g.fillStyle=lum(col)>150?'#10202e':'#fff';g.font='bold 9px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(lab,x,y+.5);g.restore()}
+$('ev').onclick=()=>{const s=s1,r=$('res');r.hidden=false;if(s.add<=0){r.textContent='Titriere zuerst bis zur Entfärbung.';return}
+if(s.ve===undefined){r.innerHTML='<span class="no">Die Lösung ist noch pink.</span> Titriere weiter bis zur Entfärbung.';return}
+const V=Math.round(s.ve*20)/20,n=s.c*V,L=n/(2*s.V),K=4*L**3,Kt=4*(s.L)**3,dev=(K-Kt)/Kt*100;
+r.innerHTML=`<b>1. Reaktionsgleichung</b><br>Ca(OH)₂(s) ⇌ Ca²⁺(aq) + 2 OH⁻(aq)<br><b>2. Löslichkeitsprodukt</b><br>Da c(Ca(OH)₂) konstant ist, gilt: K<sub>L</sub> = c(Ca²⁺)·c²(OH⁻)<br><b>3. Titrationsreaktion</b><br>Ca(OH)₂ + 2 HCl → Ca²⁺ + 2 Cl⁻ + 2 H₂O, also n(OH⁻) = n(HCl)<br><b>4. Rechnung</b><br>Nur das bis zum Äquivalenzpunkt verbrauchte Volumen zählt: V(HCl) = ${V.toFixed(2).replace('.',',')} mL<br>n(HCl) = c·V = ${s.c.toString().replace('.',',')} mol/L · ${V.toFixed(2).replace('.',',')} mL = ${n.toFixed(3).replace('.',',')} mmol<br>n(OH⁻) = n(HCl), also c(OH⁻) = ${n.toFixed(3).replace('.',',')} mmol / ${s.V} mL = ${sci(2*L,3)} mol/L<br>c(Ca²⁺) = ½·c(OH⁻) = ${sci(L,3)} mol/L<br>K<sub>L</sub> = c(Ca²⁺)·c²(OH⁻) = 4·L³ = <b>${sci(K,3)}</b><br>Vergleichswert des Modells: ${sci(Kt,3)} (Abweichung ${dev.toFixed(1).replace('.',',')} %)<p class="note">Fehlerquellen: Ablesefehler an der Bürette (±0,05 mL), Farbumschlag nicht exakt am Äquivalenzpunkt, CO₂ aus der Luft bildet CaCO₃ und senkt c(OH⁻), Temperatur der Lösung, Feststoffreste in der Pipette.</p>`};
+
+/* ===== TAB 2: Teilchenebene ===== */
+$('sa').innerHTML=S.map((s,i)=>`<option value="${i}">${s.f}</option>`).join('');
+$('sa').value=3;let s2,PA=[],PB=[],t2=0,fr=0,EV=[],PS={Na:[],NO3:[],Cl:[]};
+function reset2(){const s=S[$('sa').value],L0=LfromK(s,s.K);s2={s,L0,cA:0,cB:0,solid:3,rd:1,rp:0,dn:0,pn:0,sp:{Na:0,NO3:0,Cl:0}};EV=[];PS={Na:[],NO3:[],Cl:[]};PA=[];PB=[];$('eq').innerHTML=eqn(s);$('aH').style.display=s.oh?'':'none'}
+$('sa').onchange=reset2;$('r2').onclick=reset2;
+$('aS').onclick=()=>s2.solid+=1;$('aW').onclick=()=>{s2.cA*=.7;s2.cB*=.7;for(const k in s2.sp)s2.sp[k]*=.7};
+$('aA').onclick=()=>{const m=s2,d=2*m.L0*m.s.a;m.cA+=d;m.sp.NO3+=d*zOf(m.s.A)};
+$('aB').onclick=()=>{const m=s2,d=2*m.L0*m.s.b;m.cB+=d;m.sp.Na+=d*zOf(m.s.B)};
+$('aH').onclick=()=>{const m=s2,d=m.cB*.65;m.cB-=d;m.sp.Cl+=d};
+function anim2(dt){const m=s2,s=m.s,Q=Math.pow(m.cA,s.a)*Math.pow(m.cB,s.b),ratio=Q/s.K;
+m.rd=m.solid>.001?1:0;m.rp=(m.solid>.001||ratio>1)?ratio:0;
+let dx=.5*m.L0*(m.rd-m.rp)*dt;if(m.solid<=.001&&dx>0)dx=0;
+m.cA=Math.max(0,m.cA+s.a*dx);m.cB=Math.max(0,m.cB+s.b*dx);m.solid=Math.max(0,m.solid-dx/m.L0);
+const nA=Math.min(40,Math.round(m.cA/m.L0*8)),nB=Math.min(40,Math.round(m.cB/m.L0*8)),c=$('c2'),W=c.width,H=c.height;if(!W)return;
+const sp=()=>({x:rnd(10,W-10),y:rnd(20,H-70),vx:rnd(-40,40),vy:rnd(-40,40)});
+while(PA.length<nA)PA.push(sp());while(PA.length>nA)PA.pop();while(PB.length<nB)PB.push(sp());while(PB.length>nB)PB.pop();
+for(const k in SPEC){const n=Math.min(30,Math.round(m.sp[k]/m.L0*8));while(PS[k].length<n)PS[k].push(sp());while(PS[k].length>n)PS[k].pop()}
+const g=c.getContext('2d'),cells=Math.min(36,Math.ceil(m.solid*8)),cols=6,CS=26,rows=Math.ceil(cells/cols),cw=cols*CS,cx0=(W-cw)/2,ctop=H-6-rows*CS;
+const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'rgba(120,190,255,.12)');gr.addColorStop(1,'rgba(40,120,200,.30)');g.clearRect(0,0,W,H);g.fillStyle=gr;g.fillRect(0,0,W,H);
+{const mj=s.b>=s.a?'B':'A',mn=mj=='B'?'A':'B',nc=Math.min(s.a,s.b),tot=s.a+s.b,pat=[];let acc=0;for(let i=0;i<tot;i++){acc+=nc;if(acc>=tot/2){pat.push(mn);acc-=tot}else pat.push(mj)}
+g.fillStyle='rgba(255,255,255,.07)';g.fillRect(cx0-4,ctop-4,cw+8,rows*CS+8);g.font='bold 8px sans-serif';g.textAlign='center';g.textBaseline='middle';
+for(let i=0;i<cells;i++){const r=Math.floor(i/cols),k=i%cols;if(r==rows-1&&EV.some(e=>e.kk==k))continue;const an=pat[(k+r)%tot]=='B',x=cx0+k*CS+CS/2,y=H-6-r*CS-CS/2,col=an?s.cb:s.ca;g.fillStyle=col;g.beginPath();g.arc(x,y,an?CS*.5-1:CS*.38,0,7);g.fill();g.fillStyle=lum(col)>150?'#10202e':'#fff';g.fillText(an?s.B:s.A,x,y+.5)}}
+t2+=dt;const draw=(arr,col,rad,lab)=>{for(const p of arr){p.vx=clamp(p.vx+(Math.random()-.5)*400*dt,-60,60);p.vy=clamp(p.vy+(Math.random()-.5)*400*dt,-60,60);p.x+=p.vx*dt;p.y+=p.vy*dt;
+const fl=(p.x>cx0-rad&&p.x<cx0+cw+rad)&&rows?ctop-rad-6:H-rad-6;if(p.x<rad||p.x>W-rad){p.vx*=-1;p.x=clamp(p.x,rad,W-rad)}if(p.y<rad+4||p.y>fl){p.vy*=-1;p.y=clamp(p.y,rad+4,fl)}
+g.strokeStyle='rgba(130,200,255,.7)';g.lineWidth=1.5;g.beginPath();g.arc(p.x,p.y,rad+6,0,7);g.stroke();
+g.fillStyle='rgba(120,200,255,.95)';for(let i=0;i<4;i++){const a=t2*.8+i*Math.PI/2;g.beginPath();g.arc(p.x+Math.cos(a)*(rad+6),p.y+Math.sin(a)*(rad+6),2.2,0,7);g.fill()}
+g.fillStyle=col;g.beginPath();g.arc(p.x,p.y,rad,0,7);g.fill();g.fillStyle=lum(col)>150?'#10202e':'#fff';g.font='bold 9px sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(lab,p.x,p.y+.5)}};
+g.globalAlpha=.35;for(const k in SPEC)draw(PS[k],SPEC[k].col,SPEC[k].lab.length>3?13:9,SPEC[k].lab);g.globalAlpha=1;draw(PA,s.ca,11,s.A);draw(PB,s.cb,s.B.length>3?15:11,s.B);
+for(const k of['d','p']){const r=k=='d'?m.rd:m.rp;if(rows&&EV.length<2&&Math.random()<Math.min(r,3)*.08*dt){m[k+'n']++;const top=cells-(rows-1)*cols,kk=Math.floor(Math.random()*top),tot=s.a+s.b,mj=s.b>=s.a?'B':'A',mn=mj=='B'?'A':'B',nc=Math.min(s.a,s.b),pat=[];let acc=0;for(let i=0;i<tot;i++){acc+=nc;if(acc>=tot/2){pat.push(mn);acc-=tot}else pat.push(mj)}EV.push({k,kk,an:pat[(kk+rows-1)%tot]=='B',x:cx0+kk*CS+CS/2,y:ctop+CS/2,t:0})}}
+for(let i=EV.length-1;i>=0;i--){const e=EV[i];e.t+=dt;const u=e.t/3.2;if(u>=1){EV.splice(i,1);continue}const col=e.an?s.cb:s.ca,lab=e.an?s.B:s.A,rad=e.an?(s.B.length>3?15:11):11,d=e.k=='d'?u:1-u,y=e.y-d*85,al=u<.12?u/.12:u>.88?(1-u)/.12:1;
+
+ionAt(g,e.x,y,col,lab,rad,al,clamp(d*2.2,0,1),t2);
+g.save();g.globalAlpha=al;g.fillStyle=e.k=='d'?'#f0a542':'#3cc3c9';g.font='bold 15px sans-serif';g.textAlign='center';g.fillText(e.k=='d'?'↑':'↓',e.x+rad+10,y);g.restore()}
+if(++fr%6===0){$('ca').innerHTML=sci(m.cA,2);$('cb').innerHTML=sci(m.cB,2);$('qq').innerHTML=sci(Q,2);$('kk').innerHTML=sci(s.K,2);
+$('mk').style.left=clamp((Math.log10(Math.max(ratio,1e-9))+2)/4,0,1)*100+'%';
+const t=ratio>1.03?'Q > K_L: Es fällt Niederschlag aus':(m.solid>.01&&ratio>.97)?'Q = K_L: gesättigt, dynamisches Gleichgewicht':m.solid>.01?'Q < K_L: Feststoff löst sich weiter':'Q < K_L: ungesättigt';$('stt').textContent=t;
+$('b1').style.width=clamp(m.rd*50,0,100)+'%';$('b2').style.width=clamp(m.rp*50,0,100)+'%';const eqm=m.solid>.01&&ratio>.97&&ratio<1.03;$('dyn').innerHTML=`Lösevorgänge ↑ ${m.dn} · Abscheidevorgänge ↓ ${m.pn}<br>`+(eqm?'<b>Dynamisches Gleichgewicht:</b> Ständig lösen sich Ionen aus dem Gitter und ebenso viele lagern sich wieder an (↑ und ↓ gleich häufig). Die Teilchen bleiben in Bewegung, nur die Konzentrationen und der Bodenkörper ändern sich nicht mehr. Die Animation zeigt nur einzelne Beispiele, tatsächlich sind es unvorstellbar viele Vorgänge pro Sekunde.':'Noch kein Gleichgewicht: Lösen (↑) und Abscheiden (↓) laufen unterschiedlich schnell, bis beide gleich häufig sind.')}}
+
+/* ===== TAB 3: Aufgaben ===== */
+const TY=['K<sub>L</sub> aus Löslichkeit','Löslichkeit aus K<sub>L</sub>','Fällung nach Mischen','Gleichioneneffekt','pH und Löslichkeit','Verständnis'];
+const MC=[['Eine Lösung mit Bodenkörper hat Q = 3·K<sub>L</sub>. Was geschieht?',['Es löst sich weiter Salz','Es fällt Salz aus, bis Q = K<sub>L</sub>','Nichts, es herrscht Gleichgewicht'],1],
+['Was gilt auf Teilchenebene in der gesättigten Lösung mit Bodenkörper?',['Es lösen sich keine Ionen mehr','Lösen und Abscheiden laufen gleich schnell','Ionen lagern sich nur an'],1],
+['Man gibt NaCl zu gesättigter AgCl-Lösung. Die Löslichkeit von AgCl …',['steigt','sinkt','bleibt gleich'],1],
+['Warum löst sich Mg(OH)₂ in Salzsäure besser?',['H₃O⁺ verbraucht OH⁻, dadurch wird Q < K<sub>L</sub>','K<sub>L</sub> steigt mit der Säure','Cl⁻ bildet Komplexe'],0],
+['Wie lautet der K<sub>L</sub>-Ausdruck für Ca(OH)₂?',['c(Ca²⁺)·c(OH⁻)','c(Ca²⁺)·c²(OH⁻)','c²(Ca²⁺)·c(OH⁻)'],1],
+['In einer gesättigten Ca(OH)₂-Lösung gilt für die Ionenkonzentrationen:',['c(OH⁻) = c(Ca²⁺)','c(OH⁻) = 2·c(Ca²⁺)','c(Ca²⁺) = 2·c(OH⁻)'],1],
+['Was gilt für das Löslichkeitsprodukt bei konstanter Temperatur?',['Es ändert sich mit jeder Salzzugabe','Es ist eine Konstante des Salzes','Es hängt von der Menge des Bodenkörpers ab'],1],
+['Zu gesättigter AgCl-Lösung mit Bodenkörper wird Wasser gegeben. Was geschieht?',['Es löst sich weiteres AgCl, bis Q = K<sub>L</sub>','Es fällt AgCl aus','Q wird größer als K<sub>L</sub>'],0],
+['Q ist kleiner als K<sub>L</sub> und es ist kein Bodenkörper vorhanden. Die Lösung ist …',['gesättigt','übersättigt','ungesättigt'],2],
+['Warum ändert sich im dynamischen Gleichgewicht die Konzentration nicht?',['Es lösen sich keine Ionen mehr','Es lösen sich gleich viele Ionen, wie sich anlagern','Die Ionen sind in Ruhe'],1],
+['Welches Ion gehört bei Zugabe von NaNO₃ zu AgCl-Lösung nicht zum K<sub>L</sub>-Ausdruck?',['Ag⁺','Cl⁻','Na⁺'],2],
+['Zu gesättigter Ca(OH)₂-Lösung wird Salzsäure gegeben. Dann …',['sinkt c(OH⁻) und weiterer Feststoff löst sich','steigt c(OH⁻) und Feststoff fällt aus','ändert sich nichts'],0]];
+let tk,hl,done,pts=0,filt=-1,mcSet=[],mcPos=0;const stat=TY.map(()=>({r:0,t:0}));
+const fm=x=>String(x).replace('.',',');
+function gen(t){let s,q,ans,h,ap,so;
+if(t==0){s=pick(S);let L=r2(LfromK(s,s.K)*rnd(.6,1.6)),txt;if(Math.random()<.4){const g=r2(L*s.M);L=g/s.M;txt=`${sci(g,2)} g/L`}else txt=`${sci(L,2)} mol/L`;
+ans=KfromL(s,L);q=`Die Löslichkeit von ${s.f} beträgt bei 25 °C ${txt} (M = ${fm(s.M)} g/mol). Berechne K<sub>L</sub> (nur Zahlenwert).`;
+h=`Aus 1 mol ${s.f} entstehen ${s.a} mol ${s.A} und ${s.b} mol ${s.B}.`;ap=`${eqn(s)}<br>K<sub>L</sub> = ${kex(s)}`;
+so=`c(${s.A}) = ${s.a}·L = ${sci(s.a*L,3)} mol/L, c(${s.B}) = ${s.b}·L = ${sci(s.b*L,3)} mol/L<br>K<sub>L</sub> = ${sci(s.a*L,3)}${sup(s.a)} · ${sci(s.b*L,3)}${sup(s.b)} = <b>${sci(ans,3)}</b>`}
+else if(t==1){s=pick(S);const K=r2(s.K*rnd(.5,2)),L=LfromK(s,K),B=Math.random()<.5;ans=B?s.b*L:L;
+q=`K<sub>L</sub>(${s.f}) = ${sci(K,2)}. Berechne ${B?`c(${s.B})`:'die Löslichkeit L in mol/L'} in der gesättigten Lösung.`;
+h=`Setze c(${s.A}) = ${s.a}·L und c(${s.B}) = ${s.b}·L in K<sub>L</sub> ein.`;ap=`${eqn(s)}<br>K<sub>L</sub> = ${kex(s)} = ${Math.pow(s.a,s.a)*Math.pow(s.b,s.b)}·L${sup(s.a+s.b)}`;
+so=`L = (K<sub>L</sub> / ${Math.pow(s.a,s.a)*Math.pow(s.b,s.b)})<sup>1/${s.a+s.b}</sup> = ${sci(L,3)} mol/L${B?`<br>c(${s.B}) = ${s.b}·L = <b>${sci(ans,3)}</b> mol/L`:''}`}
+else if(t==2){s=S[0];const V1=pick([50,100,150,200]),V2=pick([50,100,150,200]),c1=pick([1e-3,2e-3,5e-4,1e-4,1e-5,5e-3]),c2=pick([1e-3,2e-3,5e-4,1e-4,1e-5,5e-3]),a=c1*V1/(V1+V2),b=c2*V2/(V1+V2);ans=a*b;
+q=`Man mischt ${V1} mL AgNO₃-Lösung (${sci(c1,2)} mol/L) mit ${V2} mL NaCl-Lösung (${sci(c2,2)} mol/L). K<sub>L</sub>(AgCl) = 1,7·10<sup>−10</sup>. Berechne das Ionenprodukt Q (nur Zahlenwert). Fällt AgCl aus?`;
+h='Durch das Mischen verdünnen sich beide Lösungen auf das Gesamtvolumen.';ap='AgCl(s) ⇌ Ag⁺(aq) + Cl⁻(aq), K<sub>L</sub> = c(Ag⁺)·c(Cl⁻)<br>Schritte: V<sub>ges</sub> bestimmen, n = c·V, c = n / V<sub>ges</sub>, Q = c(Ag⁺)·c(Cl⁻), Q mit K<sub>L</sub> vergleichen';
+so=`<b>1. Reaktionsgleichung und Ionenprodukt</b><br>AgCl(s) ⇌ Ag⁺(aq) + Cl⁻(aq)<br>K<sub>L</sub> = c(Ag⁺)·c(Cl⁻) = 1,7·10<sup>−10</sup>. Zum Vergleich berechnet man Q = c(Ag⁺)·c(Cl⁻) mit den Konzentrationen direkt nach dem Mischen.<br><b>2. Gesamtvolumen</b><br>V<sub>ges</sub> = ${V1} mL + ${V2} mL = ${V1+V2} mL = ${fm((V1+V2)/1000)} L<br><b>3. Stoffmengen vor dem Mischen</b> (n = c·V)<br>n(Ag⁺) = ${sci(c1,2)} mol/L · ${fm(V1/1000)} L = ${sci(c1*V1/1000,3)} mol<br>n(Cl⁻) = ${sci(c2,2)} mol/L · ${fm(V2/1000)} L = ${sci(c2*V2/1000,3)} mol<br>AgNO₃ und NaCl liegen vollständig dissoziiert vor, also n(Ag⁺) = n(AgNO₃) und n(Cl⁻) = n(NaCl).<br><b>4. Konzentrationen nach dem Mischen</b> (c = n / V<sub>ges</sub>)<br>c(Ag⁺) = ${sci(c1*V1/1000,3)} mol / ${fm((V1+V2)/1000)} L = ${sci(a,3)} mol/L<br>c(Cl⁻) = ${sci(c2*V2/1000,3)} mol / ${fm((V1+V2)/1000)} L = ${sci(b,3)} mol/L<br>Kontrolle: Beide Lösungen werden verdünnt, c(Ag⁺) auf ${fm(Math.round(V1/(V1+V2)*1000)/1000)} und c(Cl⁻) auf ${fm(Math.round(V2/(V1+V2)*1000)/1000)} des Ausgangswerts.<br><b>5. Ionenprodukt berechnen</b><br>Q = c(Ag⁺)·c(Cl⁻) = ${sci(a,3)} · ${sci(b,3)} = <b>${sci(ans,3)}</b><br><b>6. Vergleich mit K<sub>L</sub></b><br>Q = ${sci(ans,3)} ${ans>1.7e-10?'&gt;':'&lt;'} K<sub>L</sub> = 1,7·10<sup>−10</sup> (Q ist das ${sci(ans/1.7e-10,2)}-fache von K<sub>L</sub>)<br><b>7. Ergebnis</b><br>${ans>1.7e-10?'Q &gt; K<sub>L</sub>: Die Lösung ist übersättigt, es fällt AgCl aus, bis Q = K<sub>L</sub> erreicht ist.':'Q &lt; K<sub>L</sub>: Die Lösung ist ungesättigt, es fällt kein AgCl aus.'}`}
+else if(t==3){const c=pick([.01,.05,.1,.2]);ans=1.7e-10/c;q=`Wie hoch ist c(Ag⁺) in einer gesättigten AgCl-Lösung, die zusätzlich ${fm(c)} mol/L NaCl enthält? K<sub>L</sub>(AgCl) = 1,7·10<sup>−10</sup>. Die Chlorid-Konzentration aus AgCl darf vernachlässigt werden.`;
+h='Fast alle Chlorid-Ionen stammen aus dem NaCl.';ap='K<sub>L</sub> = c(Ag⁺)·c(Cl⁻) mit c(Cl⁻) ≈ c(NaCl)';so=`<b>1. Reaktionsgleichung und K<sub>L</sub></b><br>AgCl(s) ⇌ Ag⁺(aq) + Cl⁻(aq)<br>K<sub>L</sub> = c(Ag⁺)·c(Cl⁻) = 1,7·10<sup>−10</sup><br><b>2. Herkunft der Chlorid-Ionen</b><br>NaCl liegt vollständig dissoziiert vor: NaCl → Na⁺ + Cl⁻. Also stammen ${fm(c)} mol/L Cl⁻ aus dem NaCl.<br><b>3. Beitrag des AgCl prüfen</b><br>In reinem Wasser wäre c(Cl⁻) = c(Ag⁺) = √K<sub>L</sub> = ${sci(Math.sqrt(1.7e-10),3)} mol/L. Das sind nur ${fm((Math.sqrt(1.7e-10)/c*100).toFixed(3))} % von ${fm(c)} mol/L und darf vernachlässigt werden.<br><b>4. Näherung</b><br>c(Cl⁻) ≈ c(NaCl) = ${fm(c)} mol/L<br><b>5. Nach c(Ag⁺) umstellen</b><br>c(Ag⁺) = K<sub>L</sub> / c(Cl⁻)<br><b>6. Einsetzen</b><br>c(Ag⁺) = 1,7·10<sup>−10</sup> / ${fm(c)} = <b>${sci(ans,3)}</b> mol/L<br><b>7. Probe</b><br>Q = c(Ag⁺)·c(Cl⁻) = ${sci(ans,3)} · ${fm(c)} = ${sci(ans*c,3)} = K<sub>L</sub><br><b>8. Deutung</b><br>Gegenüber reinem Wasser ist c(Ag⁺) um den Faktor ${sci(Math.sqrt(1.7e-10)/ans,2)} kleiner. Das überschüssige Cl⁻ verschiebt das Gleichgewicht nach links, AgCl fällt aus (Gleichioneneffekt).`}
+else if(t==4){const p=pick([9.5,10,10.5,11,11.5,12]),o=Math.pow(10,p-14);ans=5.6e-12/(o*o);q=`Bis zu welcher Konzentration c(Mg²⁺) bleibt Mg(OH)₂ (K<sub>L</sub> = 5,6·10<sup>−12</sup>) bei pH = ${fm(p)} gelöst?`;
+h='Aus dem pH-Wert folgt c(OH⁻) über pOH = 14 − pH.';ap='K<sub>L</sub> = c(Mg²⁺)·c²(OH⁻)';so=`<b>1. Reaktionsgleichung</b><br>Mg(OH)₂(s) ⇌ Mg²⁺(aq) + 2 OH⁻(aq) (Faktoren 1 : 2)<br><b>2. Ausdruck für K<sub>L</sub></b><br>K<sub>L</sub> = c(Mg²⁺)·c²(OH⁻) = 5,6·10<sup>−12</sup><br><b>3. pOH aus dem pH-Wert</b><br>pOH = 14 − pH = 14 − ${fm(p)} = ${fm(14-p)}<br><b>4. Hydroxid-Konzentration</b><br>c(OH⁻) = 10<sup>−pOH</sup> = 10<sup>−${fm(14-p)}</sup> mol/L = ${sci(o,3)} mol/L<br><b>5. Nach c(Mg²⁺) umstellen</b><br>c(Mg²⁺) = K<sub>L</sub> / c²(OH⁻)<br><b>6. Einsetzen</b><br>c²(OH⁻) = (${sci(o,3)})² = ${sci(o*o,3)} mol²/L²<br>c(Mg²⁺) = 5,6·10<sup>−12</sup> / ${sci(o*o,3)} = <b>${sci(ans,3)}</b> mol/L<br><b>7. Deutung</b><br>Bis zu dieser Mg²⁺-Konzentration bleibt die Lösung bei pH ${fm(p)} klar (Q ≤ K<sub>L</sub>). Ist c(Mg²⁺) größer, gilt Q &gt; K<sub>L</sub> und Mg(OH)₂ fällt aus. Steigt der pH um 1, sinkt c(Mg²⁺) auf ein Hundertstel, weil c(OH⁻) quadratisch eingeht.`}
+else{if(mcPos>=10||!mcSet.length){const idx=MC.map((x,i)=>i);for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}mcSet=idx.slice(0,10);mcPos=0}const m=MC[mcSet[mcPos++]],ord=m[1].map((x,i)=>i).sort(()=>Math.random()-.5),opts=ord.map(i=>m[1][i]),okk=ord.indexOf(m[2]);return{t,q:'<span class="note">Verständnisfrage '+mcPos+' von 10</span><br>'+m[0],mc:opts,ok:okk,h:'Vergleiche Q mit K<sub>L</sub>.',ap:'Bei Q &gt; K<sub>L</sub> fällt Salz aus, bei Q &lt; K<sub>L</sub> löst sich Salz.',so:'Richtig: '+m[1][m[2]]}}
+return{t,q,ans,h,ap,so}}
+function chips(){$('chips').innerHTML=['Alle',...TY].map((n,i)=>`<button class="b s ${filt==i-1?'on':''}" data-i="${i-1}">${n}</button>`).join('');
+$('chips').querySelectorAll('button').forEach(b=>b.onclick=()=>{filt=+b.dataset.i;chips();next()});
+const tot=stat.reduce((a,x)=>a+x.t,0),ri=stat.reduce((a,x)=>a+x.r,0);$('stat').innerHTML=`Punkte: <b>${pts}</b> · richtig ${ri} von ${tot}<br>`+TY.map((n,i)=>`${n}: ${stat[i].r}/${stat[i].t}`).join(' | ');$('pr').style.width=(tot?ri/tot*100:0)+'%'}
+function next(){tk=gen(filt<0?Math.floor(Math.random()*6):filt);hl=0;done=false;$('tq').innerHTML=tk.q;$('fb').textContent='';$('hs').innerHTML='';
+$('tin').innerHTML=tk.mc?tk.mc.map((o,i)=>`<button class="b s" data-i="${i}">${o}</button>`).join('<br>'):'<input type="text" id="an" aria-label="Antwort" placeholder="z. B. 1,3·10^-5" autocomplete="off"> <button class="b" id="ck">Prüfen</button>';
+if(tk.mc)$('tin').querySelectorAll('button').forEach(b=>b.onclick=()=>fin(+b.dataset.i===tk.ok));else{$('ck').onclick=chk;$('an').onkeydown=e=>{if(e.key==='Enter')chk()}}chips()}
+function parse(v){return Number(v.trim().toLowerCase().replace(/\s/g,'').replace(/,/g,'.').replace(/−/g,'-').replace(/[·×x*]10\^?\(?(-?\d+)\)?/,'e$1'))}
+function chk(){const v=parse($('an').value);if(!isFinite(v)){$('fb').innerHTML='<span class="no">Bitte eine Zahl eingeben, z. B. 1,3·10^-5.</span>';return}fin(Math.abs(v-tk.ans)/tk.ans<=.03)}
+function fin(ok){if(ok){$('fb').innerHTML='<span class="ok">Richtig.</span>';if(!done){done=true;stat[tk.t].t++;stat[tk.t].r++;pts+=Math.max(2,10-3*hl)}$('hs').innerHTML=`<div class="sol">${tk.so}</div>`}else $('fb').innerHTML='<span class="no">Noch nicht richtig.</span> Prüfe Stöchiometrie und Zehnerpotenz.';chips()}
+$('hp').onclick=()=>{hl=Math.min(3,hl+1);$('hs').innerHTML=`<div class="sol">${hl==1?tk.h:hl==2?tk.h+'<br>'+tk.ap:tk.h+'<br>'+tk.ap+'<br>'+tk.so}</div>`};
+$('sv').onclick=()=>{if(!done){done=true;stat[tk.t].t++}$('hs').innerHTML=`<div class="sol">${tk.ap}<br>${tk.so}</div>`;chips()};$('nx').onclick=next;
+
+/* Start */
+function loop(now){const dt=Math.min(.05,(now-(loop.l||now))/1000);loop.l=now;if(cur==='t0')anim0(dt);if(cur==='t1')anim1(dt);if(cur==='t2')anim2(dt);requestAnimationFrame(loop)}
+size();reset0();reset1();reset2();next();requestAnimationFrame(loop);
+</script></body></html>

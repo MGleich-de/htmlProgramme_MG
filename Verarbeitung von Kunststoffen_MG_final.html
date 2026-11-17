@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Verarbeitung von Kunststoffen</title>
+<style>
+:root{--bg:#e9eef4;--card:#fff;--fg:#17212e;--mut:#566577;--acc:#e8590c;--line:#d3dce6;--cv:#f4f7fb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d141c;--card:#16202b;--fg:#e7eef6;--mut:#9aabbd;--acc:#ff8a3d;--line:#283646;--cv:#0f1822}}
+:root[data-theme="dark"]{--bg:#0d141c;--card:#16202b;--fg:#e7eef6;--mut:#9aabbd;--acc:#ff8a3d;--line:#283646;--cv:#0f1822}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 "Avenir Next","Segoe UI",system-ui,sans-serif}
+main{max-width:920px;margin:0 auto;padding:18px 14px 28px}
+h1{margin:0;font:700 clamp(24px,5vw,36px)/1.1 "Avenir Next Condensed","Arial Narrow",system-ui,sans-serif;letter-spacing:.2px}
+.au{margin:2px 0 14px;color:var(--mut);font-size:14px}
+nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:12px;padding:10px 4px;font:600 14px inherit;font-family:inherit;cursor:pointer;transition:.2s}
+nav button.on{background:var(--acc);border-color:var(--acc);color:#fff;transform:translateY(-2px);box-shadow:0 6px 16px rgba(232,89,12,.35)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:12px}
+canvas{display:block;width:100%;aspect-ratio:2/1;background:var(--cv);border-radius:10px}
+#bar{height:4px;background:var(--line);border-radius:2px;margin:10px 0}
+#pb{display:block;height:100%;width:0;background:var(--acc);border-radius:2px}
+.ctl,.opt,#chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ctl button,#chips button{border:1px solid var(--line);background:var(--cv);color:var(--fg);border-radius:9px;padding:7px 12px;font:600 13px inherit;font-family:inherit;cursor:pointer}
+#chips{margin-top:10px}
+#chips button.on{border-color:var(--acc);color:var(--acc);background:var(--card)}
+label{font-size:13px;color:var(--mut);display:flex;gap:6px;align-items:center}
+select,input[type=range]{accent-color:var(--acc);font:inherit;color:var(--fg);background:var(--cv);border:1px solid var(--line);border-radius:6px}
+.opt{margin-top:10px}
+h2{margin:0 0 4px;font-size:19px}
+h3{margin:10px 0 2px;font-size:16px;color:var(--acc)}
+p{margin:4px 0}.m{color:var(--mut);font-size:14px}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+</style></head><body><main>
+<h1>Verarbeitung von Kunststoffen</h1>
+<p class="au">Autor: Matthias Gleich</p>
+<nav id="tabs"></nav>
+<section class="card"><canvas id="cv" width="1600" height="800"></canvas>
+<div id="bar"><i id="pb"></i></div>
+<div class="ctl"><button id="bpr">‹ Schritt</button><button id="bpl">Pause</button><button id="bnx">Schritt ›</button><button id="brs">↺ Neu</button>
+<label>Tempo <input id="sp" type="range" min=".25" max="2" step=".25" value="1"></label></div>
+<div class="opt" id="opts"></div><div id="chips"></div></section>
+<section class="card"><h2 id="ti"></h2><p class="m" id="df"></p><h3 id="sn"></h3><p id="sx"></p><p class="m" id="mt"></p></section>
+</main>
+<script>
+const $=i=>document.getElementById(i),cv=$('cv'),c=cv.getContext('2d');
+const cl=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),lp=(a,b,f)=>a+(b-a)*f,ez=u=>u*u*(3-2*u);
+const mx=(a,b,f)=>'rgb('+a.map((v,i)=>Math.round(lp(v,b[i],cl(f)))).join()+')';
+const HOT=[255,90,50],ORG=[240,150,50],COLD=[100,145,205],STEEL=[160,168,182];
+let FG='#000',ACC='#e8590c',o={T:210,vac:1,gap:5,shape:0,pis:0},cur='sp',t=0,playing=true,speed=1,last=0,ls=-1,DT=0,exAcc=0;
+function rr(x,y,w,h,r,f,s){c.beginPath();c.roundRect(x,y,w,h,r);if(f){c.fillStyle=f;c.fill()}if(s){c.strokeStyle=s;c.lineWidth=1.5;c.stroke()}}
+function tx(s,x,y,w){c.fillStyle=w?'#fff':FG;c.font='600 13px system-ui,sans-serif';c.textAlign='center';c.fillText(s,x,y)}
+function metal(x,y,w,h,r=4){const g=c.createLinearGradient(0,y,0,y+h);g.addColorStop(0,'#cdd4de');g.addColorStop(.5,'#919cab');g.addColorStop(1,'#667282');rr(x,y,w,h,r,g,'#47525f')}
+function arrow(x1,y1,x2,y2,col,w=3){const a=Math.atan2(y2-y1,x2-x1);c.strokeStyle=c.fillStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-10*Math.cos(a-.4),y2-10*Math.sin(a-.4));c.lineTo(x2-10*Math.cos(a+.4),y2-10*Math.sin(a+.4));c.fill()}
+function dot(x,y,r,col){c.beginPath();c.arc(x,y,r,0,7);c.fillStyle=col;c.fill()}
+function screw(x0,x1,y0,y1,ph){c.save();c.beginPath();c.rect(x0,y0,x1-x0,y1-y0);c.clip();rr(x0,y0+9,x1-x0,y1-y0-18,3,'#6f7a89');c.strokeStyle='#d5dbe4';c.lineWidth=4;for(let x=x0-26+ph%26;x<x1;x+=26){c.beginPath();c.moveTo(x,y1);c.lineTo(x+15,y0);c.stroke()}c.restore()}
+function gauge(x,y,p){dot(x,y,22,'#f4f6f9');c.strokeStyle='#47525f';c.lineWidth=3;c.stroke();const a=Math.PI*(.75+1.5*cl(p));c.strokeStyle='#d63b2f';c.beginPath();c.moveTo(x,y);c.lineTo(x+17*Math.cos(a),y+17*Math.sin(a));c.stroke();tx('Druck',x,y+39)}
+function heat(x,y,w,n,gap){for(let i=0;i<n;i++){rr(x+i*gap,y,w,8,2,'#d63b2f');rr(x+i*gap,y+64,w,8,2,'#d63b2f')}}
+
+/* ---------- 1 Spritzgießen ---------- */
+function dSp(tl,s,u){
+ const fm=cl((o.T-165)/35,.5,1);let tip=330,f=0,sf=0,op=0,ej=0,dr=0,cool=0,rot=0,pr=.1;
+ if(s==0){tip=330+120*u;rot=1;pr=.15}
+ if(s==1){tip=450-120*u;sf=cl(u*3);f=cl((u-.25)/.75)*fm;pr=.2+.8*u}
+ if(s==2){sf=1;f=fm;cool=u;pr=.9-.7*u}
+ if(s==3){sf=1;f=fm;cool=1;op=ez(cl(u/.4));ej=cl((u-.4)/.2);dr=cl((u-.6)/.4)}
+ const off=op*70,mc=mx(HOT,COLD,cool);
+ rr(60,372,200,10,3,'#919cab');
+ metal(190,120,72,160);rr(190,196,72,8,0,'#2b323b');
+ if(sf){c.fillStyle=mc;c.fillRect(262-72*sf,196,72*sf,8)}
+ metal(110-off,120,80,160);rr(150-off,158,40,84,6,'#2b323b');
+ if(s==2){c.strokeStyle='#4fa8ff';c.lineWidth=3;c.setLineDash([7,6]);c.lineDashOffset=-tl*30;for(const y of[138,262]){c.beginPath();c.moveTo(118-off,y);c.lineTo(185-off,y);c.moveTo(196,y);c.lineTo(256,y);c.stroke()}c.setLineDash([])}
+ if(f>0){const px=-off+ej*12,py=dr*dr*128;c.fillStyle=mc;c.fillRect(190+px-40*f,158+py,40*f,84);if(sf>=1)c.fillRect(190+px,196+py,12,8)}
+ if(op>.95)rr(96-off,197,64+ej*14,6,2,'#e1e6ec');
+ rr(246,190,22,20,3,'#667282');metal(262,170,458,60,8);rr(268,176,448,48,4,'#262d36');
+ const g=c.createLinearGradient(268,0,tip,0);g.addColorStop(0,'#ff5a32');g.addColorStop(1,'#f28a2e');c.fillStyle=g;c.fillRect(268,176,tip-268,48);
+ screw(tip,716,176,224,rot*tl*70);
+ for(let i=0;i<26;i++){const x=tip+6+((i*47+(rot?tl*60:0))%(716-tip-12));dot(x,182+(i%2)*36+(i%3)*2,2.8,mx(ORG,HOT,1-(x-tip)/(716-tip)))}
+ heat(290,164,34,6,68);
+ rr(718,160,58,80,8,'#3ea6e0');tx('Antrieb',747,205,1);
+ c.beginPath();c.moveTo(600,95);c.lineTo(700,95);c.lineTo(670,170);c.lineTo(630,170);c.closePath();c.fillStyle='#aeb8c4';c.fill();c.strokeStyle='#47525f';c.stroke();
+ for(let i=0;i<14;i++)dot(620+(i*29)%60,100+(i%4)*10,3,'#e08a2c');
+ if(s==0)for(let i=0;i<6;i++)dot(650+(i%3-1)*8,135+((tl*70+i*12)%36),3,'#e08a2c');
+ gauge(500,100,pr);tx('Einfülltrichter',650,84);tx('Heizbänder',360,156);tx('Schnecke',540,258);tx('Düse',255,248);tx('Werkzeug',150,112);
+ if(fm<.95&&s>=1)tx('Kurzschuss: Form nicht vollständig gefüllt',230,340);
+}
+/* ---------- 2 Tiefziehen ---------- */
+function dTd(tl,s,u){
+ const xs=[160,290,322,326,400,474,478,510,640],sag=14*(s==0?ez(u):1);
+ const y0=[200,200,200,200,200+sag,200,200,200,200],y1=[200,236,240,318,318,318,240,236,200];
+ const m=s==0?0:s==1?ez(u):1,lift=s==3?-110*ez(u):0;
+ metal(280,240,240,120,6);rr(324,240,152,80,3,'#262d36');
+ for(const x of[364,400,436])rr(x-3,320,6,40,0,'#262d36');
+ if(s<=1){const hy=70-(s==1?60*ez(u):0);c.globalAlpha=s==1?1-u:1;metal(200,hy,400,22,6);for(let i=0;i<10;i++)rr(212+i*38,hy+22,26,6,3,'#ff4b2b');
+  c.strokeStyle='#ff7a45';c.lineWidth=2;c.globalAlpha*=.3+.5*(s==0?u:1);for(let i=0;i<9;i++){c.beginPath();for(let y=hy+34;y<190;y+=4){const x=225+i*44+4*Math.sin(y/9-tl*8);y==hy+34?c.moveTo(x,y):c.lineTo(x,y)}c.stroke()}c.globalAlpha=1;if(s==0)tx('Heizstrahler',400,hy-8)}
+ if(s==2){metal(340,60,120,18,4);c.save();c.translate(400,102);c.rotate(tl*12);for(let k=0;k<3;k++){c.rotate(2.094);c.beginPath();c.ellipse(0,-13,6,13,0,0,7);c.fillStyle='#8da0b6';c.fill()}c.restore();
+  c.strokeStyle='#4fa8ff';c.lineWidth=3;c.setLineDash([6,8]);c.lineDashOffset=-tl*40;for(let i=0;i<5;i++){c.beginPath();c.moveTo(340+i*30,128);c.lineTo(340+i*30,186);c.stroke()}c.setLineDash([]);tx('Gebläse',400,56)}
+ if(o.vac&&(s==1||s==2)){for(const x of[364,400,436])arrow(x,342,x,372,'#1fa6d8');tx('Vakuum',400,392)}
+ if(!o.vac&&(s==1||s==2)){for(const x of[340,400,460])arrow(x,118,x,176,'#d63b2f',4);tx('Überdruck',400,108)}
+ const col=s==0?mx(STEEL,ORG,u):s==1?mx(ORG,[255,110,50],u*.5):s==2?mx([250,130,55],COLD,u):mx(COLD,COLD,0);
+ c.save();c.translate(0,lift);rr(128,186,38,32,4,'#47525f');rr(634,186,38,32,4,'#47525f');
+ c.strokeStyle=col;c.lineWidth=7;c.lineJoin='round';c.beginPath();c.moveTo(140,200);xs.forEach((x,i)=>c.lineTo(x,lp(y0[i],y1[i],m)));c.lineTo(660,200);c.stroke();c.restore();
+ if(s<3){tx('Spannrahmen',148,176);tx('Kunststoff-Folie',215,190)}else{arrow(147,176+lift,147,150+lift,'#1fa6d8');arrow(653,176+lift,653,150+lift,'#1fa6d8')}
+ tx('Formwerkzeug',226,300);
+}
+/* ---------- 3 Kalandrieren ---------- */
+function dKa(tl,s,u){
+ const R=[[330,105,1],[424,105,-1],[424,199,1],[424,293,-1]];
+ const sh=new Path2D();sh.moveTo(377,84);sh.lineTo(377,105);sh.arc(424,105,47,Math.PI,Math.PI/2,true);sh.arc(424,199,47,-Math.PI/2,Math.PI/2,false);sh.arc(424,293,47,-Math.PI/2,Math.PI/2,true);sh.lineTo(790,340);
+ for(const[x,y,d]of R){const g=c.createRadialGradient(x-12,y-12,4,x,y,42);g.addColorStop(0,'#f3f5f8');g.addColorStop(.6,'#818c9b');g.addColorStop(1,'#39424e');dot(x,y,42,g);c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=3;for(let k=0;k<3;k++){const a=tl*1.5*d+k*2.094;c.beginPath();c.moveTo(x+10*Math.cos(a),y+10*Math.sin(a));c.lineTo(x+35*Math.cos(a),y+35*Math.sin(a));c.stroke()}dot(x,y,6,'#2b323b');
+  c.strokeStyle='#d63b2f';c.lineWidth=3;c.beginPath();c.arc(x,y,48,-.5,.5);c.stroke()}
+ const g=c.createLinearGradient(330,0,790,0);g.addColorStop(0,'#ff4d2e');g.addColorStop(.3,'#ff6a3a');g.addColorStop(.55,'#9db4d6');g.addColorStop(1,'#7f9cc7');
+ c.lineCap='butt';c.strokeStyle=g;c.lineWidth=o.gap;c.stroke(sh);
+ c.strokeStyle='rgba(255,255,255,.4)';c.lineWidth=o.gap*.4;c.setLineDash([10,14]);c.lineDashOffset=-tl*45;c.stroke(sh);c.setLineDash([]);
+ c.beginPath();c.ellipse(377,82,30+3*Math.sin(tl*4),14+2*Math.sin(tl*5),0,0,7);c.fillStyle='#ff4d2e';c.fill();c.strokeStyle='#b3260f';c.lineWidth=2;c.stroke();
+ arrow(377,14,377,52,'#d63b2f',4);tx('Schmelze',377,10);tx('Walzen',262,108);tx('Walzenspalt: '+(o.gap/10).toFixed(1)+' mm',640,380);
+ c.strokeStyle='#4fa8ff';c.lineWidth=3;c.setLineDash([6,8]);c.lineDashOffset=-tl*40;for(let i=0;i<4;i++){c.beginPath();c.moveTo(560+i*45,288);c.lineTo(560+i*45,330);c.stroke()}c.setLineDash([]);tx('Kühlung',628,278);
+ arrow(705,318,780,318,'#e03e2f',4);tx('Abzug',742,306);tx('endlose Bahn',620,362);
+}
+/* ---------- 4 Extrusion ---------- */
+function dEx(tl,s,u){
+ const pp=tl%4,fl=o.pis?(pp<3?1:0):1;exAcc+=DT*45*fl;
+ rr(40,170,110,100,10,'#3ea6e0');tx('Antrieb',95,225,1);rr(150,208,24,16,2,'#667282');
+ metal(170,190,390,60,8);rr(174,196,382,48,3,'#262d36');
+ if(o.pis){const px=pp<3?lp(190,470,pp/3):lp(470,190,pp-3);const g=c.createLinearGradient(px,0,556,0);g.addColorStop(0,'#f28a2e');g.addColorStop(1,'#ff4d2e');c.fillStyle=g;c.fillRect(px,196,556-px,48);rr(150,214,px-150,12,2,'#667282');rr(px,198,16,44,3,'#919cab','#47525f')}
+ else{screw(174,556,196,244,tl*50);for(let i=0;i<30;i++){const x=262+((i*53+tl*35)%294);dot(x,203+(i%2)*34,3.2-1.4*(x-262)/294,mx(ORG,HOT,(x-262)/294))}
+  const g=c.createLinearGradient(400,0,556,0);g.addColorStop(0,'rgba(255,77,46,0)');g.addColorStop(1,'rgba(255,77,46,.8)');c.fillStyle=g;c.fillRect(400,196,156,48)}
+ heat(200,182,26,8,48);
+ for(const x of[360,440]){c.strokeStyle='#47525f';c.lineWidth=3;c.beginPath();c.moveTo(x,190);c.lineTo(x,172);c.stroke();dot(x,170,4,'#2ea84a')}
+ c.beginPath();c.moveTo(260,110);c.lineTo(320,110);c.lineTo(300,190);c.lineTo(280,190);c.closePath();c.fillStyle='#aeb8c4';c.fill();c.strokeStyle='#47525f';c.lineWidth=1.5;c.stroke();
+ for(let i=0;i<9;i++)dot(272+(i*13)%34,120+(i%3)*12,3,'#e08a2c');
+ c.beginPath();c.moveTo(560,186);c.lineTo(626,200);c.lineTo(626,240);c.lineTo(560,254);c.closePath();c.fillStyle='#667282';c.fill();c.stroke();
+ const g=c.createLinearGradient(620,0,790,0);g.addColorStop(0,'#ff5a32');g.addColorStop(.4,'#f08a46');g.addColorStop(1,'#8aa6cc');
+ const sp=o.shape;c.fillStyle=g;c.strokeStyle=g;
+ if(sp==0){c.fillRect(626,200,164,12);c.fillRect(626,228,164,12);c.fillStyle='rgba(120,140,170,.25)';c.fillRect(626,212,164,16)}
+ if(sp==1){rr(626,205,164,30,3,g);c.strokeStyle='rgba(0,0,0,.25)';c.lineWidth=2;for(const y of[215,225]){c.beginPath();c.moveTo(626,y);c.lineTo(790,y);c.stroke()}}
+ if(sp==2){c.beginPath();c.moveTo(626,228);c.lineTo(700,204);c.lineTo(790,204);c.lineTo(790,214);c.lineTo(710,238);c.lineTo(626,238);c.fill()}
+ if(sp==3){c.lineWidth=4;c.beginPath();for(let x=626;x<=790;x+=3){const y=221+7*Math.sin((x-626)/14-exAcc/10);x==626?c.moveTo(x,y):c.lineTo(x,y)}c.stroke()}
+ if(sp<3&&fl){c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=2;c.setLineDash([8,12]);c.lineDashOffset=-exAcc;c.beginPath();c.moveTo(626,220);c.lineTo(790,220);c.stroke();c.setLineDash([])}
+ rr(650,26,130,104,10,'rgba(128,140,160,.16)');tx('Querschnitt',715,46);c.fillStyle='#9db4d6';
+ if(sp==0){c.beginPath();c.arc(715,92,28,0,2*Math.PI);c.moveTo(731,92);c.arc(715,92,16,0,2*Math.PI,true);c.fill()}
+ if(sp==1){c.fillRect(687,70,56,12);c.fillRect(708,82,14,36)}
+ if(sp==2)c.fillRect(675,86,80,10);
+ if(sp==3)c.fillRect(670,90,90,3);
+ gauge(480,110,[.1,.25,.6,.9][s]);
+ tx('Befülltrichter',290,100);tx('Heizbänder',215,176);tx('Temperatursensor',400,160);tx('Schnecke',360,272);tx('Düse',595,272);tx('Extrudat',720,262);
+}
+/* ---------- Daten ---------- */
+const sel=(k,l,a)=>`<label>${l}<select onchange="o.${k}=+this.value">${a.map((x,i)=>`<option value=${i}>${x}</option>`).join('')}</select></label>`;
+const P={
+sp:{n:'Spritzgießen',draw:dSp,def:'Spritzgießen ist ein Fertigungsverfahren, bei dem geschmolzenes Material unter hohem Druck in eine Form eingespritzt wird, um eine gewünschte Form zu erzeugen.',
+ mt:'Ablauf: diskontinuierlich (Zyklus). Produkte: Gehäuse, Verschlüsse, Zahnräder, Spielzeug.',
+ opt:'<label>Zylindertemperatur <b id="tv">210</b> °C<input type="range" min="160" max="240" step="5" value="210" oninput="o.T=+this.value;$(\'tv\').textContent=this.value"></label>',
+ st:[{n:'Plastifizieren',d:4,f:[520,200,80],t:'Granulat fällt aus dem Trichter in den beheizten Zylinder. Die rotierende Schnecke fördert es nach vorn, Heizbänder und Reibung schmelzen es auf. Die Schnecke weicht zurück, vor ihr sammelt sich die Schmelze.'},
+ {n:'Einspritzen',d:3,f:[215,200,70],t:'Die Schnecke wirkt wie ein Kolben und drückt die Schmelze unter hohem Druck durch Düse und Anguss in den Formhohlraum. Das Manometer zeigt den Druckanstieg.'},
+ {n:'Abkühlen',d:2.5,f:[150,200,65],t:'In der gekühlten Form erstarrt die Schmelze und behält die Gestalt des Hohlraums. Währenddessen kann bereits neues Material plastifiziert werden.'},
+ {n:'Entformen & Auswerfen',d:3,f:[150,230,80],t:'Das Werkzeug öffnet sich, der Auswerfer drückt das fertige Formteil heraus. Danach schließt die Form und der Zyklus beginnt von vorn. Tipp: Senke die Temperatur und beobachte den Kurzschuss.'}]},
+td:{n:'Tiefziehen',draw:dTd,def:'Beim Kunststoff-Tiefziehen wird eine erhitzte Kunststoffplatte oder -folie über eine Form gebracht und durch Vakuum oder Druck in die gewünschte Form gebracht.',
+ mt:'Ablauf: diskontinuierlich. Produkte: Joghurtbecher, Blisterverpackungen, Innenverkleidungen.',opt:sel('vac','Formgebung',['Überdruck','Vakuum']).replace('<option value=1>','<option value=1 selected>'),
+ st:[{n:'Erwärmen',d:3,f:[400,150,110],t:'Die Folie liegt im Spannrahmen. Heizstrahler erwärmen sie, bis sie weich wird und leicht durchhängt.'},
+ {n:'Formen',d:3.5,f:[400,280,100],t:'Die weiche Folie wird durch Vakuum angesaugt oder durch Überdruck gedrückt und legt sich an die Form an.'},
+ {n:'Abkühlen',d:3,f:[400,200,90],t:'Ein Gebläse kühlt das Teil. Es wird wieder fest und behält die neue Form.'},
+ {n:'Entnehmen',d:2.5,f:[400,150,120],t:'Die Formgebung wird beendet, das fertige Teil wird entnommen und anschließend zugeschnitten.'}]},
+ka:{n:'Kalandrieren',draw:dKa,def:'Kalandrieren ist ein Verfahren der Kunststoffverarbeitung, bei dem eine erwärmte Kunststoffschmelze zwischen einer oder mehreren Walzen zu einer endlosen Bahn geformt wird.',
+ mt:'Ablauf: kontinuierlich. Produkte: Folien, Fußbodenbeläge, Kunstleder, Planen.',opt:'<label>Walzenspalt <input type="range" min="3" max="9" step="1" value="5" oninput="o.gap=+this.value"></label>',
+ st:[{n:'Aufgabe der Schmelze',d:3,f:[377,84,45],t:'Die erwärmte Kunststoffschmelze wird von oben in den ersten Walzenspalt gegeben und bildet einen rotierenden Wulst.'},
+ {n:'Formen im Walzenspalt',d:3,f:[377,110,60],t:'Gegenläufige Walzen ziehen die Schmelze in den Spalt und pressen sie zu einer dünnen Bahn. Der Abstand der Walzen bestimmt die Dicke.'},
+ {n:'Glätten & Abkühlen',d:3,f:[424,200,85],t:'Die Bahn läuft nacheinander durch die Spalte zwischen jeweils zwei Walzen. Dabei wird sie geglättet und kühlt ab.'},
+ {n:'Abzug',d:3,f:[700,330,65],t:'Die endlose Bahn wird kontinuierlich abgezogen und danach z. B. aufgewickelt oder zugeschnitten.'}]},
+ex:{n:'Extrusion',draw:dEx,def:'Dabei wird das Material erwärmt, geschmolzen und plastisch gemacht und dann unter Druck kontinuierlich zu Fasern, Profilen, Rohren, Platten oder anderen Produkten geformt. Der Druck wird durch einen mechanischen Kolben oder eine Förderschnecke erzeugt.',
+ mt:'Ablauf: kontinuierlich (Schnecke) bzw. taktweise (Kolben). Produkte: Rohre, Profile, Platten, Folien, Fasern.',
+ opt:sel('shape','Erzeugnis',['Rohr','Profil','Platte','Folie'])+sel('pis','Druckerzeugung',['Förderschnecke','Kolben']),
+ st:[{n:'Einfüllen & Fördern',d:3,f:[290,150,60],t:'Granulat rutscht aus dem Befülltrichter in den Zylinder und wird von der rotierenden Schnecke nach vorn gefördert.'},
+ {n:'Aufschmelzen',d:3,f:[370,220,80],t:'Heizbänder und Reibung erwärmen das Material. Es schmilzt und wird plastisch. Temperatursensoren überwachen die Zonen.'},
+ {n:'Verdichten unter Druck',d:3,f:[500,220,60],t:'Schnecke oder Kolben bauen Druck auf und pressen die Schmelze gleichmäßig zur Düse.'},
+ {n:'Formgebung an der Düse',d:3,f:[690,220,75],t:'Die Schmelze tritt durch die Düse aus und bildet kontinuierlich das Extrudat. Die Düse bestimmt den Querschnitt (siehe Kasten).'}]}
+};
+/* ---------- Steuerung ---------- */
+const tot=()=>P[cur].st.reduce((a,x)=>a+x.d,0),start=i=>P[cur].st.slice(0,i).reduce((a,x)=>a+x.d,0);
+function at(t){let a=0;const S=P[cur].st;for(let i=0;i<S.length;i++){if(t<a+S[i].d||i==S.length-1)return[i,cl((t-a)/S[i].d)];a+=S[i].d}}
+function pick(k){cur=k;t=0;ls=-1;exAcc=0;document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.k==k));
+ const p=P[k];$('ti').textContent=p.n;$('df').textContent=p.def;$('mt').textContent=p.mt;$('opts').innerHTML=p.opt;
+ $('chips').innerHTML=p.st.map((s,i)=>`<button data-i="${i}">${i+1}. ${s.n}</button>`).join('');
+ document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>{t=start(+b.dataset.i)+.001})}
+function show(s){const S=P[cur].st[s];$('sn').textContent=(s+1)+'. '+S.n;$('sx').textContent=S.t;document.querySelectorAll('#chips button').forEach((b,i)=>b.classList.toggle('on',i==s))}
+$('tabs').innerHTML=Object.keys(P).map(k=>`<button data-k="${k}">${P[k].n}</button>`).join('');
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>pick(b.dataset.k));
+$('bpl').onclick=()=>{playing=!playing;$('bpl').textContent=playing?'Pause':'Weiter'};
+$('bnx').onclick=()=>{const[s]=at(t);t=start((s+1)%P[cur].st.length)+.001};
+$('bpr').onclick=()=>{const[s,u]=at(t),n=P[cur].st.length;t=start(u>.15?s:(s+n-1)%n)+.001};
+$('brs').onclick=()=>{t=0};$('sp').oninput=e=>speed=+e.target.value;
+function frame(ts){DT=playing?Math.min(.05,(ts-last)/1000)*speed:0;last=ts;if(playing)t=(t+DT)%tot();
+ const[s,u]=at(t);if(s!=ls){ls=s;show(s)}
+ const st=getComputedStyle(document.documentElement);FG=st.getPropertyValue('--fg').trim();ACC=st.getPropertyValue('--acc').trim();
+ c.setTransform(2,0,0,2,0,0);c.clearRect(0,0,800,400);c.lineCap='round';
+ P[cur].draw(t,s,u);
+ const f=P[cur].st[s].f;c.save();c.strokeStyle=ACC;c.lineWidth=3;c.setLineDash([8,6]);c.globalAlpha=.85;c.beginPath();c.arc(f[0],f[1],f[2]+3*Math.sin(t*6),0,7);c.stroke();c.restore();
+ $('pb').style.width=(t/tot()*100)+'%';requestAnimationFrame(frame)}
+pick('sp');requestAnimationFrame(frame);
+</script></body></html>
